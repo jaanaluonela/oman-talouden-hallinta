@@ -44,3 +44,8 @@ V8.4 MOBIILIVIIMEISTELY
 - Pitkät viite- ja maksunumerot piilotetaan näkymästä, mutta alkuperäinen tapahtumatieto säilyy tallennettuna.
 - Summa pysyy selkeästi oikeassa yläkulmassa.
 - Menoluokan tapahtumalista, tapahtumat ja vuosihaku käyttävät samaa selkeää ulkoasua.
+
+V8.5 korjaukset:
+- S-market, Prisma, K-Market, K-Supermarket, K-Citymarket, Lidl, Tokmanni, Kärkkäinen ja IKEA ovat omia kauppaluokkiaan.
+- Kaupan yhteydessä ei näytetä turhaan samaa ostosluokkaa toiseen kertaan.
+- Kaupparaportin ohjeteksti on selkeytetty.

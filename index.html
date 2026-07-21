@@ -110,7 +110,7 @@
 <div class="report-tabs"><button class="report-tab active" data-report="categories">Menoluokat</button><button class="report-tab" data-report="shops">🛒 Kaupat</button><button class="report-tab" data-report="months">Kuukaudet</button><button class="report-tab" data-report="review">⚠️ Tarkistettavat</button></div>
 <div id="reportMain">
   <div id="reportCategories" class="card"><h3>Suurimmat menoluokat</h3><div class="report-note">Paina mitä tahansa menoluokkaa, niin näet kaikki siihen kuuluvat ostokset. Erityisesti <b>Muut ostokset</b> avautuu nyt tapahtumalistaksi.</div><div id="allcats"></div></div>
-  <div id="reportShops" class="card hidden"><h3>🛒 Kaupparaportti</h3><div class="report-note"><b>Tokmanni on oma osionsa.</b> Paina kaupan nimeä nähdäksesi kaikki ostokset, maksutilit ja summat.</div><div id="shopList"></div></div>
+  <div id="reportShops" class="card hidden"><h3>🛒 Kaupparaportti</h3><div class="report-note">Paina kaupan nimeä nähdäksesi kaikki kyseisessä kaupassa tehdyt ostokset, päivämäärät ja summat.</div><div id="shopList"></div></div>
   <div id="reportMonths" class="card hidden"><h3>Kuukausiyhteenveto 2026</h3><div id="months"></div></div><div id="reportReview" class="card hidden"><h3>⚠️ Tarkistettavat tapahtumat</h3><div class="report-note">Kaikki tapahtumat tarkistetaan automaattisesti. Tässä näkyvät vain maksut, joita ei voida tunnistaa varmasti. <b>Omat siirrot eivät ole tuloja tai menoja.</b> Valitse tarvittaessa oikea luokka; muutos tallentuu tähän selaimeen.</div><div id="reviewList"></div></div>
 </div>
 <div id="reportDetail" class="card hidden"><div class="detail-head"><div><h3 id="detailTitle" style="margin:0"></h3><div class="muted" id="detailSummary"></div></div><button class="back-btn" onclick="closeReportDetail()">← Takaisin</button></div><div id="detailList"></div></div>
@@ -144,13 +144,23 @@ function automaticAudit(x){const d=textKey(x.description),r={...x,needsReview:fa
  if(r.owner==='Yritys')return r;
  const rules=[
   [/TOKMANNI/,'Tokmanni'],
-  [/S KAUPAT|S MARKET|SMARKET|PRISMA|SALE |ALEPA|K MARKET|K SUPERMARKET|K CITYMARKET|CITYMARKET|LIDL|RUOKAPUOTI|LIHA MERONEN/,'Ruoka'],
+  [/PRISMA/,'Prisma'],
+  [/S MARKET|SMARKET/,'S-market'],
+  [/SALE /,'Sale'],
+  [/ALEPA/,'Alepa'],
+  [/K CITYMARKET|CITYMARKET/,'K-Citymarket'],
+  [/K SUPERMARKET/,'K-Supermarket'],
+  [/K MARKET/,'K-Market'],
+  [/LIDL/,'Lidl'],
+  [/KARKKAINEN/,'Kärkkäinen'],
+  [/IKEA/,'IKEA'],
+  [/RUOKAPUOTI|LIHA MERONEN/,'Ruokakauppa'],
   [/ALKO/,'Alkoholi'],
   [/NESTE|SHELL|ST1|ABC |TEBOIL/,'Polttoaine'],
   [/POHJOLA VAKUUTUS|LAHITAPIOLA|IF VAKUUTUS|FENNIA/,'Vakuutukset'],
   [/PAIJAT HAMEEN HYVINVOINTIALUE|APTEEKKI|YLIOPISTON APTEEKKI|TERVEYSTALO|MEHILAINEN/,'Terveys'],
   [/MUSTI JA MIRRI|MUSTI MIRRI|PETEN KOIRATARVIKE/,'Lemmikit'],
-  [/IKEA|BAUHAUS|K RAUTA|JYSK|RUSTA|POWER|GIGANTTI|KARKKAINEN|TAVARAPUOTI|NORMAL /,'Kodin hankinnat'],
+  [/BAUHAUS|K RAUTA|JYSK|RUSTA|POWER|GIGANTTI|TAVARAPUOTI|NORMAL /,'Kodin hankinnat'],
   [/LAGER 157|FIFTH AVENUE|DIFFERENSES|H M |ZALANDO/,'Vaatteet'],
   [/HESBURGER|MCDONALD|BURGER KING|RAVINTOLA|RESTAUR|KAHVILA|PIZZA|KOTIPIZZA|LIMETTE/,'Ravintolat'],
   [/VR MATKALLA|FINNAIR|MAJOITUS|HOTEL|FINNKINO|LIPPUPISTE|MESSUKESKUS|TYKKIMAEN HUVIPUISTO|LUCKIEFUN|HEINOLAN HEINASAARI|LAIVARANTA/,'Matkailu'],
@@ -169,11 +179,11 @@ function automaticAudit(x){const d=textKey(x.description),r={...x,needsReview:fa
  return r}
 function auditAll(rows){return (rows||[]).map(automaticAudit)}
 let state=JSON.parse(localStorage.getItem('talousV5')||'null')||seed;
-if(state.version!=='8.3'){
+if(state.version!=='8.5'){
  const savedById=Object.fromEntries((state.transactions||[]).map(x=>[x.id,x]));
  const merged=seed.transactions.map(f=>{const old=savedById[f.id];return old?{...f,...old}:f});
  const extra=(state.transactions||[]).filter(x=>!seed.transactions.some(f=>f.id===x.id));
- state={...seed,...state,version:'8.4',transactions:auditAll([...merged,...extra]).sort((a,b)=>b.date.localeCompare(a.date))};
+ state={...seed,...state,version:'8.5',transactions:auditAll([...merged,...extra]).sort((a,b)=>b.date.localeCompare(a.date))};
  localStorage.setItem('talousV5',JSON.stringify(state));
 }else{state.transactions=auditAll(state.transactions);localStorage.setItem('talousV5',JSON.stringify(state));}const E=n=>Number(n||0).toLocaleString('fi-FI',{style:'currency',currency:'EUR'});const $=id=>document.getElementById(id);$('count').textContent=state.transactions.length+' pankkitapahtumaa';const cash=()=>state.accounts.reduce((s,a)=>s+a.balance,0);const householdCash=()=>state.accounts.filter(a=>a.owner!=='Yritys').reduce((s,a)=>s+a.balance,0);function monthRows(m){return state.transactions.filter(x=>x.date.startsWith(m)&&x.owner!=='Yritys')}function businessRows(m){return state.transactions.filter(x=>x.date.startsWith(m)&&x.owner==='Yritys')}function renderHome(){
  const personal=state.transactions.filter(x=>x.owner!=='Yritys');
@@ -194,11 +204,11 @@ if(state.version!=='8.3'){
 }
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function displayDescription(desc){let d=String(desc||'').replace(/\bSEPA\s+PIKA\b/gi,' ').replace(/\bINTERNETPANK(?:KI)?\b/gi,' ').replace(/\bKORTTIOSTO\b/gi,' ').replace(/\b\d{8,}\b/g,' ').replace(/[’']\s*[A-ZÅÄÖ][A-ZÅÄÖ -]{2,}$/g,' ').replace(/\s+/g,' ').trim();return d||String(desc||'Tapahtuma')}
-function transactionEntry(x,{positiveRaw=false}={}){const acc=state.accounts.find(a=>a.id===x.account),amount=positiveRaw?Math.abs(x.amount):x.amount;return `<div class="transaction-entry"><div class="transaction-datebox"><div class="transaction-date">${escapeHtml(x.date.split('-').reverse().join('.'))}</div><div class="transaction-owner">${escapeHtml(x.owner)}</div></div><div class="transaction-main"><div class="transaction-name">${escapeHtml(displayDescription(x.description))}</div><div class="transaction-meta"><span class="tag">${escapeHtml(x.category)}</span><span class="transaction-account">${escapeHtml(acc?acc.name:x.account)}</span></div><div class="transaction-type">${x.type==='transfer'?'Siirto – ei tulo eikä meno':''}</div></div><div class="transaction-amount ${x.amount<0?'neg':'pos'}">${E(amount)}</div></div>`}
+function transactionEntry(x,{positiveRaw=false}={}){const acc=state.accounts.find(a=>a.id===x.account),amount=positiveRaw?Math.abs(x.amount):x.amount,merchant=merchantName(x.description),showCategory=x.category!==merchant;return `<div class="transaction-entry"><div class="transaction-datebox"><div class="transaction-date">${escapeHtml(x.date.split('-').reverse().join('.'))}</div><div class="transaction-owner">${escapeHtml(x.owner)}</div></div><div class="transaction-main"><div class="transaction-name">${escapeHtml(displayDescription(x.description))}</div><div class="transaction-meta">${showCategory?`<span class="tag">${escapeHtml(x.category)}</span>`:''}<span class="transaction-account">${escapeHtml(acc?acc.name:x.account)}</span></div><div class="transaction-type">${x.type==='transfer'?'Siirto – ei tulo eikä meno':''}</div></div><div class="transaction-amount ${x.amount<0?'neg':'pos'}">${E(amount)}</div></div>`}
 function renderEvents(){let r=[...state.transactions];const q=$('search').value.toLowerCase(),o=$('owner').value,t=$('etype').value;if(q)r=r.filter(x=>(x.description+' '+x.category).toLowerCase().includes(q));if(o)r=r.filter(x=>x.owner===o);if(t)r=r.filter(x=>x.type===t);$('eventList').innerHTML=r.slice(0,700).map(x=>transactionEntry(x)).join('')}function merchantName(desc){const d=(desc||'').toUpperCase();const rules=[
- ['TOKMANNI','Tokmanni'],['PRISMA','Prisma'],['S-MARKET','S-market'],['SMARKET','S-market'],['K-SUPERMARKET','K-Supermarket'],['K-MARKET','K-Market'],['K-CITYMARKET','K-Citymarket'],['CITYMARKET','K-Citymarket'],['LIDL','Lidl'],['MOTONET','Motonet'],['PUUILO','Puuilo'],['BAUHAUS','Bauhaus'],['IKEA','IKEA'],['MUSTI JA MIRRI','Musti ja Mirri'],['MUSTI&MIRRI','Musti ja Mirri'],['NESTE','Neste'],['ABC','ABC'],['ST1','St1'],['SHELL','Shell'],['OOMI','Oomi'],['ELISA','Elisa'],['DNA','DNA'],['POHJOLA VAKUUTUS','Pohjola Vakuutus'],['LÄHITAPIOLA','LähiTapiola'],['APTEEKKI','Apteekki'],['KÄRKKÄINEN','Kärkkäinen'],['RUSTA','Rusta'],['JYSK','JYSK'],['POWER','Power'],['GIGANTTI','Gigantti']];for(const [key,name] of rules)if(d.includes(key))return name;let clean=(desc||'').replace(/\s+(KORTTIOSTO|SEPA PIKA|TILISIIRTO|MAKSUPALVELU|PALKKA).*$/i,'').replace(/\s+/g,' ').trim();return clean.length>34?clean.slice(0,34)+'…':clean||'Tuntematon';}
+ ['TOKMANNI','Tokmanni'],['PRISMA','Prisma'],['S-MARKET','S-market'],['SMARKET','S-market'],['SALE ','Sale'],['ALEPA','Alepa'],['K-SUPERMARKET','K-Supermarket'],['K-MARKET','K-Market'],['K-CITYMARKET','K-Citymarket'],['CITYMARKET','K-Citymarket'],['LIDL','Lidl'],['MOTONET','Motonet'],['PUUILO','Puuilo'],['BAUHAUS','Bauhaus'],['IKEA','IKEA'],['MUSTI JA MIRRI','Musti ja Mirri'],['MUSTI&MIRRI','Musti ja Mirri'],['NESTE','Neste'],['ABC','ABC'],['ST1','St1'],['SHELL','Shell'],['OOMI','Oomi'],['ELISA','Elisa'],['DNA','DNA'],['POHJOLA VAKUUTUS','Pohjola Vakuutus'],['LÄHITAPIOLA','LähiTapiola'],['APTEEKKI','Apteekki'],['KÄRKKÄINEN','Kärkkäinen'],['RUSTA','Rusta'],['JYSK','JYSK'],['POWER','Power'],['GIGANTTI','Gigantti']];for(const [key,name] of rules)if(d.includes(key))return name;let clean=(desc||'').replace(/\s+(KORTTIOSTO|SEPA PIKA|TILISIIRTO|MAKSUPALVELU|PALKKA).*$/i,'').replace(/\s+/g,' ').trim();return clean.length>34?clean.slice(0,34)+'…':clean||'Tuntematon';}
 function personalExpenses(){return state.transactions.filter(x=>x.type==='expense'&&x.owner!=='Yritys')}
-const reviewCategories=['Muut ostokset','Tokmanni','Ruoka','Alkoholi','Asuminen','Sähkö','Vesi','Polttoaine','Auto','Matkailu','Terveys','Terveys ja hyvinvointi','Lemmikit','Vaatteet','Ravintolat','Puhelin ja netti','Vakuutukset','Kodin hankinnat','Harrastukset','Lahjoitukset','Pankkipalvelut','Muut'];
+const reviewCategories=['Muut ostokset','S-market','Prisma','Sale','Alepa','K-Market','K-Supermarket','K-Citymarket','Lidl','Tokmanni','Kärkkäinen','IKEA','Ruokakauppa','Alkoholi','Asuminen','Sähkö','Vesi','Polttoaine','Auto','Matkailu','Terveys','Terveys ja hyvinvointi','Lemmikit','Vaatteet','Ravintolat','Puhelin ja netti','Vakuutukset','Kodin hankinnat','Harrastukset','Lahjoitukset','Pankkipalvelut','Muut'];
 function reviewRows(){return personalExpenses().filter(x=>x.needsReview===true).sort((a,b)=>b.date.localeCompare(a.date))}
 function setCategory(id,category){const x=state.transactions.find(t=>t.id===id);if(!x||!category)return;x.category=category;x.needsReview=(category==='Muut ostokset');localStorage.setItem('talousV5',JSON.stringify(state));renderReports();renderHome()}
 function renderReview(){const rows=reviewRows(),total=rows.reduce((s,x)=>s-x.amount,0);$('reviewList').innerHTML=rows.map(x=>{const opts=reviewCategories.map(c=>`<option value="${c}" ${c===x.category?'selected':''}>${c}</option>`).join('');return `<div class="review-row"><div><b>${x.date.split('-').reverse().join('.')}</b><div class="muted">${x.owner}</div></div><div>${x.description}<div class="muted">${state.accounts.find(a=>a.id===x.account)?.name||x.account}</div></div><b class="neg">${E(-x.amount)}</b><select class="category-select" onchange="setCategory('${x.id}',this.value)">${opts}</select></div>`}).join('')||'<p class="pos"><b>Kaikki tapahtumat on luokiteltu.</b></p>';return {count:rows.length,total}}
