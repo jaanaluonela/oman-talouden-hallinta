@@ -37,7 +37,7 @@ V8.3 KORJAUKSET
 - Välimuisti päivitetään automaattisesti, jotta puhelimessa näkyy uusin korjattu versio.
 
 
-V8.4 MOBIILIVIIMEISTELY
+V8.6 MOBIILIVIIMEISTELY
 - Tapahtumat näkyvät puhelimella selkeinä korttiriveinä.
 - Päivämäärä ja henkilö ovat pienellä ylärivillä.
 - Maksunsaajalle käytetään koko näytön leveyttä.
@@ -45,7 +45,7 @@ V8.4 MOBIILIVIIMEISTELY
 - Summa pysyy selkeästi oikeassa yläkulmassa.
 - Menoluokan tapahtumalista, tapahtumat ja vuosihaku käyttävät samaa selkeää ulkoasua.
 
-V8.5 korjaukset:
+V8.6 korjaukset:
 - S-market, Prisma, K-Market, K-Supermarket, K-Citymarket, Lidl, Tokmanni, Kärkkäinen ja IKEA ovat omia kauppaluokkiaan.
 - Kaupan yhteydessä ei näytetä turhaan samaa ostosluokkaa toiseen kertaan.
 - Kaupparaportin ohjeteksti on selkeytetty.
