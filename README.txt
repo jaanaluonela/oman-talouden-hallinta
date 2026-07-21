@@ -28,3 +28,10 @@ V8.2 KORJAUKSET
 - Tokmanni ja muut selvät kaupat luokitellaan automaattisesti.
 - Tarkistettaviin jäävät vain epävarmat maksut.
 - Tarkistettavan tapahtuman valikko ei enää näytä virheellisesti Tokmannia oletuksena.
+
+V8.3 KORJAUKSET
+- Tokmanni ja muut tunnistetut kaupat poistuvat automaattisesti tarkistettavista.
+- Jaana–Janne-tilisiirrot tunnistetaan varmasti omiksi siirroiksi, eivätkä ne vaikuta tuloihin tai menoihin.
+- Aurinkovuoren Vesi ja muut vesilaskut tunnistetaan automaattisesti Vesi-luokkaan.
+- Etusivun menoluokkia voi painaa: esimerkiksi Sähkö tai Vesi avaa kaikki vuoden laskut.
+- Välimuisti päivitetään automaattisesti, jotta puhelimessa näkyy uusin korjattu versio.
