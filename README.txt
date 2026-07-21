@@ -1,10 +1,13 @@
-OMAN TALOUDEN HALLINTA V7.2
+Oman talouden hallinta V8 – pysyvä talousarkisto
 
 Uutta:
-- Tarkistettavat tapahtumat -näkymä
-- Muut ostokset voidaan luokitella suoraan
-- Tokmanni omana luokkana
-- Taksin verojen suunnitelma: ennakkovero 600 €/kk, maksujärjestely 256,38 €/kk ja ALV kuun 12. päivä
-- Jannen rahastot 256,56 €
+- Kodin ja taksiyrityksen tulot ja menot pysyvät erillään.
+- Haku aiheittain ja vuosittain: esimerkiksi Vesi, Sähkö, Vakuutukset tai Polttoaine.
+- Näyttää valitun aiheen yhteissumman sekä kaikki yksittäiset tapahtumat.
+- Tiedot tallentuvat laitteen selaimeen.
+- JSON-varmuuskopio voidaan ladata ja palauttaa.
+- Palautuksessa päällekkäiset tapahtumat ohitetaan tapahtumatunnisteen perusteella.
+- Puhelinasettelu on muutettu yhden kortin ja selkeiden tapahtumarivien näkymäksi.
 
-Avaa index.html selaimessa. Tiedot ja luokittelut tallentuvat kyseisen selaimen paikalliseen tallennustilaan.
+Tärkeää:
+Tee varmuuskopio aina uusien tiliotteiden lisäämisen jälkeen. Selaimen tiedot voivat kadota, jos selaimen tallennustila tyhjennetään tai laite vaihdetaan.
