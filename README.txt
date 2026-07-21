@@ -35,3 +35,12 @@ V8.3 KORJAUKSET
 - Aurinkovuoren Vesi ja muut vesilaskut tunnistetaan automaattisesti Vesi-luokkaan.
 - Etusivun menoluokkia voi painaa: esimerkiksi Sähkö tai Vesi avaa kaikki vuoden laskut.
 - Välimuisti päivitetään automaattisesti, jotta puhelimessa näkyy uusin korjattu versio.
+
+
+V8.4 MOBIILIVIIMEISTELY
+- Tapahtumat näkyvät puhelimella selkeinä korttiriveinä.
+- Päivämäärä ja henkilö ovat pienellä ylärivillä.
+- Maksunsaajalle käytetään koko näytön leveyttä.
+- Pitkät viite- ja maksunumerot piilotetaan näkymästä, mutta alkuperäinen tapahtumatieto säilyy tallennettuna.
+- Summa pysyy selkeästi oikeassa yläkulmassa.
+- Menoluokan tapahtumalista, tapahtumat ja vuosihaku käyttävät samaa selkeää ulkoasua.
