@@ -1,7 +1,10 @@
-Oman talouden hallinta V9.2
+Oman talouden hallinta V9.6
 
 Muutokset:
-- Poistettu turha Yleishaku- ja Suosikit-rivi.
-- Poistettu MobilePay-suosikki ja kertaluonteiset hakuesimerkit.
-- Hakukentissä yleinen ohjeteksti: Hae yrityksen nimellä tai menoluokalla.
-- Menoluokkavalikko muodostuu automaattisesti kaikista aineistossa käytössä olevista menoluokista.
+- Jaana ja Janne voidaan valita samanaikaisesti haussa; Taksi voidaan jättää pois.
+- Valittu tilisuodatus muistetaan seuraavaa käyttökertaa varten.
+- Taksin menot käsitellään vain yrityksen omilla menoluokilla.
+- Yrityksen menoluokat näkyvät luokiteltuna ja avautuvat tapahtumalistaksi kuten kodin menot.
+- Taksin puhelinlasku kuuluu yrityksen Puhelin ja netti -luokkaan.
+- Kodin menoluokat eivät sekoitu yritysraporttiin.
+- Luomatec kuuluu Kodin menot -luokkaan eikä näy Sähkö-haussa.
