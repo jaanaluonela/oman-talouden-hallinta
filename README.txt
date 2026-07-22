@@ -1,3 +1,7 @@
-Oman talouden hallinta V9.1
+Oman talouden hallinta V9.2
 
-Korjattu etusivun pikavalinnat, yritysten luokittelu sekä kodin ja taksin menojen automaattinen erottelu.
+Muutokset:
+- Poistettu turha Yleishaku- ja Suosikit-rivi.
+- Poistettu MobilePay-suosikki ja kertaluonteiset hakuesimerkit.
+- Hakukentissä yleinen ohjeteksti: Hae yrityksen nimellä tai menoluokalla.
+- Menoluokkavalikko muodostuu automaattisesti kaikista aineistossa käytössä olevista menoluokista.
