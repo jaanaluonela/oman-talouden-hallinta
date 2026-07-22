@@ -1,0 +1,24 @@
+V9.1 muutokset
+
+Etusivu:
+- Poista: Etsi menoja
+- Poista: Kaikki tapahtumat
+- Pikalaatikot:
+  * Tarkistettavat
+  * Kodin menot
+  * Taksin menot
+  * Kaupat
+
+Luokittelusäännöt:
+- TUI -> Matkailu
+- POWER -> Kodin menot
+- SHOWLINK -> Lemmikit
+- SALPAUSSELÄN KENNEL -> Lemmikit
+- LAGER 157 -> Vaatteet
+- DIFFERENSES -> Vaatteet
+- TAVARAPUOTI VK OY -> Kaupat
+- RUOKAPUOTI VK OY -> Kaupat
+- VFI*SF-CARAVAN -> Matkailu
+- VÄÄKSYN VIHERKUKKA -> Kukkakauppa
+- R-LAHTI / R-KIOSKI -> Vapaa-aika
+- VFI*PH-AUTOHUOLTO VÄÄKSY -> Taksin menot
