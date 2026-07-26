@@ -85,7 +85,7 @@
 <div class="card home-intro">
   <h2>Oma talousarkisto</h2>
   <div class="home-search"><input id="homeSearch" placeholder="Hae yrityksen nimellä tai menoluokalla"><button onclick="startExpenseSearch()">🔎 Hae</button></div>
-  <div class="home-meta"><span id="homeUpdated"></span><span id="homePeriod"></span></div>
+  <div class="home-meta"><span id="homeUpdated">Päivitetty 21.07.2026</span><span id="homePeriod">Aineisto 02.01.2026–20.07.2026</span></div>
 </div>
 <div class="home-actions">
   <button class="home-action" onclick="openHomeScope('home')"><span class="ico">🏠</span><b>Kodin menot</b><small>Kodin kaikki menot maksutilistä riippumatta</small></button>
@@ -194,7 +194,7 @@ if(state.version!=='9.6'){
  const extra=(state.transactions||[]).filter(x=>!seed.transactions.some(f=>f.id===x.id));
  state={...seed,...state,version:'9.9',transactions:auditAll([...merged,...extra]).sort((a,b)=>b.date.localeCompare(a.date))};
  localStorage.setItem('talousV5',JSON.stringify(state));
-}else{state.transactions=auditAll(state.transactions);localStorage.setItem('talousV5',JSON.stringify(state));}const E=n=>Number(n||0).toLocaleString('fi-FI',{style:'currency',currency:'EUR'});const $=id=>document.getElementById(id);$('count').textContent=state.transactions.length+' pankkitapahtumaa';const cash=()=>state.accounts.reduce((s,a)=>s+a.balance,0);const householdCash=()=>state.accounts.filter(a=>a.owner!=='Yritys').reduce((s,a)=>s+a.balance,0);function monthRows(m){return state.transactions.filter(x=>x.date.startsWith(m)&&x.scope!=='Yritys')}function businessRows(m){return state.transactions.filter(x=>x.date.startsWith(m)&&x.account==='taxi')}function renderHome(){
+}else{state.transactions=auditAll(state.transactions);localStorage.setItem('talousV5',JSON.stringify(state));}const E=n=>Number(n||0).toLocaleString('fi-FI',{style:'currency',currency:'EUR'});const $=id=>document.getElementById(id);const countEl=$('count');if(countEl)countEl.textContent=state.transactions.length+' pankkitapahtumaa';const cash=()=>state.accounts.reduce((s,a)=>s+a.balance,0);const householdCash=()=>state.accounts.filter(a=>a.owner!=='Yritys').reduce((s,a)=>s+a.balance,0);function monthRows(m){return state.transactions.filter(x=>x.date.startsWith(m)&&x.scope!=='Yritys')}function businessRows(m){return state.transactions.filter(x=>x.date.startsWith(m)&&x.account==='taxi')}function renderHome(){
  const dates=state.transactions.map(x=>x.date).sort();
  const first=dates[0]||'',last=dates[dates.length-1]||'';
  const fi=d=>d?d.split('-').reverse().join('.'):'';
