@@ -88,14 +88,14 @@
   <div class="home-meta"><span id="homeUpdated">Päivitetty 21.07.2026</span><span id="homePeriod">Aineisto 02.01.2026–20.07.2026</span></div>
 </div>
 <div class="home-actions">
-  <button class="home-action" onclick="openHomeScope('home')"><span class="ico">🏠</span><b>Kodin menot</b><small>Kodin kaikki menot maksutilistä riippumatta</small></button>
-  <button class="home-action" onclick="openHomeScope('business')"><span class="ico">🚕</span><b>Taksin menot</b><small>Vain varsinaiset yrityksen kulut</small></button>
-  <button class="home-action" onclick="openHomeReport('review')"><span class="ico">⚠️</span><b>Tarkistettavat</b><small>Vain aidosti epäselvät tapahtumat</small></button>
-  <button class="home-action" onclick="show('reports')"><span class="ico">📊</span><b>Raportit</b><small>Menoluokat ja seuranta</small></button>
-  <button class="home-action" onclick="show('events')"><span class="ico">📅</span><b>Kuukaudet</b><small>Kuukausittainen tarkastelu</small></button>
-  <button class="home-action" onclick="show('archive')"><span class="ico">🔍</span><b>Haku</b><small>Etsi tapahtumia</small></button>
-  <button class="home-action" onclick="show('goals')"><span class="ico">🏦</span><b>Tilit</b><small>Tilit ja tiliotteen lisäys</small></button>
-  <button class="home-action" onclick="show('debts')"><span class="ico">📉</span><b>Velat</b><small>Lainat ja luotot</small></button>
+  <button type="button" class="home-action" data-home-action="home"><span class="ico">🏠</span><b>Kodin menot</b><small>Kodin kaikki menot maksutilistä riippumatta</small></button>
+  <button type="button" class="home-action" data-home-action="business"><span class="ico">🚕</span><b>Taksin menot</b><small>Vain varsinaiset yrityksen kulut</small></button>
+  <button type="button" class="home-action" data-home-action="review"><span class="ico">⚠️</span><b>Tarkistettavat</b><small>Vain aidosti epäselvät tapahtumat</small></button>
+  <button type="button" class="home-action" data-home-action="reports"><span class="ico">📊</span><b>Raportit</b><small>Menoluokat ja seuranta</small></button>
+  <button type="button" class="home-action" data-home-action="months"><span class="ico">📅</span><b>Kuukaudet</b><small>Kuukausittainen tarkastelu</small></button>
+  <button type="button" class="home-action" data-home-action="archive"><span class="ico">🔍</span><b>Haku</b><small>Etsi tapahtumia</small></button>
+  <button type="button" class="home-action" data-home-action="goals"><span class="ico">🏦</span><b>Tilit</b><small>Tilit ja tiliotteen lisäys</small></button>
+  <button type="button" class="home-action" data-home-action="debts"><span class="ico">📉</span><b>Velat</b><small>Lainat ja luotot</small></button>
 </div>
 </section>
 <section id="events" class="hidden"><div class="card toolbar"><input id="search" placeholder="Hae tapahtumaa"><select id="owner"><option value="">Kaikki henkilöt</option><option>Jaana</option><option>Janne</option><option>Yritys</option></select><select id="etype"><option value="">Kaikki tyypit</option><option value="expense">Menot</option><option value="income">Tulot</option><option value="transfer">Siirrot</option></select></div>
@@ -215,7 +215,7 @@ function startCategorySearch(cat){
   if(e){e.value='expense';}
   renderEvents();
 }
-function renderEvents(){let r=[...state.transactions];const q=$('search').value.toLowerCase(),o=$('owner').value,t=$('etype').value;if(q)r=r.filter(x=>(x.description+' '+x.category).toLowerCase().includes(q));if(o)r=r.filter(x=>x.owner===o);if(t)r=r.filter(x=>x.type===t);$('eventList').innerHTML=r.slice(0,700).map(x=>transactionEntry(x)).join('')}function merchantName(desc){const d=(desc||'').toUpperCase();const rules=[
+function renderEvents(){let r=[...state.transactions];const q=$('search').value.toLowerCase(),o=$('owner').value,t=$('etype').value;if(q)r=r.filter(x=>(x.description+' '+x.category).toLowerCase().includes(q));if(o)r=r.filter(x=>x.owner===o);if(t)r=r.filter(x=>x.type===t);if(window.homeScopeFilter==='home')r=r.filter(x=>x.scope!=='Yritys');$('eventList').innerHTML=r.slice(0,700).map(x=>transactionEntry(x)).join('')}function merchantName(desc){const d=(desc||'').toUpperCase();const rules=[
  ['TOKMANNI','Tokmanni'],['PRISMA','Prisma'],['S-MARKET','S-market'],['SMARKET','S-market'],['SALE ','Sale'],['ALEPA','Alepa'],['K-SUPERMARKET','K-Supermarket'],['K-MARKET','K-Market'],['K-CITYMARKET','K-Citymarket'],['CITYMARKET','K-Citymarket'],['LIDL','Lidl'],['MOTONET','Motonet'],['PUUILO','Puuilo'],['BAUHAUS','Bauhaus'],['IKEA','IKEA'],['MUSTI JA MIRRI','Musti ja Mirri'],['MUSTI&MIRRI','Musti ja Mirri'],['NESTE','Neste'],['ABC','ABC'],['ST1','St1'],['SHELL','Shell'],['OOMI','Oomi'],['ELISA','Elisa'],['DNA','DNA'],['POHJOLA VAKUUTUS','Pohjola Vakuutus'],['LÄHITAPIOLA','LähiTapiola'],['APTEEKKI','Apteekki'],['KÄRKKÄINEN','Kärkkäinen'],['RUSTA','Rusta'],['JYSK','JYSK'],['POWER','Power'],['GIGANTTI','Gigantti']];for(const [key,name] of rules)if(d.includes(key))return name;let clean=(desc||'').replace(/\s+(KORTTIOSTO|SEPA PIKA|TILISIIRTO|MAKSUPALVELU|PALKKA).*$/i,'').replace(/\s+/g,' ').trim();return clean.length>34?clean.slice(0,34)+'…':clean||'Tuntematon';}
 function personalExpenses(){return state.transactions.filter(x=>x.type==='expense'&&x.scope!=='Yritys')}
 const reviewCategories=['Muut ostokset','S-market','Prisma','Sale','Alepa','K-Market','K-Supermarket','K-Citymarket','Lidl','Tokmanni','Kaupat','Kodin menot','Kukkakauppa','Vapaa-aika','Alkoholi','Asuminen','Sähkö','Vesi','Polttoaine','Auto','Matkailu','Terveys','Terveys ja hyvinvointi','Lemmikit','Vaatteet','Ravintolat','Puhelin ja netti','Vakuutukset','Harrastukset','Lahjoitukset','Pankkipalvelut','Muut'];
@@ -262,7 +262,38 @@ function renderBusiness(){
  $('bizAvgAfterOwn').textContent=E(after/n);$('bizAvgAfterOwn').className=after>=0?'pos':'neg';
  $('bizFormula').innerHTML=`Keskimäärin kuukaudessa: <b>${E(allIncome/n)}</b> tuloja − <b>${E(allExpense/n)}</b> taksin menoja − <b>${E(allOwn/n)}</b> omiin menoihin = <b class="${after>=0?'pos':'neg'}">${E(after/n)}</b> yritykseen.`;
  const cs={};r.filter(x=>x.type==='expense'&&x.scope==='Yritys'&&!x.personalExpense).forEach(x=>cs[x.category]=(cs[x.category]||0)+(-x.amount));const max=Math.max(1,...Object.values(cs));$('bizCats').innerHTML=Object.entries(cs).sort((a,b)=>b[1]-a[1]).map(([c,v])=>{const count=r.filter(x=>x.type==='expense'&&x.scope==='Yritys'&&!x.personalExpense&&x.category===c).length;return `<div class="catline clickable" onclick="openBusinessCategoryDetail('${encodeURIComponent(c)}')"><div><b>${c}</b> <span class="muted">${count} tapahtumaa</span><div class="bar"><i style="width:${v/max*100}%"></i></div></div><b>${E(v)} <span class="chev">›</span></b></div>`}).join('')||'<p class="muted">Ei kuluja.</p>';
-}function renderDebts(){const d=state.debts.reduce((s,x)=>s+x.balance,0),a=cash();$('debtTotal').textContent=E(d);$('funds').textContent=E(state.funds);$('assetCash').textContent=E(a);$('worth').textContent=E(a+state.funds-d);$('debtList').innerHTML=state.debts.map(x=>`<div class="debt"><span>${x.name}</span><b>${E(x.balance)}</b></div>`).join('')}function show(p){document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));$(p).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='events')renderEvents();if(p==='reports')renderReports();if(p==='business')renderBusiness();if(p==='archive')renderArchive();if(p==='goals')initStatementAccounts();if(p==='debts')renderDebts()}$('search').oninput=renderEvents;$('owner').onchange=renderEvents;$('etype').onchange=renderEvents;$('businessMonth').onchange=renderBusiness;document.querySelectorAll('.report-tab').forEach(b=>b.onclick=()=>showReportTab(b.dataset.report));document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.page));
+}function renderDebts(){const d=state.debts.reduce((s,x)=>s+x.balance,0),a=cash();$('debtTotal').textContent=E(d);$('funds').textContent=E(state.funds);$('assetCash').textContent=E(a);$('worth').textContent=E(a+state.funds-d);$('debtList').innerHTML=state.debts.map(x=>`<div class="debt"><span>${x.name}</span><b>${E(x.balance)}</b></div>`).join('')}function show(p){if(p!=='events')window.homeScopeFilter=null;document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));$(p).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='events')renderEvents();if(p==='reports')renderReports();if(p==='business')renderBusiness();if(p==='archive')renderArchive();if(p==='goals')initStatementAccounts();if(p==='debts')renderDebts()}$('search').oninput=renderEvents;$('owner').onchange=renderEvents;$('etype').onchange=renderEvents;$('businessMonth').onchange=renderBusiness;document.querySelectorAll('.report-tab').forEach(b=>b.onclick=()=>showReportTab(b.dataset.report));
+function openHomeAction(action){
+  if(action==='home'){
+    show('events');
+    $('owner').value='';
+    $('etype').value='expense';
+    window.homeScopeFilter='home';
+    renderEvents();
+    return;
+  }
+  if(action==='business'){
+    show('business');
+    return;
+  }
+  if(action==='review'){
+    show('reports');
+    showReportTab('review');
+    return;
+  }
+  if(action==='months'){
+    show('reports');
+    showReportTab('months');
+    return;
+  }
+  if(['reports','archive','goals','debts'].includes(action)) show(action);
+}
+document.querySelectorAll('[data-home-action]').forEach(btn=>btn.addEventListener('click',ev=>{
+  ev.preventDefault();
+  ev.stopPropagation();
+  openHomeAction(btn.dataset.homeAction);
+}));
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{window.homeScopeFilter=null;show(b.dataset.page)});
 function persist(){localStorage.setItem('talousV5',JSON.stringify(state))}
 function selectedArchiveAreas(){return [...$('archiveArea').querySelectorAll('input:checked')].map(el=>el.value)}
 function archiveAreaMatch(x,areas=selectedArchiveAreas()){
