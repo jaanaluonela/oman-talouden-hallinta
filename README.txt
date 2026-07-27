@@ -1,4 +1,4 @@
-Oma talousarkisto V9.19
+Oma talousarkisto V9.20
 
 Korjattu kokonaisuutena:
 - Etusivun 8 pikavalintaa avaavat nyt omat oikeat näkymänsä.
