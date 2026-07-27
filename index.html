@@ -80,6 +80,8 @@
 .home-intro h2{margin:0 0 10px;font-size:1.35rem}.statement-import{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;margin:12px 0}.statement-import select{min-width:0;padding:11px;border:1px solid var(--line);border-radius:12px;background:#fff}.statement-import button{border:0;border-radius:12px;padding:12px 15px;background:var(--accent);color:#fff;font-weight:800}@media(max-width:430px){.statement-import{grid-template-columns:1fr}.statement-import button{width:100%}}
 .home-intro{padding:10px 14px}
 .home-meta span{padding:5px 9px}
+
+.page-head{margin:2px 2px 12px}.page-head h2{margin:0;font-size:1.35rem}.page-head p{margin:4px 0 0;color:var(--muted);font-size:.86rem}.scope-filter{border:1px solid var(--line);border-radius:14px;padding:9px 11px;background:#fff;display:flex;gap:12px;align-items:center;flex-wrap:wrap}.scope-filter legend{padding:0 5px;font-size:.78rem;color:var(--muted);font-weight:750}.scope-filter label{display:flex;align-items:center;gap:6px;font-weight:750}.scope-filter input{width:18px;height:18px;accent-color:var(--accent)}.report-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.report-kpi{background:#fff;border:1px solid var(--line);border-radius:15px;padding:12px}.report-kpi small{display:block;color:var(--muted)}.report-kpi b{display:block;font-size:1.25rem;margin-top:5px}.empty-state{padding:18px;text-align:center;color:var(--muted)}@media(max-width:650px){.report-kpis{grid-template-columns:1fr 1fr}.scope-filter{display:grid;grid-template-columns:1fr 1fr}.scope-filter legend{grid-column:1/-1}}
 </style></head><body><div class="app">
 <section id="home">
 <div class="card home-intro">
@@ -98,14 +100,27 @@
   <button type="button" class="home-action" data-home-action="debts"><span class="ico">📉</span><b>Velat</b><small>Lainat ja luotot</small></button>
 </div>
 </section>
-<section id="events" class="hidden"><div class="card toolbar"><input id="search" placeholder="Hae tapahtumaa"><select id="owner"><option value="">Kaikki henkilöt</option><option>Jaana</option><option>Janne</option><option>Yritys</option></select><select id="etype"><option value="">Kaikki tyypit</option><option value="expense">Menot</option><option value="income">Tulot</option><option value="transfer">Siirrot</option></select></div>
-<div class="card"><h3>📄 Tapahtumat</h3><div class="muted">Suodata ja hae tapahtumia. Menokategoriat löytyvät Kodin menot -näkymästä.</div></div></div><div class="card"><div id="eventList"></div></div></section>
+<section id="events" class="hidden">
+<div class="page-head"><h2>🧾 Tapahtumat</h2><p>Kaikki tiliotteiden tapahtumat. Valitse yksi tai useampi tarkasteltava henkilö.</p></div>
+<div class="card toolbar"><input id="search" placeholder="Hae tapahtumaa"><fieldset id="eventOwners" class="scope-filter"><legend>Tarkastellaan</legend><label><input type="checkbox" value="Jaana" checked> Jaana</label><label><input type="checkbox" value="Janne" checked> Janne</label><label><input type="checkbox" value="Yritys"> Taksi</label></fieldset><select id="etype"><option value="">Kaikki tyypit</option><option value="expense">Menot</option><option value="income">Tulot</option><option value="transfer">Siirrot</option></select></div>
+<div class="card"><div id="eventList"></div></div>
+</section>
+<section id="household" class="hidden">
+<div class="page-head"><h2>🏠 Kodin menot</h2><p>Jaanan ja Jannen kodin menot riippumatta siitä, miltä tililtä ne on maksettu.</p></div>
+<div class="card"><div class="summary-grid"><div class="summary-metric"><small>Menot yhteensä</small><b id="homeExpenseTotal"></b></div><div class="summary-metric"><small>Jaanan tililtä</small><b id="homeJaanaTotal"></b></div><div class="summary-metric"><small>Jannen tililtä</small><b id="homeJanneTotal"></b></div><div class="summary-metric"><small>Tapahtumia</small><b id="homeExpenseCount"></b></div></div></div>
+<div class="card"><h3>Menoluokat</h3><div id="homeCategoryList"></div></div>
+<div class="card"><h3>Viimeisimmät kodin menot</h3><div id="homeExpenseList"></div></div>
+</section>
 <section id="reports" class="hidden">
+<div class="page-head"><h2>📊 Raportit</h2><p>Yhteenvedot valituista henkilöistä ja taksista. Kaikki tarkoittaa tässä kaikkia valittuja.</p></div>
+<div class="card"><fieldset id="reportOwners" class="scope-filter"><legend>Tarkastellaan</legend><label><input type="checkbox" value="Jaana" checked> Jaana</label><label><input type="checkbox" value="Janne" checked> Janne</label><label><input type="checkbox" value="Yritys"> Taksi</label></fieldset></div>
+<div class="report-kpis"><div class="report-kpi"><small>Tulot</small><b id="reportIncome"></b></div><div class="report-kpi"><small>Menot</small><b id="reportExpense"></b></div><div class="report-kpi"><small>Erotus</small><b id="reportNet"></b></div><div class="report-kpi"><small>Tapahtumia</small><b id="reportCount"></b></div></div>
 <div class="report-tabs"><button class="report-tab active" data-report="categories">Menoluokat</button><button class="report-tab" data-report="shops">🛒 Kaupat</button><button class="report-tab" data-report="months">Kuukaudet</button><button class="report-tab" data-report="review">⚠️ Tarkistettavat</button></div>
 <div id="reportMain">
-  <div id="reportCategories" class="card"><h3>Suurimmat menoluokat</h3><div class="report-note">Paina mitä tahansa menoluokkaa, niin näet kaikki siihen kuuluvat ostokset. Erityisesti <b>Muut ostokset</b> avautuu nyt tapahtumalistaksi.</div><div id="allcats"></div></div>
-  <div id="reportShops" class="card hidden"><h3>🛒 Kaupparaportti</h3><div class="report-note">Paina kaupan nimeä nähdäksesi kaikki kyseisessä kaupassa tehdyt ostokset, päivämäärät ja summat.</div><div id="shopList"></div></div>
-  <div id="reportMonths" class="card hidden"><h3>Kuukausiyhteenveto 2026</h3><div id="months"></div></div><div id="reportReview" class="card hidden"><h3>⚠️ Tarkistettavat tapahtumat</h3><div class="report-note">Kaikki tapahtumat tarkistetaan automaattisesti. Tässä näkyvät vain maksut, joita ei voida tunnistaa varmasti. <b>Omat siirrot eivät ole tuloja tai menoja.</b> Valitse tarvittaessa oikea luokka; muutos tallentuu tähän selaimeen.</div><div id="reviewList"></div></div>
+  <div id="reportCategories" class="card"><h3>Suurimmat menoluokat</h3><div id="allcats"></div></div>
+  <div id="reportShops" class="card hidden"><h3>🛒 Kaupparaportti</h3><div id="shopList"></div></div>
+  <div id="reportMonths" class="card hidden"><h3>Kuukausiyhteenveto</h3><div id="months"></div></div>
+  <div id="reportReview" class="card hidden"><h3>⚠️ Tarkistettavat tapahtumat</h3><div class="report-note">Tässä näkyvät vain tapahtumat, joita ei ole voitu luokitella varmasti.</div><div id="reviewList"></div></div>
 </div>
 <div id="reportDetail" class="card hidden"><div class="detail-head"><div><h3 id="detailTitle" style="margin:0"></h3><div class="muted" id="detailSummary"></div></div><button class="back-btn" onclick="closeReportDetail()">← Takaisin</button></div><div id="detailList"></div></div>
 </section>
@@ -188,11 +203,11 @@ function automaticAudit(x){
 }
 function auditAll(rows){return (rows||[]).map(automaticAudit)}
 let state=JSON.parse(localStorage.getItem('talousV5')||'null')||seed;
-if(state.version!=='9.6'){
+if(state.version!=='9.19'){
  const savedById=Object.fromEntries((state.transactions||[]).map(x=>[x.id,x]));
  const merged=seed.transactions.map(f=>{const old=savedById[f.id];return old?{...f,...old}:f});
  const extra=(state.transactions||[]).filter(x=>!seed.transactions.some(f=>f.id===x.id));
- state={...seed,...state,version:'9.9',transactions:auditAll([...merged,...extra]).sort((a,b)=>b.date.localeCompare(a.date))};
+ state={...seed,...state,version:'9.19',transactions:auditAll([...merged,...extra]).sort((a,b)=>b.date.localeCompare(a.date))};
  localStorage.setItem('talousV5',JSON.stringify(state));
 }else{state.transactions=auditAll(state.transactions);localStorage.setItem('talousV5',JSON.stringify(state));}const E=n=>Number(n||0).toLocaleString('fi-FI',{style:'currency',currency:'EUR'});const $=id=>document.getElementById(id);const countEl=$('count');if(countEl)countEl.textContent=state.transactions.length+' pankkitapahtumaa';const cash=()=>state.accounts.reduce((s,a)=>s+a.balance,0);const householdCash=()=>state.accounts.filter(a=>a.owner!=='Yritys').reduce((s,a)=>s+a.balance,0);function monthRows(m){return state.transactions.filter(x=>x.date.startsWith(m)&&x.scope!=='Yritys')}function businessRows(m){return state.transactions.filter(x=>x.date.startsWith(m)&&x.account==='taxi')}function renderHome(){
  const dates=state.transactions.map(x=>x.date).sort();
@@ -215,23 +230,28 @@ function startCategorySearch(cat){
   if(e){e.value='expense';}
   renderEvents();
 }
-function renderEvents(){let r=[...state.transactions];const q=$('search').value.toLowerCase(),o=$('owner').value,t=$('etype').value;if(q)r=r.filter(x=>(x.description+' '+x.category).toLowerCase().includes(q));if(o)r=r.filter(x=>x.owner===o);if(t)r=r.filter(x=>x.type===t);if(window.homeScopeFilter==='home')r=r.filter(x=>x.scope!=='Yritys');$('eventList').innerHTML=r.slice(0,700).map(x=>transactionEntry(x)).join('')}function merchantName(desc){const d=(desc||'').toUpperCase();const rules=[
+function selectedOwners(id){const box=$(id);return box?[...box.querySelectorAll('input:checked')].map(x=>x.value):[]}
+function renderEvents(){let r=[...state.transactions];const q=$('search').value.toLowerCase(),owners=selectedOwners('eventOwners'),t=$('etype').value;if(q)r=r.filter(x=>(x.description+' '+x.category+' '+merchantName(x.description)).toLowerCase().includes(q));r=r.filter(x=>owners.includes(x.owner));if(t)r=r.filter(x=>x.type===t);$('eventList').innerHTML=r.slice(0,700).map(x=>transactionEntry(x)).join('')||'<div class="empty-state">Ei tapahtumia valituilla ehdoilla.</div>'}
+function merchantName(desc){const d=(desc||'').toUpperCase();const rules=[
  ['TOKMANNI','Tokmanni'],['PRISMA','Prisma'],['S-MARKET','S-market'],['SMARKET','S-market'],['SALE ','Sale'],['ALEPA','Alepa'],['K-SUPERMARKET','K-Supermarket'],['K-MARKET','K-Market'],['K-CITYMARKET','K-Citymarket'],['CITYMARKET','K-Citymarket'],['LIDL','Lidl'],['MOTONET','Motonet'],['PUUILO','Puuilo'],['BAUHAUS','Bauhaus'],['IKEA','IKEA'],['MUSTI JA MIRRI','Musti ja Mirri'],['MUSTI&MIRRI','Musti ja Mirri'],['NESTE','Neste'],['ABC','ABC'],['ST1','St1'],['SHELL','Shell'],['OOMI','Oomi'],['ELISA','Elisa'],['DNA','DNA'],['POHJOLA VAKUUTUS','Pohjola Vakuutus'],['LÄHITAPIOLA','LähiTapiola'],['APTEEKKI','Apteekki'],['KÄRKKÄINEN','Kärkkäinen'],['RUSTA','Rusta'],['JYSK','JYSK'],['POWER','Power'],['GIGANTTI','Gigantti']];for(const [key,name] of rules)if(d.includes(key))return name;let clean=(desc||'').replace(/\s+(KORTTIOSTO|SEPA PIKA|TILISIIRTO|MAKSUPALVELU|PALKKA).*$/i,'').replace(/\s+/g,' ').trim();return clean.length>34?clean.slice(0,34)+'…':clean||'Tuntematon';}
-function personalExpenses(){return state.transactions.filter(x=>x.type==='expense'&&x.scope!=='Yritys')}
+function reportRows(){const owners=selectedOwners('reportOwners');return state.transactions.filter(x=>owners.includes(x.owner))}function personalExpenses(){return reportRows().filter(x=>x.type==='expense')}
 const reviewCategories=['Muut ostokset','S-market','Prisma','Sale','Alepa','K-Market','K-Supermarket','K-Citymarket','Lidl','Tokmanni','Kaupat','Kodin menot','Kukkakauppa','Vapaa-aika','Alkoholi','Asuminen','Sähkö','Vesi','Polttoaine','Auto','Matkailu','Terveys','Terveys ja hyvinvointi','Lemmikit','Vaatteet','Ravintolat','Puhelin ja netti','Vakuutukset','Harrastukset','Lahjoitukset','Pankkipalvelut','Muut'];
 function reviewRows(){return personalExpenses().filter(x=>x.needsReview===true).sort((a,b)=>b.date.localeCompare(a.date))}
 function setCategory(id,category){const x=state.transactions.find(t=>t.id===id);if(!x||!category)return;x.category=category;x.needsReview=(category==='Muut ostokset');localStorage.setItem('talousV5',JSON.stringify(state));renderReports();renderHome()}
 function renderReview(){const rows=reviewRows(),total=rows.reduce((s,x)=>s-x.amount,0);$('reviewList').innerHTML=rows.map(x=>{const opts=reviewCategories.map(c=>`<option value="${c}" ${c===x.category?'selected':''}>${c}</option>`).join('');return `<div class="review-row"><div><b>${x.date.split('-').reverse().join('.')}</b><div class="muted">${x.owner}</div></div><div>${x.description}<div class="muted">${state.accounts.find(a=>a.id===x.account)?.name||x.account}</div></div><b class="neg">${E(-x.amount)}</b><select class="category-select" onchange="setCategory('${x.id}',this.value)">${opts}</select></div>`}).join('')||'<p class="pos"><b>Kaikki tapahtumat on luokiteltu.</b></p>';return {count:rows.length,total}}
 function openReview(){show('reports');showReportTab('review');window.scrollTo({top:0,behavior:'smooth'})}
 function renderReports(){
- const months=[1,2,3,4,5,6,7].map(n=>'2026-'+String(n).padStart(2,'0'));
- $('months').innerHTML=months.map(m=>{const r=monthRows(m),i=r.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0),e=-r.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0);return `<div class="row"><b>${m}</b><span class="pos">Tulot ${E(i)}</span><span class="neg">Menot ${E(e)}</span><b class="${i-e>=0?'pos':'neg'}">${E(i-e)}</b></div>`}).join('');
- const rows=personalExpenses(),cs={};rows.forEach(x=>cs[x.category]=(cs[x.category]||0)+(-x.amount));const max=Math.max(...Object.values(cs),1);
- $('allcats').innerHTML=Object.entries(cs).sort((a,b)=>b[1]-a[1]).map(([c,v])=>{const count=rows.filter(x=>x.category===c).length;return `<div class="catline clickable" onclick="openCategoryDetail('${encodeURIComponent(c)}')"><div><b>${c}</b> <span class="muted">${count} tapahtumaa</span><div class="bar"><i style="width:${v/max*100}%"></i></div></div><b>${E(v)} <span class="chev">›</span></b></div>`}).join('');
- const shops={};rows.forEach(x=>{const n=merchantName(x.description);if(!shops[n])shops[n]={sum:0,count:0};shops[n].sum+=-x.amount;shops[n].count++});
- const review=renderReview();
- $('shopList').innerHTML=Object.entries(shops).sort((a,b)=>b[1].sum-a[1].sum).map(([n,v])=>`<div class="merchant-row clickable" onclick="openShopDetail('${encodeURIComponent(n)}')"><div><b>${n}</b><div class="muted">${v.count} ostosta · keskiostos ${E(v.sum/v.count)}</div></div><b>${E(v.sum)}</b><span class="chev">›</span></div>`).join('');
- closeReportDetail(false);
+ const selected=reportRows();
+ const income=selected.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0);
+ const expense=-selected.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0);
+ $('reportIncome').textContent=E(income);$('reportExpense').textContent=E(expense);$('reportNet').textContent=E(income-expense);$('reportNet').className=income-expense>=0?'pos':'neg';$('reportCount').textContent=selected.length;
+ const months=[...new Set(selected.map(x=>x.date.slice(0,7)))].sort();
+ $('months').innerHTML=months.map(m=>{const r=selected.filter(x=>x.date.startsWith(m)),i=r.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0),e=-r.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0);return `<div class="row"><b>${m}</b><span class="pos">Tulot ${E(i)}</span><span class="neg">Menot ${E(e)}</span><b class="${i-e>=0?'pos':'neg'}">${E(i-e)}</b></div>`}).join('')||'<div class="empty-state">Ei kuukausitietoja.</div>';
+ const rows=personalExpenses(),cs={};rows.forEach(x=>cs[x.category]=(cs[x.category]||0)+Math.abs(x.amount));const max=Math.max(...Object.values(cs),1);
+ $('allcats').innerHTML=Object.entries(cs).sort((a,b)=>b[1]-a[1]).map(([c,v])=>{const count=rows.filter(x=>x.category===c).length;return `<div class="catline clickable" onclick="openCategoryDetail('${encodeURIComponent(c)}')"><div><b>${escapeHtml(c)}</b> <span class="muted">${count} tapahtumaa</span><div class="bar"><i style="width:${v/max*100}%"></i></div></div><b>${E(v)} <span class="chev">›</span></b></div>`}).join('')||'<div class="empty-state">Ei menoja valituilla ehdoilla.</div>';
+ const shops={};rows.forEach(x=>{const n=merchantName(x.description);if(!shops[n])shops[n]={sum:0,count:0};shops[n].sum+=Math.abs(x.amount);shops[n].count++});
+ $('shopList').innerHTML=Object.entries(shops).sort((a,b)=>b[1].sum-a[1].sum).map(([n,v])=>`<div class="merchant-row clickable" onclick="openShopDetail('${encodeURIComponent(n)}')"><div><b>${escapeHtml(n)}</b><div class="muted">${v.count} ostosta · keskiostos ${E(v.sum/v.count)}</div></div><b>${E(v.sum)}</b><span class="chev">›</span></div>`).join('')||'<div class="empty-state">Ei kauppaostoja.</div>';
+ renderReview();closeReportDetail(false);
 }
 function showReportTab(name){document.querySelectorAll('.report-tab').forEach(b=>b.classList.toggle('active',b.dataset.report===name));$('reportCategories').classList.toggle('hidden',name!=='categories');$('reportShops').classList.toggle('hidden',name!=='shops');$('reportMonths').classList.toggle('hidden',name!=='months');$('reportReview').classList.toggle('hidden',name!=='review');$('reportMain').classList.remove('hidden');$('reportDetail').classList.add('hidden')}
 function openCategoryDetail(encoded){const category=decodeURIComponent(encoded),rows=personalExpenses().filter(x=>x.category===category).sort((a,b)=>b.date.localeCompare(a.date));openReportDetail(category,rows)}
@@ -262,38 +282,23 @@ function renderBusiness(){
  $('bizAvgAfterOwn').textContent=E(after/n);$('bizAvgAfterOwn').className=after>=0?'pos':'neg';
  $('bizFormula').innerHTML=`Keskimäärin kuukaudessa: <b>${E(allIncome/n)}</b> tuloja − <b>${E(allExpense/n)}</b> taksin menoja − <b>${E(allOwn/n)}</b> omiin menoihin = <b class="${after>=0?'pos':'neg'}">${E(after/n)}</b> yritykseen.`;
  const cs={};r.filter(x=>x.type==='expense'&&x.scope==='Yritys'&&!x.personalExpense).forEach(x=>cs[x.category]=(cs[x.category]||0)+(-x.amount));const max=Math.max(1,...Object.values(cs));$('bizCats').innerHTML=Object.entries(cs).sort((a,b)=>b[1]-a[1]).map(([c,v])=>{const count=r.filter(x=>x.type==='expense'&&x.scope==='Yritys'&&!x.personalExpense&&x.category===c).length;return `<div class="catline clickable" onclick="openBusinessCategoryDetail('${encodeURIComponent(c)}')"><div><b>${c}</b> <span class="muted">${count} tapahtumaa</span><div class="bar"><i style="width:${v/max*100}%"></i></div></div><b>${E(v)} <span class="chev">›</span></b></div>`}).join('')||'<p class="muted">Ei kuluja.</p>';
-}function renderDebts(){const d=state.debts.reduce((s,x)=>s+x.balance,0),a=cash();$('debtTotal').textContent=E(d);$('funds').textContent=E(state.funds);$('assetCash').textContent=E(a);$('worth').textContent=E(a+state.funds-d);$('debtList').innerHTML=state.debts.map(x=>`<div class="debt"><span>${x.name}</span><b>${E(x.balance)}</b></div>`).join('')}function show(p){if(p!=='events')window.homeScopeFilter=null;document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));$(p).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='events')renderEvents();if(p==='reports')renderReports();if(p==='business')renderBusiness();if(p==='archive')renderArchive();if(p==='goals')initStatementAccounts();if(p==='debts')renderDebts()}$('search').oninput=renderEvents;$('owner').onchange=renderEvents;$('etype').onchange=renderEvents;$('businessMonth').onchange=renderBusiness;document.querySelectorAll('.report-tab').forEach(b=>b.onclick=()=>showReportTab(b.dataset.report));
+}
+function renderHousehold(){const rows=state.transactions.filter(x=>x.type==='expense'&&x.scope!=='Yritys').sort((a,b)=>b.date.localeCompare(a.date));const total=rows.reduce((s,x)=>s+Math.abs(x.amount),0);$('homeExpenseTotal').textContent=E(total);$('homeJaanaTotal').textContent=E(rows.filter(x=>x.owner==='Jaana').reduce((s,x)=>s+Math.abs(x.amount),0));$('homeJanneTotal').textContent=E(rows.filter(x=>x.owner==='Janne').reduce((s,x)=>s+Math.abs(x.amount),0));$('homeExpenseCount').textContent=rows.length;const cs={};rows.forEach(x=>cs[x.category]=(cs[x.category]||0)+Math.abs(x.amount));const max=Math.max(...Object.values(cs),1);$('homeCategoryList').innerHTML=Object.entries(cs).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`<div class="catline"><div><b>${escapeHtml(c)}</b><div class="bar"><i style="width:${v/max*100}%"></i></div></div><b>${E(v)}</b></div>`).join('');$('homeExpenseList').innerHTML=rows.slice(0,100).map(x=>transactionEntry(x,{positiveRaw:true})).join('')||'<div class="empty-state">Ei kodin menoja.</div>'}
+function renderDebts(){const d=state.debts.reduce((s,x)=>s+x.balance,0),a=cash();$('debtTotal').textContent=E(d);$('funds').textContent=E(state.funds);$('assetCash').textContent=E(a);$('worth').textContent=E(a+state.funds-d);$('debtList').innerHTML=state.debts.map(x=>`<div class="debt"><span>${x.name}</span><b>${E(x.balance)}</b></div>`).join('')}function show(p){document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));const page=$(p);if(!page)return;page.classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='home')renderHome();if(p==='events')renderEvents();if(p==='household')renderHousehold();if(p==='reports')renderReports();if(p==='business')renderBusiness();if(p==='archive')renderArchive();if(p==='goals')initStatementAccounts();if(p==='debts')renderDebts();window.scrollTo({top:0,behavior:'smooth'})}$('search').oninput=renderEvents;$('eventOwners').onchange=renderEvents;$('etype').onchange=renderEvents;$('reportOwners').onchange=renderReports;$('businessMonth').onchange=renderBusiness;document.querySelectorAll('.report-tab').forEach(b=>b.onclick=()=>showReportTab(b.dataset.report));
 function openHomeAction(action){
-  if(action==='home'){
-    show('events');
-    $('owner').value='';
-    $('etype').value='expense';
-    window.homeScopeFilter='home';
-    renderEvents();
-    return;
-  }
-  if(action==='business'){
-    show('business');
-    return;
-  }
-  if(action==='review'){
-    show('reports');
-    showReportTab('review');
-    return;
-  }
-  if(action==='months'){
-    show('reports');
-    showReportTab('months');
-    return;
-  }
-  if(['reports','archive','goals','debts'].includes(action)) show(action);
+ if(action==='home'){show('household');return}
+ if(action==='business'){show('business');return}
+ if(action==='review'){show('reports');showReportTab('review');return}
+ if(action==='months'){show('reports');showReportTab('months');return}
+ if(action==='reports'){show('reports');showReportTab('categories');return}
+ if(['archive','goals','debts'].includes(action)){show(action);return}
 }
 document.querySelectorAll('[data-home-action]').forEach(btn=>btn.addEventListener('click',ev=>{
   ev.preventDefault();
   ev.stopPropagation();
   openHomeAction(btn.dataset.homeAction);
 }));
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{window.homeScopeFilter=null;show(b.dataset.page)});
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.page));
 function persist(){localStorage.setItem('talousV5',JSON.stringify(state))}
 function selectedArchiveAreas(){return [...$('archiveArea').querySelectorAll('input:checked')].map(el=>el.value)}
 function archiveAreaMatch(x,areas=selectedArchiveAreas()){
@@ -336,7 +341,7 @@ function restoreArchiveAreas(){let values=['jaana','janne'];try{const saved=JSON
 $('archiveArea').onchange=()=>{saveArchiveAreas();updateArchiveCategories();renderArchive()};$('archiveCategory').onchange=renderArchive;$('archiveYear').onchange=renderArchive;$('archiveKeyword').oninput=renderArchive;$('homeSearch').addEventListener('keydown',e=>{if(e.key==='Enter')startExpenseSearch()});
 $('exportBackup').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`talousarkisto-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href);$('backupStatus').textContent='Varmuuskopio ladattu.'};
 $('importBackupBtn').onclick=()=>$('importBackup').click();
-$('importBackup').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.transactions))throw new Error('Virheellinen tiedosto');const existing=new Set(state.transactions.map(x=>x.id));const added=data.transactions.filter(x=>!existing.has(x.id));state={...state,...data,transactions:[...state.transactions,...added].sort((a,b)=>b.date.localeCompare(a.date)),version:'9.9'};persist();initArchiveFilters();renderArchive();$('backupStatus').textContent=`Palautus valmis: ${added.length} uutta tapahtumaa, päällekkäiset ohitettiin.`;renderHome()}catch(err){$('backupStatus').textContent='Varmuuskopion palautus epäonnistui: '+err.message}}
+$('importBackup').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.transactions))throw new Error('Virheellinen tiedosto');const existing=new Set(state.transactions.map(x=>x.id));const added=data.transactions.filter(x=>!existing.has(x.id));state={...state,...data,transactions:[...state.transactions,...added].sort((a,b)=>b.date.localeCompare(a.date)),version:'9.19'};persist();initArchiveFilters();renderArchive();$('backupStatus').textContent=`Palautus valmis: ${added.length} uutta tapahtumaa, päällekkäiset ohitettiin.`;renderHome()}catch(err){$('backupStatus').textContent='Varmuuskopion palautus epäonnistui: '+err.message}}
 
 function initStatementAccounts(){
  const sel=$('statementAccount');if(!sel)return;

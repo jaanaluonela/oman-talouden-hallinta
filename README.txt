@@ -1,10 +1,12 @@
-Oman talouden hallinta V9.6
+Oma talousarkisto V9.19
 
-Muutokset:
-- Jaana ja Janne voidaan valita samanaikaisesti haussa; Taksi voidaan jättää pois.
-- Valittu tilisuodatus muistetaan seuraavaa käyttökertaa varten.
-- Taksin menot käsitellään vain yrityksen omilla menoluokilla.
-- Yrityksen menoluokat näkyvät luokiteltuna ja avautuvat tapahtumalistaksi kuten kodin menot.
-- Taksin puhelinlasku kuuluu yrityksen Puhelin ja netti -luokkaan.
-- Kodin menoluokat eivät sekoitu yritysraporttiin.
-- Luomatec kuuluu Kodin menot -luokkaan eikä näy Sähkö-haussa.
+Korjattu kokonaisuutena:
+- Etusivun 8 pikavalintaa avaavat nyt omat oikeat näkymänsä.
+- Tapahtumat on oma sivunsa ja siinä voi valita Jaanan ja Jannen yhtä aikaa.
+- Kodin menot on oma yhteenvetosivunsa, ei tavallinen tapahtumalista.
+- Taksin menot avaa yrityksen oman yhteenvedon.
+- Tarkistettavat, Raportit ja Kuukaudet avautuvat oikeille raporttivälilehdille.
+- Haku, Tilit ja Velat ovat omia erillisiä sivujaan.
+- Raporteissa voi valita Jaana, Janne ja Taksi erikseen tai useita yhtä aikaa.
+- Alapalkin sivut vaihtavat sekä aktiivisen napin että varsinaisen sivusisällön.
+- Välimuistin versio päivitetty, jotta vanha sivu ei jää näkyviin.
