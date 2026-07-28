@@ -1,10 +1,11 @@
-OMA TALOUSARKISTO V10
+Oman talouden hallinta V10.2
 
-Uutta versiossa 10:
-- Taksiyrityksen tammi–kesäkuun 2026 vuosianalyysi Raportit-osiossa
-- Kuukausikohtainen kannattavuusarvio
-- Kassavirta, omat nostot ja omien varojen siirrot eriteltyinä
-- Tulostus / PDF-tallennus vuosianalyysistä
-- Elenia ja Oomi luokitellaan kodin sähkömenoiksi
+Korjaus: Raportit > Menoluokat näyttää nyt myös taksin kaikki menoluokat, kun Taksi on valittuna.
+Kun Jaana/Janne ja Taksi ovat valittuina, kodin ja taksin menoluokat näkyvät omina osioinaan.
 
-Avaa index.html selaimessa tai julkaise kaikki tiedostot GitHub Pagesiin.
+Asennus GitHub Pagesiin:
+1. Pura ZIP.
+2. Korvaa repositoriossa kaikki vanhat tiedostot näillä.
+3. Commitoi muutokset.
+4. Avaa sovellus ja tee Ctrl+F5.
+5. Jos vanha versio näkyy yhä, sulje sovellusvälilehti kokonaan ja avaa sivu uudelleen.
