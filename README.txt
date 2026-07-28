@@ -12,4 +12,6 @@ Asennus GitHub Pagesiin:
 
 V10.3: korjatut taksin menoluokat, verojen jako, YEL, auton osamaksut sekä yritystililtä maksetut kodin sähkö-, vesi- ja pihakulut.
 
-V10.4: Lisätty taksin kuukausiraportti (tulot, menot, tulos, arvio, omat nostot, yritykseen jäänyt raha) sekä Kärkkäinen → Työvaatteet.
+V10.5: Lisätty taksin kuukausiraportti (tulot, menot, tulos, arvio, omat nostot, yritykseen jäänyt raha) sekä Kärkkäinen → Työvaatteet.
+
+V10.5: Taksin tulot lasketaan kaikista taksitilin positiivisista tapahtumista. Jaana Luonelan ja Janne Luonelan siirrot käsitellään omana rahana yritykseen, eivätkä ne ole taksituloa.
