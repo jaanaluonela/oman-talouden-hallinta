@@ -199,7 +199,20 @@ function automaticAudit(x){
   [/MAKSUJARJESTELY|MAKSUJÄRJESTELY/,'Maksujärjestely'],
   [/PANKKIPALVELU|PALVELUMAKSU|TILINHOITOMAKSU/,'Pankkipalvelut'],
   [/LASKUTUSMAKSU/,'Laskutusmaksut'],
-  [/TARVIKE/,'Tarvikkeet']
+  [/TARVIKE/,'Tarvikkeet'],
+  [/VIESTIPAJA/,'Taksimittarin päivitykset'],
+  [/PLANEETTA INTERNET/,'Nettisivut'],
+  [/WULFF/,'Toimistotarvikkeet'],
+  [/KESKISUOMALAINEN|PAIJANNE MEDIA|PÄIJÄNNE MEDIA/,'Lehdet ja mainonta'],
+  [/MUSIIKKILUVAT|TEOSTO|GRAMEX/,'Musiikkiluvat'],
+  [/TRIPPI/,'Laskutusmaksut'],
+  [/PH[ -]?PIENKONE/,'Tarvikkeet'],
+  [/K-AUTO/,'Huollot ja korjaukset'],
+  [/INTRUM/,'Maksujärjestely'],
+  [/VASTUU SERVICES/,'Muut yrityskulut'],
+  [/OOMI|ELENIA|ELENIA VERKKO/,'Sähkö'],
+  [/AURINKOVUOREN VESI/,'Vesi'],
+  [/RAKENNUS.*ANTTILAINEN|J ANTTILAINEN/,'Piha ja lumityöt']
  ];
  if(r.type==='expense'&&isTaxi){
   for(const [rx,c] of taxiCategoryRules){if(rx.test(d)){r.category=c;break}}
