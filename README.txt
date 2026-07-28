@@ -11,3 +11,5 @@ Asennus GitHub Pagesiin:
 5. Jos vanha versio näkyy yhä, sulje sovellusvälilehti kokonaan ja avaa sivu uudelleen.
 
 V10.3: korjatut taksin menoluokat, verojen jako, YEL, auton osamaksut sekä yritystililtä maksetut kodin sähkö-, vesi- ja pihakulut.
+
+V10.4: Lisätty taksin kuukausiraportti (tulot, menot, tulos, arvio, omat nostot, yritykseen jäänyt raha) sekä Kärkkäinen → Työvaatteet.
