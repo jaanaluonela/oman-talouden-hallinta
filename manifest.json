@@ -1,5 +1,5 @@
 {
-  "name": "Oma talousarkisto V10",
+  "name": "Oma talousarkisto",
   "short_name": "Talousarkisto",
   "start_url": "./index.html",
   "display": "standalone",
@@ -7,12 +7,12 @@
   "theme_color": "#126e68",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "talouskoti-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "talouskoti-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
