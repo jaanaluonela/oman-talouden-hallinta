@@ -336,8 +336,13 @@ if(state.version!=='11.0'){
  const migratedAccounts=(state.accounts||seed.accounts).map(a=>a.id==='sp_jaana'?{...a,balance:122.57}:a.id==='sp_janne'?{...a,balance:114.83}:a.id==='op_jaana'?{...a,balance:19.84}:a.id==='op_janne'?{...a,balance:0.61}:a.id==='taxi'?{...a,balance:56.06}:a);
  state={...seed,...state,accounts:migratedAccounts,version:'11.0',transactions:auditAll(corrected).sort((a,b)=>b.date.localeCompare(a.date))};
  localStorage.setItem('talousV5',JSON.stringify(state));
-}else{state.transactions=auditAll(state.transactions);localStorage.setItem('talousV5',JSON.stringify(state));}const E=n=>Number(n||0).toLocaleString('fi-FI',{style:'currency',currency:'EUR'});const $=id=>document.getElementById(id);const countEl=$('count');if(countEl)countEl.textContent=state.transactions.length+' pankkitapahtumaa';const cash=()=>state.accounts.filter(a=>a.owner!=='Yritys'&&a.id!=='taxi').reduce((s,a)=>s+a.balance,0);const householdCash=()=>state.accounts.filter(a=>a.owner!=='Yritys').reduce((s,a)=>s+a.balance,0);function monthRows(m){return state.transactions.filter(x=>x.date.startsWith(m)&&x.scope!=='Yritys')}function renderHome(){
- const dates=state.transactions.filter(x=>x.scope!=='Yritys').map(x=>x.date).sort();
+}else{state.transactions=auditAll(state.transactions);localStorage.setItem('talousV5',JSON.stringify(state));}const E=n=>Number(n||0).toLocaleString('fi-FI',{style:'currency',currency:'EUR'});const $=id=>document.getElementById(id);const isHouseholdOwner=owner=>owner==='Jaana'||owner==='Janne';
+const isHouseholdAccount=account=>isHouseholdOwner(account.owner)&&account.id!=='taxi';
+const isHouseholdTransaction=x=>isHouseholdOwner(x.owner)&&x.scope!=='Yritys';
+const countEl=$('count');if(countEl)countEl.textContent=state.transactions.filter(isHouseholdTransaction).length+' pankkitapahtumaa';
+const cash=()=>state.accounts.filter(a=>isHouseholdAccount(a)||a.id==='loan'&&a.owner==='Yhteinen').reduce((s,a)=>s+a.balance,0);
+function renderHome(){
+ const dates=state.transactions.filter(isHouseholdTransaction).map(x=>x.date).sort();
  const first=dates[0]||'',last=dates[dates.length-1]||'';
  const fi=d=>d?d.split('-').reverse().join('.'):'';
  $('homeUpdated').textContent='Päivitetty '+fi(state.lastImport||seed.generated);
@@ -357,10 +362,10 @@ function startCategorySearch(cat){
   renderEvents();
 }
 function selectedOwners(id){const box=$(id);return box?[...box.querySelectorAll('input:checked')].map(x=>x.value):[]}
-function renderEvents(){let r=state.transactions.filter(x=>x.scope!=='Yritys');const q=$('search').value.toLowerCase(),owners=selectedOwners('eventOwners'),t=$('etype').value;if(q)r=r.filter(x=>(x.description+' '+x.category+' '+merchantName(x.description)).toLowerCase().includes(q));r=r.filter(x=>owners.includes(x.owner));if(t)r=r.filter(x=>x.type===t);$('eventList').innerHTML=r.slice(0,700).map(x=>transactionEntry(x)).join('')||'<div class="empty-state">Ei tapahtumia valituilla ehdoilla.</div>'}
+function renderEvents(){let r=state.transactions.filter(isHouseholdTransaction);const q=$('search').value.toLowerCase(),owners=selectedOwners('eventOwners'),t=$('etype').value;if(q)r=r.filter(x=>(x.description+' '+x.category+' '+merchantName(x.description)).toLowerCase().includes(q));r=r.filter(x=>owners.includes(x.owner));if(t)r=r.filter(x=>x.type===t);$('eventList').innerHTML=r.slice(0,700).map(x=>transactionEntry(x)).join('')||'<div class="empty-state">Ei tapahtumia valituilla ehdoilla.</div>'}
 function merchantName(desc){const d=(desc||'').toUpperCase();const rules=[
  ['TOKMANNI','Tokmanni'],['PRISMA','Prisma'],['S-MARKET','S-market'],['SMARKET','S-market'],['SALE ','Sale'],['ALEPA','Alepa'],['K-SUPERMARKET','K-Supermarket'],['K-MARKET','K-Market'],['K-CITYMARKET','K-Citymarket'],['CITYMARKET','K-Citymarket'],['LIDL','Lidl'],['MOTONET','Motonet'],['PUUILO','Puuilo'],['BAUHAUS','Bauhaus'],['IKEA','IKEA'],['MUSTI JA MIRRI','Musti ja Mirri'],['MUSTI&MIRRI','Musti ja Mirri'],['NESTE','Neste'],['ABC','ABC'],['ST1','St1'],['SHELL','Shell'],['OOMI','Oomi'],['ELISA','Elisa'],['DNA','DNA'],['POHJOLA VAKUUTUS','Pohjola Vakuutus'],['LÄHITAPIOLA','LähiTapiola'],['APTEEKKI','Apteekki'],['KÄRKKÄINEN','Kärkkäinen'],['RUSTA','Rusta'],['JYSK','JYSK'],['POWER','Power'],['GIGANTTI','Gigantti']];for(const [key,name] of rules)if(d.includes(key))return name;let clean=(desc||'').replace(/\s+(KORTTIOSTO|SEPA PIKA|TILISIIRTO|MAKSUPALVELU|PALKKA).*$/i,'').replace(/\s+/g,' ').trim();return clean.length>34?clean.slice(0,34)+'…':clean||'Tuntematon';}
-function reportRows(){const owners=selectedOwners('reportOwners');return state.transactions.filter(x=>x.scope!=='Yritys'&&(x.owner==='Yritys'?owners.length>0:owners.includes(x.owner)))}
+function reportRows(){const owners=selectedOwners('reportOwners');return state.transactions.filter(x=>isHouseholdTransaction(x)&&owners.includes(x.owner))}
 const householdCategoryOrder=['Asuminen','Kaupat','Auto','Polttoaine','Vakuutukset','Terveys','Ravintolat','Matkailu','Puhelin ja internet','Verot','Lemmikit','Harrastukset ja vapaa-aika','Muut menot'];
 function householdMainCategory(x){
  const c=String(x.category||'').trim(),d=textKey(x.description);
@@ -376,7 +381,7 @@ function householdMainCategory(x){
  return householdCategoryOrder.includes(c)?c:'Muut menot';
 }
 function personalExpenses(){return reportRows().filter(x=>x.type==='expense'&&x.scope!=='Yritys')}
-function householdExpenses(){return state.transactions.filter(x=>x.type==='expense'&&x.scope!=='Yritys')}
+function householdExpenses(){return state.transactions.filter(x=>x.type==='expense'&&isHouseholdTransaction(x))}
 const reviewCategories=['Muut ostokset','S-market','Prisma','Sale','Alepa','K-Market','K-Supermarket','K-Citymarket','Lidl','Tokmanni','Kaupat','Kodin menot','Kukkakauppa','Vapaa-aika','Alkoholi','Asuminen','Sähkö','Vesi','Polttoaine','Auto','Matkailu','Terveys','Terveys ja hyvinvointi','Lemmikit','Vaatteet','Ravintolat','Puhelin ja netti','Vakuutukset','Harrastukset','Lahjoitukset','Pankkipalvelut','Muut'];
 function reviewRows(){return reportRows().filter(x=>x.type==='expense'&&x.needsReview===true).sort((a,b)=>b.date.localeCompare(a.date))}
 function setCategory(id,category){const x=state.transactions.find(t=>t.id===id);if(!x||!category)return;x.category=category;x.needsReview=(category==='Muut ostokset'||category==='Muut yrityskulut');localStorage.setItem('talousV5',JSON.stringify(state));renderReports();renderHome()}
@@ -431,7 +436,7 @@ function persist(){localStorage.setItem('talousV5',JSON.stringify(state))}
 function selectedArchiveAreas(){return [...$('archiveArea').querySelectorAll('input:checked')].map(el=>el.value)}
 function archiveAreaMatch(x,areas=selectedArchiveAreas()){
  const selected=new Set(areas);
- return x.scope!=='Yritys'&&((selected.has('jaana')&&x.owner==='Jaana')||(selected.has('janne')&&x.owner==='Janne'));
+ return isHouseholdTransaction(x)&&((selected.has('jaana')&&x.owner==='Jaana')||(selected.has('janne')&&x.owner==='Janne'));
 }
 function updateArchiveCategories(){
  const select=$('archiveCategory'),current=select.value;
@@ -441,7 +446,7 @@ function updateArchiveCategories(){
 }
 function initArchiveFilters(){
  updateArchiveCategories();
- const years=[...new Set(state.transactions.map(x=>x.date.slice(0,4)))].sort().reverse();
+ const years=[...new Set(state.transactions.filter(isHouseholdTransaction).map(x=>x.date.slice(0,4)))].sort().reverse();
  $('archiveYear').innerHTML='<option value="all">Kaikki vuodet</option>'+years.map(y=>`<option>${y}</option>`).join('');
 }
 function archiveSearchText(x){
@@ -474,7 +479,7 @@ $('importBackup').onchange=async e=>{try{const data=JSON.parse(await e.target.fi
 function initStatementAccounts(){
  const sel=$('statementAccount');if(!sel)return;
  const current=sel.value;
- sel.innerHTML=state.accounts.filter(a=>a.owner!=='Yritys'&&a.id!=='taxi').map(a=>`<option value="${escapeHtml(a.id)}">${escapeHtml(a.name)}</option>`).join('');
+ sel.innerHTML=state.accounts.filter(isHouseholdAccount).map(a=>`<option value="${escapeHtml(a.id)}">${escapeHtml(a.name)}</option>`).join('');
  if(current&&[...sel.options].some(option=>option.value===current))sel.value=current;
 }
 function parseFinnishAmount(value){
