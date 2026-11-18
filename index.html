@@ -172,19 +172,22 @@ nav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:v
 
 /* Kuukausivertailu: hyväksytty tiivis viiden menoryhmän näkymä */
 #reports #reportKpis{display:none!important}#reports .monthly-list{margin:0!important;padding:18px 14px!important;border-radius:20px!important}#reports .monthly-list h2{font-size:1.25rem!important;margin:0 0 16px!important}#reports #expenseComparison{margin-top:16px}#reports .expense-group{margin:7px 0!important;border:1px solid #e0e4e5!important;border-radius:12px!important;overflow:hidden}#reports .expense-group>summary{padding:13px 12px!important;min-height:0!important;font-size:1rem!important}#reports .expense-group[open]>summary{background:#ddf2ef!important}#reports .expense-month-detail{padding:3px 12px!important}#reports .monthly-category{padding:0!important}#reports .monthly-category-button{padding:11px 2px!important;font-size:.95rem!important;min-height:0!important;align-items:center}#reports .monthly-category-name{gap:12px!important}#reports .monthly-category-icon{color:#08776f!important;min-width:30px}#reports .monthly-shop-toggle{margin:0 0 8px 42px;font-size:.85rem;color:#08776f}#reports .monthly-shop-toggle>summary{cursor:pointer;padding:6px}#reports .monthly-shop-breakdown{padding:8px 12px;background:#f4f8f7;border-radius:10px}#reports .monthly-shop-breakdown>div{display:flex;justify-content:space-between;gap:12px;padding:5px 0;color:#263b39}#reports .comparison-close{margin-top:16px!important;background:#00847c!important}#reports .monthly-owner select{font-weight:500!important}
+
+/* Etusivun sovitun mallin selkeät ikonit ja otsikointi */
+#home .page-head h1{color:#087b74!important;display:flex;align-items:center;gap:10px}#home .home-title-icon{font-size:1.65em;font-weight:400;line-height:.8}#home .home-period-label{font-weight:600}#home .home-choice .choice-icon{font-family:system-ui,sans-serif!important;font-size:1.65rem!important;color:#087b74!important;letter-spacing:-.13em;min-width:38px;text-align:center}#home .home-choices{gap:10px!important}
 </style></head><body><div class="app">
 <section id="home">
-<div class="page-head"><h1>Kodin talous</h1></div>
-<label class="monthly-owner">Luonela · kuukausi <select id="homePeriod"></select></label>
+<div class="page-head"><h1><span class="home-title-icon" aria-hidden="true">⌂</span> Kodin talous</h1></div>
+<label class="monthly-owner">Luonela · <span class="home-period-label">Valitse kuukausi</span> <select id="homePeriod"></select></label>
 <div class="card home-balance">
   <div class="home-balance-row"><span>Tulot</span><strong id="homeIncome"></strong></div>
   <div class="home-balance-row"><span>Menot</span><strong id="homeSpent"></strong></div>
   <div class="home-balance-row"><span>Rahaa jää</span><strong id="homeRemaining"></strong></div>
 </div>
 <div class="home-choices">
-  <button class="home-choice" type="button" id="homeExpenseBtn"><span class="choice-icon">◷</span><span><b>Mihin rahat menivät?</b><small>Menoluokat ja kaupat</small></span><span>›</span></button>
-  <button class="home-choice" type="button" onclick="show('reports');showReportTab('comparison')"><span class="choice-icon">▥</span><span><b>Vertaa kuukausia</b><small>Menot eri kuukausina</small></span><span>›</span></button>
-  <button class="home-choice" type="button" onclick="show('goals')"><span class="choice-icon">▤</span><span><b>Lisää tiliote</b><small>Päivitä tapahtumat</small></span><span>›</span></button>
+  <button class="home-choice" type="button" id="homeExpenseBtn"><span class="choice-icon">◴</span><span><b>Mihin rahat menivät?</b><small>Menoluokat ja kaupat</small></span><span>›</span></button>
+  <button class="home-choice" type="button" onclick="show('reports');showReportTab('comparison')"><span class="choice-icon">▂▅▇</span><span><b>Vertaa kuukausia</b><small>Menot eri kuukausina</small></span><span>›</span></button>
+  <button class="home-choice" type="button" onclick="show('goals')"><span class="choice-icon">▱</span><span><b>Lisää tiliote</b><small>Päivitä tapahtumat</small></span><span>›</span></button>
 </div>
 <button type="button" class="home-review-link hidden" id="homeReviewBtn"></button>
 <div class="card" id="singleMonthCard" hidden>
