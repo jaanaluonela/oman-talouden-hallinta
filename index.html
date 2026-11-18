@@ -169,6 +169,9 @@ nav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:v
 
 /* Yhtenäinen hyväksytty mobiilinäkymä: ei päällekkäisiä yhteenvetoja */
 #reports .page-head{margin-bottom:18px}#reports .page-head h2{margin:0 0 12px;color:#08776f;font-size:1.55rem}#reports .report-kpis{display:none!important}#reports .monthly-list{box-shadow:0 3px 14px rgba(0,0,0,.045);border:1px solid #e1e5e4;border-radius:20px;padding:18px 14px!important}#reports .monthly-list h2{font-size:1.35rem!important;color:#171b1c;line-height:1.25}#reports .monthly-owner{display:block;max-width:290px}#reports .monthly-owner select{font-weight:500;border-radius:12px}#reports .expense-group{margin:9px 0!important;border-radius:12px!important}#reports .expense-group[open]>summary{background:#def2ef!important}#reports .monthly-category-icon{color:#08776f!important}#reports .comparison-close{background:#00847c!important}#home .home-balance{overflow:hidden}#home .home-balance-row:last-child{background:#def2ef}#home .home-choice{background:#fff}#events .toolbar{border-radius:18px}#events #eventList{overflow-wrap:anywhere}@media(max-width:430px){#reports .monthly-list{padding:14px 10px!important}#reports .monthly-list h2{font-size:1.18rem!important}#reports .expense-group summary{font-size:.94rem!important}#reports .monthly-category-button{font-size:.88rem!important}}
+
+/* Kuukausivertailu: hyväksytty tiivis viiden menoryhmän näkymä */
+#reports #reportKpis{display:none!important}#reports .monthly-list{margin:0!important;padding:18px 14px!important;border-radius:20px!important}#reports .monthly-list h2{font-size:1.25rem!important;margin:0 0 16px!important}#reports #expenseComparison{margin-top:16px}#reports .expense-group{margin:7px 0!important;border:1px solid #e0e4e5!important;border-radius:12px!important;overflow:hidden}#reports .expense-group>summary{padding:13px 12px!important;min-height:0!important;font-size:1rem!important}#reports .expense-group[open]>summary{background:#ddf2ef!important}#reports .expense-month-detail{padding:3px 12px!important}#reports .monthly-category{padding:0!important}#reports .monthly-category-button{padding:11px 2px!important;font-size:.95rem!important;min-height:0!important;align-items:center}#reports .monthly-category-name{gap:12px!important}#reports .monthly-category-icon{color:#08776f!important;min-width:30px}#reports .monthly-shop-toggle{margin:0 0 8px 42px;font-size:.85rem;color:#08776f}#reports .monthly-shop-toggle>summary{cursor:pointer;padding:6px}#reports .monthly-shop-breakdown{padding:8px 12px;background:#f4f8f7;border-radius:10px}#reports .monthly-shop-breakdown>div{display:flex;justify-content:space-between;gap:12px;padding:5px 0;color:#263b39}#reports .comparison-close{margin-top:16px!important;background:#00847c!important}#reports .monthly-owner select{font-weight:500!important}
 </style></head><body><div class="app">
 <section id="home">
 <div class="page-head"><h1>Kodin talous</h1></div>
@@ -492,27 +495,26 @@ function compareAllMonths(){
  const byMonth=groupExpenses(rows,x=>x.date.slice(0,7));
  const comparison=$('expenseComparison');
  const months=[...byMonth].sort(([a],[b])=>b.localeCompare(a));
- const iconFor=name=>{
-  const n=name.toLocaleLowerCase('fi');
-  if(/kauppa|ruoka|market/.test(n))return '🛒';
-  if(/auto|polttoaine|liikenne/.test(n))return '🚘';
-  if(/vesi/.test(n))return '♧';
-  if(/sähkö|energia/.test(n))return 'ϟ';
-  if(/vakuutus/.test(n))return '◇';
-  if(/puhelin|netti/.test(n))return '▯';
-  if(/asunto|laina|asuminen/.test(n))return '⌂';
-  if(/terveys|apteekki/.test(n))return '♡';
-  return '•••';
- };
+ const mainGroups=[
+  {label:'Kauppaostokset',icon:'🛒',match:n=>/kauppa|ruoka|market/i.test(n)},
+  {label:'Auto',icon:'🚗',match:n=>/auto|polttoaine|liikenne/i.test(n)},
+  {label:'Vesi',icon:'♧',match:n=>/vesi/i.test(n)},
+  {label:'Sähkö',icon:'ϟ',match:n=>/sähkö|energia/i.test(n)}
+ ];
  comparison.innerHTML=months.map(([month,items],index)=>{
-  const categories=groupExpenses(items,householdMainCategory);
-  const breakdown=[...categories].sort((a,b)=>expenseTotal(b[1])-expenseTotal(a[1])).map(([name,expenses])=>{
-   let sub='';
-   if(name===shoppingCategory){
-    const shops=groupExpenses(expenses,shopGroup);
-    sub='<div class="monthly-shop-list">'+shopOrder.filter(n=>shops.has(n)).map(n=>'<button type="button" data-compare="'+escapeHtml(name)+'"><span>'+escapeHtml(n)+'</span><b>'+E(expenseTotal(shops.get(n)))+'</b></button>').join('')+'</div>';
+  const cats=[...groupExpenses(items,householdMainCategory)];
+  const buckets=mainGroups.map(g=>({...g,expenses:[]}));
+  const other={label:'Muut menot',icon:'•••',expenses:[]};
+  cats.forEach(([name,expenses])=>{const bucket=buckets.find(g=>g.match(name))||other;bucket.expenses.push(...expenses)});
+  const breakdown=[...buckets,other].filter(g=>g.expenses.length).map(g=>{
+   const amount=expenseTotal(g.expenses);
+   let extra='';
+   if(g.label==='Kauppaostokset'){
+    const shops=groupExpenses(g.expenses,shopGroup);
+    const lines=shopOrder.filter(n=>shops.has(n)).map(n=>'<div><span>'+escapeHtml(n)+'</span><b>'+E(expenseTotal(shops.get(n)))+'</b></div>').join('');
+    if(lines)extra='<details class="monthly-shop-toggle"><summary>Näytä kaupat</summary><div class="monthly-shop-breakdown">'+lines+'</div></details>';
    }
-   return '<div class="monthly-category"><button type="button" class="monthly-category-button" data-compare="'+escapeHtml(name)+'"><span class="monthly-category-name"><span class="monthly-category-icon" aria-hidden="true">'+iconFor(name)+'</span>'+escapeHtml(name)+'</span><b>'+E(expenseTotal(expenses))+'</b></button>'+sub+'</div>';
+   return '<div class="monthly-category"><button type="button" class="monthly-category-button" data-compare="'+escapeHtml(g.label==='Kauppaostokset'?shoppingCategory:g.label)+'"><span class="monthly-category-name"><span class="monthly-category-icon" aria-hidden="true">'+g.icon+'</span>'+g.label+'</span><b>'+E(amount)+'</b></button>'+extra+'</div>';
   }).join('');
   return '<details class="expense-group" '+(index===0?'open':'')+'><summary><span>'+monthLabel(month)+'</span><b>'+E(expenseTotal(items))+'</b></summary><div class="expense-month-detail">'+breakdown+'</div></details>';
  }).join('')||'<p class="muted">Ei vielä menotietoja. Lisää tiliote, niin kuukaudet tulevat näkyviin.</p>';
