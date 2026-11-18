@@ -107,6 +107,16 @@
 .expense-compare-row b{white-space:nowrap;font-variant-numeric:tabular-nums}
 .expense-month-detail{padding:4px 12px 12px;border-left:2px solid var(--soft)}
 .expense-month-detail .expense-compare-row{font-size:.92rem;padding:7px 0}
+.monthly-list{border:0;margin:0;padding:0}.monthly-list h3{font-size:1.15rem;margin:0 0 14px}
+.monthly-list .expense-group{border:1px solid var(--line);border-radius:14px;margin:10px 0;overflow:hidden}
+.monthly-list .expense-group summary{padding:13px 12px;font-weight:750}
+.monthly-list .expense-group[open]>summary{background:var(--soft)}
+.monthly-list .expense-month-detail{border:0;padding:6px 14px 12px}
+.monthly-list .expense-compare-row{align-items:center;min-height:44px}
+.monthly-list .expense-compare-row button{border:0;background:none;color:var(--ink);font:inherit;text-align:left;padding:8px 0;cursor:pointer;flex:1}
+.monthly-list .expense-compare-row button:hover{color:var(--accent)}
+.monthly-owner{display:grid;gap:5px;max-width:260px;color:var(--muted);font-size:.9rem;margin-bottom:16px}
+.monthly-owner select{font:inherit;color:var(--ink);background:white;border:1px solid var(--line);border-radius:12px;padding:11px}
 .compare-button{border:1px solid var(--line);border-radius:10px;background:white;color:var(--accent);font:inherit;font-weight:700;padding:8px 12px;min-height:44px;margin:8px 0}
 .nav-icon{display:block;font-family:system-ui,sans-serif;font-size:1.45rem;line-height:1.2;font-weight:700;color:var(--accent)}
 nav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--accent)}
@@ -114,7 +124,7 @@ nav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:v
 </style></head><body><div class="app">
 <section id="home">
 <div class="page-head"><h1>Kodin talous</h1></div>
-<div class="card">
+<div class="card" id="singleMonthCard" hidden>
   <h2 style="margin:0 0 12px">Kuukauden menot</h2>
   <div class="expense-filters">
     <label>Kuukausi <select id="expenseMonth"></select></label>
@@ -123,10 +133,13 @@ nav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:v
   <div class="expense-total"><span id="expenseTotalLabel">Menot yhteensä</span><strong id="expenseTotal" aria-live="polite"></strong></div>
   <h3 style="margin:16px 0 5px">Menot eriteltynä</h3>
   <div id="expenseGroups"></div>
-  <div id="expenseComparison" class="expense-compare hidden" aria-live="polite"></div>
+</div>
+<div class="card monthly-list">
+  <h2>Kaikki menot kuukausittain</h2>
+  <label class="monthly-owner">Tarkastellaan <select id="monthlyOwner"><option value="">Luonela</option><option>Jaana</option><option>Janne</option></select></label>
+  <div id="expenseComparison" aria-live="polite"></div>
 </div>
 <div class="expense-tools">
-  <button type="button" class="action-btn" id="compareAllBtn">Vertaa kuukausia</button>
   <button type="button" class="action-btn" id="homeSearchBtn">Hae menoja</button>
   <button type="button" class="action-btn" id="homeReviewBtn">Tarkistettavat</button>
 </div>
@@ -409,34 +422,33 @@ function expenseGroup(label,rows,content){
  return `<details class="expense-group"><summary><span>${escapeHtml(label)}</span><b>${E(expenseTotal(rows))}</b></summary><div class="expense-breakdown">${compare}${content}</div></details>`;
 }
 function compareExpenseMonths(category){
- const owner=$('expenseOwner').value;
+ const owner=$('monthlyOwner').value;
  const rows=state.transactions.filter(x=>x.type==='expense'&&isHouseholdTransaction(x)&&(!owner||x.owner===owner)&&householdMainCategory(x)===category);
  const byMonth=groupExpenses(rows,x=>x.date.slice(0,7));
  const comparison=$('expenseComparison');
- comparison.innerHTML=`<h3>${escapeHtml(category)} eri kuukausina</h3>`+[...byMonth].sort(([a],[b])=>b.localeCompare(a)).map(([month,items])=>`<div class="expense-compare-row"><span>${monthLabel(month)}</span><b>${E(expenseTotal(items))}</b></div>`).join('')+'<button type="button" class="compare-button" id="closeComparison">Sulje vertailu</button>';
+ comparison.innerHTML=`<h3>${escapeHtml(category)} eri kuukausina</h3>`+[...byMonth].sort(([a],[b])=>b.localeCompare(a)).map(([month,items])=>`<div class="expense-compare-row"><span>${monthLabel(month)}</span><b>${E(expenseTotal(items))}</b></div>`).join('')+'<button type="button" class="action-btn primary" id="closeComparison">Takaisin kuukausiin</button>';
  comparison.classList.remove('hidden');
  comparison.scrollIntoView({behavior:'smooth',block:'start'});
- $('closeComparison').onclick=()=>comparison.classList.add('hidden');
+ $('closeComparison').onclick=compareAllMonths;
 }
 function compareAllMonths(){
- const owner=$('expenseOwner').value;
+ const owner=$('monthlyOwner').value;
  const rows=state.transactions.filter(x=>x.type==='expense'&&isHouseholdTransaction(x)&&(!owner||x.owner===owner));
  const byMonth=groupExpenses(rows,x=>x.date.slice(0,7));
  const comparison=$('expenseComparison');
- comparison.innerHTML='<h3>Kaikki menot kuukausittain</h3>'+[...byMonth].sort(([a],[b])=>b.localeCompare(a)).map(([month,items])=>{
+ const months=[...byMonth].sort(([a],[b])=>b.localeCompare(a));
+ comparison.innerHTML=months.map(([month,items],index)=>{
   const categories=groupExpenses(items,householdMainCategory);
-  const breakdown=[...categories].sort((a,b)=>expenseTotal(b[1])-expenseTotal(a[1])).map(([name,expenses])=>`<div class="expense-compare-row"><span>${escapeHtml(name)}</span><b>${E(expenseTotal(expenses))}</b></div>`).join('');
-  return `<details class="expense-group"><summary><span>${monthLabel(month)}</span><b>${E(expenseTotal(items))}</b></summary><div class="expense-month-detail">${breakdown}</div></details>`;
- }).join('')+'<button type="button" class="compare-button" id="closeComparison">Sulje vertailu</button>';
+  const breakdown=[...categories].sort((a,b)=>expenseTotal(b[1])-expenseTotal(a[1])).map(([name,expenses])=>`<div class="expense-compare-row"><button type="button" data-compare="${escapeHtml(name)}">${escapeHtml(name)}</button><b>${E(expenseTotal(expenses))}</b></div>`).join('');
+  return `<details class="expense-group" ${index===0?'open':''}><summary><span>${monthLabel(month)}</span><b>${E(expenseTotal(items))}</b></summary><div class="expense-month-detail">${breakdown}</div></details>`;
+ }).join('')||'<p class="muted">Ei vielä menotietoja.</p>';
  comparison.classList.remove('hidden');
- comparison.scrollIntoView({behavior:'smooth',block:'start'});
- $('closeComparison').onclick=()=>comparison.classList.add('hidden');
 }
 function expenseEntries(rows){
  return [...rows].sort((a,b)=>b.date.localeCompare(a.date)).map(x=>transactionEntry(x,{positiveRaw:true})).join('');
 }
 function renderHome(){
- $('expenseComparison').classList.add('hidden');
+ compareAllMonths();
  const month=$('expenseMonth');
  const selectedMonth=month.value;
  const months=[...new Set(state.transactions.filter(isHouseholdTransaction).map(x=>x.date.slice(0,7)).filter(m=>/^\d{4}-(0[1-9]|1[0-2])$/.test(m)))].sort().reverse();
@@ -567,7 +579,8 @@ function incomeValue(x){return x.type==='income'?Math.max(Number(x.amount)||0,0)
 function renderDebts(){const d=state.debts.reduce((s,x)=>s+x.balance,0),a=cash();$('debtTotal').textContent=E(d);$('funds').textContent=E(state.funds);$('assetCash').textContent=E(a);$('worth').textContent=E(a+state.funds-d);$('debtList').innerHTML=state.debts.map(x=>`<div class="debt"><span>${x.name}</span><b>${E(x.balance)}</b></div>`).join('')}function show(p){document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));const page=$(p);if(!page)return;page.classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='home')renderHome();if(p==='events')renderEvents();if(p==='reports')renderReports();if(p==='archive')renderArchive();if(p==='goals')initStatementAccounts();if(p==='debts')renderDebts();window.scrollTo({top:0,behavior:'smooth'})}$('search').oninput=renderEvents;$('eventOwners').onchange=renderEvents;$('etype').onchange=renderEvents;$('reportOwners').onchange=renderReports;document.querySelectorAll('.report-tab').forEach(b=>b.onclick=()=>showReportTab(b.dataset.report));
 $('expenseMonth').onchange=renderHome;
 $('expenseOwner').onchange=renderHome;
-$('compareAllBtn').onclick=compareAllMonths;
+$('monthlyOwner').onchange=()=>{$('expenseOwner').value=$('monthlyOwner').value;renderHome()};
+$('expenseComparison').onclick=event=>{const button=event.target.closest('[data-compare]');if(button)compareExpenseMonths(button.dataset.compare)};
 $('expenseGroups').onclick=event=>{const button=event.target.closest('[data-compare]');if(button)compareExpenseMonths(button.dataset.compare)};
 $('homeSearchBtn').onclick=openHomeSearch;
 $('homeReviewBtn').onclick=()=>{
