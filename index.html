@@ -487,10 +487,31 @@ function expenseGroup(label,rows,content){
 }
 function compareExpenseMonths(category){
  const owner=$('monthlyOwner').value;
- const rows=state.transactions.filter(x=>x.type==='expense'&&isHouseholdTransaction(x)&&(!owner||x.owner===owner)&&householdMainCategory(x)===category);
- const byMonth=groupExpenses(rows,x=>x.date.slice(0,7));
+ const rows=state.transactions.filter(x=>x.type==='expense'&&isHouseholdTransaction(x)&&(!owner||x.owner===owner));
+ const groups=[
+  {label:'Kauppaostokset',match:n=>/kauppa|ruoka|market/i.test(n)},
+  {label:'Auto',match:n=>/auto|polttoaine|liikenne/i.test(n)},
+  {label:'Vesi',match:n=>/vesi/i.test(n)},
+  {label:'Sähkö',match:n=>/sähkö|energia/i.test(n)}
+ ];
+ const selected=rows.filter(x=>{
+  const name=householdMainCategory(x);
+  const bucket=groups.find(g=>g.match(name));
+  if(category==='Muut menot')return !bucket;
+  if(category===shoppingCategory||category==='Kauppaostokset')return bucket?.label==='Kauppaostokset';
+  if(groups.some(g=>g.label===category))return bucket?.label===category;
+  return name===category;
+ });
+ const byMonth=groupExpenses(selected,x=>x.date.slice(0,7));
  const comparison=$('expenseComparison');
- comparison.innerHTML=`<h3>${escapeHtml(category)} eri kuukausina</h3>`+[...byMonth].sort(([a],[b])=>b.localeCompare(a)).map(([month,items])=>`<div class="expense-compare-row"><span>${monthLabel(month)}</span><b>${E(expenseTotal(items))}</b></div>`).join('')+'<button type="button" class="action-btn primary" id="closeComparison">Takaisin kuukausiin</button>';
+ const monthly=[...byMonth].sort(([a],[b])=>b.localeCompare(a));
+ comparison.innerHTML='<h3>'+escapeHtml(category)+' eri kuukausina</h3>'+
+ (monthly.length?monthly.map(([month,items])=>{
+  const categories=[...groupExpenses(items,householdMainCategory)].sort((a,b)=>expenseTotal(b[1])-expenseTotal(a[1]));
+  const detail=categories.map(([name,entries])=>'<div class="expense-compare-row"><span>'+escapeHtml(name)+'</span><b>'+E(expenseTotal(entries))+'</b></div>').join('');
+  return '<details class="expense-group"><summary><span>'+monthLabel(month)+'</span><b>'+E(expenseTotal(items))+'</b></summary><div class="expense-month-detail">'+detail+'</div></details>';
+ }).join(''):'<p class="muted">Ei menotietoja valitulla rajauksella.</p>')+
+ '<button type="button" class="action-btn primary" id="closeComparison">Takaisin kuukausiin</button>';
  comparison.classList.remove('hidden');
  comparison.scrollIntoView({behavior:'smooth',block:'start'});
  $('closeComparison').onclick=compareAllMonths;
