@@ -180,17 +180,37 @@ nav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:v
 #reports .monthly-list{padding:14px!important}#reports .monthly-list h2{font-size:1.22rem!important;margin:0 0 13px!important}#reports .monthly-owner{margin-bottom:13px!important}#reports .monthly-owner select{min-height:42px!important;font-weight:500!important}#reports .monthly-list .expense-group{margin:6px 0!important;border-radius:10px!important}#reports .monthly-list .expense-group summary{padding:10px 12px!important;min-height:46px!important;font-size:1rem!important}#reports .monthly-list .expense-month-detail{padding:0 12px 5px!important}#reports .monthly-category-button{min-height:43px!important;padding:5px 0!important;grid-template-columns:minmax(0,1fr) auto!important;font-size:.96rem!important}#reports .monthly-category-name{gap:10px!important}#reports .monthly-category-icon{font-size:1rem!important;width:25px!important;min-width:25px!important}#reports .monthly-category-icon svg{display:block;width:23px;height:23px}#reports .monthly-shop-toggle{margin:0 0 5px 35px!important;padding:0!important}#reports .monthly-shop-toggle>summary{display:list-item!important;min-height:0!important;padding:3px 0 5px!important;color:#087b74!important;font-size:.82rem!important;font-weight:600!important;background:none!important}#reports .monthly-shop-breakdown{margin:2px 0 5px!important;padding:5px 9px!important;background:#f4f7f6!important;border-radius:7px!important}#reports .monthly-shop-breakdown>div{padding:3px 0!important;font-size:.86rem!important}#reports .comparison-close{min-height:45px!important;margin-top:15px!important;font-size:.95rem!important}
 /* Muut menot avautuu kuukausikortin sisään */
 #reports .monthly-other>summary{display:grid!important;list-style:none;cursor:pointer}#reports .monthly-other>summary::-webkit-details-marker{display:none}#reports .monthly-other>summary::after{display:none!important}#reports .monthly-other-detail{padding:0 4px 10px 35px}#reports .monthly-other-detail .expense-compare-row{padding:7px 0;font-size:.88rem}#reports .monthly-other-detail .expense-compare-row:last-child{border:0}
+
+/* Etusivu – hyväksytty vaalea ja selkeä malli 18.11.2026 */
+#home .page-head{margin:12px 4px 24px}
+#home .page-head h1{font-size:2rem;font-weight:850;letter-spacing:-.035em;color:#171b1a;line-height:1.2}
+#home .home-title-icon{display:none}
+#home .monthly-owner{max-width:none;width:100%;display:block;font-size:0;font-weight:400;margin:0 0 22px}
+#home .monthly-owner select{display:block;width:100%;min-height:55px;border:1px solid #bfc5c5;border-radius:13px;background:#fff;color:#191d1c;font-size:1.1rem;padding:12px 16px;box-shadow:0 2px 4px #0000000a}
+#home .home-balance{padding:0!important;border:1px solid #d7dcda;border-radius:20px;box-shadow:none;overflow:hidden;margin-bottom:24px}
+#home .home-balance-row{min-height:64px;align-items:center;padding:17px 18px;font-size:1.13rem;border-bottom:1px solid #d8dddb}
+#home .home-balance-row strong{font-size:1.2rem}
+#home .home-balance-row:last-child{background:#e1f3f0;border-bottom:0}
+#home .home-balance-row:last-child strong{color:#087335}
+#home .home-choices{gap:14px;margin-bottom:16px}
+#home .home-choice{grid-template-columns:48px minmax(0,1fr) 22px;min-height:96px;padding:18px 17px;border:1px solid #c8cecc;border-radius:17px;box-shadow:none}
+#home .home-choice .choice-icon{font-size:1.8rem;color:#087c74}
+#home .home-choice b{font-size:1.14rem;letter-spacing:-.02em}
+#home .home-choice small{font-size:.9rem;margin-top:3px}
+#home .home-choice>span:last-child{font-size:1.7rem;color:#292f2d}
+#home .home-review-link{font-size:.94rem;color:#aa5b0b;margin-top:4px}
+@media(max-width:700px){#home .page-head h1{font-size:1.9rem}#home .home-choice{min-height:91px}#home .home-balance-row{min-height:61px}}
 </style></head><body><div class="app">
 <section id="home">
 <div class="page-head"><h1><span class="home-title-icon" aria-hidden="true">⌂</span> Kodin talous</h1></div>
-<label class="monthly-owner">Luonela · <span class="home-period-label">Valitse kuukausi</span> <select id="homePeriod"></select></label>
+<label class="monthly-owner">Luonela · <span class="home-period-label">Valitse kuukausi</span> <select id="homePeriod" aria-label="Luonela – valitse kuukausi"></select></label>
 <div class="card home-balance">
   <div class="home-balance-row"><span>Tulot</span><strong id="homeIncome"></strong></div>
   <div class="home-balance-row"><span>Menot</span><strong id="homeSpent"></strong></div>
   <div class="home-balance-row"><span>Rahaa jää</span><strong id="homeRemaining"></strong></div>
 </div>
 <div class="home-choices">
-  <button class="home-choice" type="button" id="homeExpenseBtn"><span class="choice-icon">◴</span><span><b>Mihin rahat menivät?</b><small>Menoluokat ja kaupat</small></span><span>›</span></button>
+  <button class="home-choice" type="button" id="homeExpenseBtn"><span class="choice-icon" aria-hidden="true">◴</span><span><b>Mihin rahat menivät?</b><small>Menoluokat ja kaupat</small></span><span>›</span></button>
   <button class="home-choice" type="button" onclick="show('reports');showReportTab('comparison')"><span class="choice-icon">▂▅▇</span><span><b>Vertaa kuukausia</b><small>Menot eri kuukausina</small></span><span>›</span></button>
   <button class="home-choice" type="button" onclick="show('goals')"><span class="choice-icon">▱</span><span><b>Lisää tiliote</b><small>Päivitä tapahtumat</small></span><span>›</span></button>
 </div>
