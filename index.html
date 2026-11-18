@@ -117,6 +117,16 @@
 .monthly-list .expense-compare-row button:hover{color:var(--accent)}
 .monthly-owner{display:grid;gap:5px;max-width:260px;color:var(--muted);font-size:.9rem;margin-bottom:16px}
 .monthly-owner select{font:inherit;color:var(--ink);background:white;border:1px solid var(--line);border-radius:12px;padding:11px}
+.home-period{width:100%;min-height:48px;padding:11px 12px;margin:0 0 14px;border:1px solid var(--line);border-radius:12px;background:white;font:inherit;color:var(--ink)}
+.home-balance{padding:0;margin-bottom:14px;overflow:hidden}
+.home-balance-row{display:flex;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700}
+.home-balance-row:last-child{border:0;background:var(--soft)}
+.home-balance-row strong{white-space:nowrap;font-variant-numeric:tabular-nums}
+.home-choices{display:grid;gap:10px;margin-bottom:14px}
+.home-choice{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:12px;width:100%;min-height:78px;padding:12px 14px;background:white;border:1px solid var(--line);border-radius:15px;text-align:left;color:var(--ink);font:inherit;cursor:pointer}
+.home-choice .choice-icon{font-size:1.45rem;color:var(--accent);text-align:center}
+.home-choice small{display:block;color:var(--muted);font-size:.82rem;margin-top:3px}
+.home-review-link{border:0;background:transparent;color:#a75413;text-decoration:underline;padding:10px 2px;font:inherit;font-weight:700}
 .compare-button{border:1px solid var(--line);border-radius:10px;background:white;color:var(--accent);font:inherit;font-weight:700;padding:8px 12px;min-height:44px;margin:8px 0}
 .nav-icon{display:block;font-family:system-ui,sans-serif;font-size:1.45rem;line-height:1.2;font-weight:700;color:var(--accent)}
 nav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--accent)}
@@ -124,6 +134,18 @@ nav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:v
 </style></head><body><div class="app">
 <section id="home">
 <div class="page-head"><h1>Kodin talous</h1></div>
+<label class="monthly-owner">Luonela · kuukausi <select id="homePeriod"></select></label>
+<div class="card home-balance">
+  <div class="home-balance-row"><span>Tulot</span><strong id="homeIncome"></strong></div>
+  <div class="home-balance-row"><span>Menot</span><strong id="homeSpent"></strong></div>
+  <div class="home-balance-row"><span>Rahaa jää</span><strong id="homeRemaining"></strong></div>
+</div>
+<div class="home-choices">
+  <button class="home-choice" type="button" id="homeExpenseBtn"><span class="choice-icon">◷</span><span><b>Mihin rahat menivät?</b><small>Menoluokat ja kaupat</small></span><span>›</span></button>
+  <button class="home-choice" type="button" onclick="show('reports');showReportTab('comparison')"><span class="choice-icon">▥</span><span><b>Vertaa kuukausia</b><small>Menot eri kuukausina</small></span><span>›</span></button>
+  <button class="home-choice" type="button" onclick="show('goals')"><span class="choice-icon">▤</span><span><b>Lisää tiliote</b><small>Päivitä tapahtumat</small></span><span>›</span></button>
+</div>
+<button type="button" class="home-review-link hidden" id="homeReviewBtn"></button>
 <div class="card" id="singleMonthCard" hidden>
   <h2 style="margin:0 0 12px">Kuukauden menot</h2>
   <div class="expense-filters">
@@ -135,12 +157,6 @@ nav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:v
   <div id="expenseGroups"></div>
 </div>
 
-<div class="home-actions">
-  <button class="home-action home-action-primary" type="button" onclick="show('reports');showReportTab('comparison')"><b>Kuukausivertailu</b><small>Kaikki menot kuukausittain</small></button>
-  <button class="home-action" type="button" onclick="show('reports');showReportTab('categories')"><b>Menoluokat</b><small>Mihin rahat menevät</small></button>
-  <button class="home-action" type="button" onclick="show('goals')"><b>Lisää tiliote</b><small>Päivitä tapahtumat</small></button>
-</div>
-<div class="expense-tools"><button type="button" class="action-btn" id="homeSearchBtn">Hae menoja</button><button type="button" class="action-btn" id="homeReviewBtn">Tarkistettavat</button></div>
 </section>
 <section id="events" class="hidden">
 <div class="page-head"><h2>🧾 Tapahtumat</h2><p>Kaikki tiliotteiden tapahtumat. Valitse yksi tai useampi tarkasteltava henkilö.</p></div>
@@ -453,15 +469,29 @@ function expenseEntries(rows){
 function renderHome(){
  compareAllMonths();
  const month=$('expenseMonth');
- const selectedMonth=month.value;
+ const selectedMonth=$('homePeriod').value||month.value;
  const months=[...new Set(state.transactions.filter(isHouseholdTransaction).map(x=>x.date.slice(0,7)).filter(m=>/^\d{4}-(0[1-9]|1[0-2])$/.test(m)))].sort().reverse();
  const allExpenses=state.transactions.filter(x=>x.type==='expense'&&isHouseholdTransaction(x));
  month.innerHTML=months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('')||'<option value="">Ei kuukausia</option>';
  if(months.includes(selectedMonth))month.value=selectedMonth;
  else if(allExpenses.length)month.value=months.find(m=>allExpenses.some(x=>x.date.slice(0,7)===m))||months[0];
  month.disabled=!months.length;
+ const period=$('homePeriod');
+ period.innerHTML=month.innerHTML;
+ period.value=month.value;
+ period.disabled=month.disabled;
  const owner=$('expenseOwner').value;
  const rows=allExpenses.filter(x=>x.date.slice(0,7)===month.value&&(!owner||x.owner===owner));
+ const householdMonth=state.transactions.filter(x=>isHouseholdTransaction(x)&&x.date.slice(0,7)===month.value);
+ const income=householdMonth.reduce((sum,x)=>sum+Math.round(incomeValue(x)*100),0)/100;
+ const spent=expenseTotal(householdMonth.filter(x=>x.type==='expense'));
+ $('homeIncome').textContent=E(income);
+ $('homeSpent').textContent=E(spent);
+ $('homeRemaining').textContent=E(income-spent);
+ $('homeRemaining').className=income-spent<0?'neg':'pos';
+ const reviewCount=householdMonth.filter(x=>x.type==='expense'&&x.needsReview).length;
+ $('homeReviewBtn').textContent=`Tarkistettavia ${reviewCount}`;
+ $('homeReviewBtn').classList.toggle('hidden',reviewCount===0);
  $('expenseTotal').textContent=E(expenseTotal(rows));
  $('expenseTotalLabel').textContent=month.value?monthLabel(month.value)+' yhteensä':'Menot yhteensä';
  const groups=groupExpenses(rows,householdMainCategory);
@@ -581,11 +611,12 @@ function closeReportDetail(showMain=true){if($('reportDetail'))$('reportDetail')
 function incomeValue(x){return x.type==='income'?Math.max(Number(x.amount)||0,0):0}
 function renderDebts(){const d=state.debts.reduce((s,x)=>s+x.balance,0),a=cash();$('debtTotal').textContent=E(d);$('funds').textContent=E(state.funds);$('assetCash').textContent=E(a);$('worth').textContent=E(a+state.funds-d);$('debtList').innerHTML=state.debts.map(x=>`<div class="debt"><span>${x.name}</span><b>${E(x.balance)}</b></div>`).join('')}function show(p){document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));const page=$(p);if(!page)return;page.classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='home')renderHome();if(p==='events')renderEvents();if(p==='reports'){renderReports();compareAllMonths();showReportTab('comparison');}if(p==='archive')renderArchive();if(p==='goals')initStatementAccounts();if(p==='debts')renderDebts();window.scrollTo({top:0,behavior:'smooth'})}$('search').oninput=renderEvents;$('eventOwners').onchange=renderEvents;$('etype').onchange=renderEvents;$('reportOwners').onchange=renderReports;document.querySelectorAll('.report-tab').forEach(b=>b.onclick=()=>showReportTab(b.dataset.report));
 $('expenseMonth').onchange=renderHome;
+$('homePeriod').onchange=()=>{$('expenseMonth').value=$('homePeriod').value;renderHome()};
+$('homeExpenseBtn').onclick=()=>{$('singleMonthCard').hidden=false;$('singleMonthCard').scrollIntoView({behavior:'smooth',block:'start'})};
 $('expenseOwner').onchange=renderHome;
 $('monthlyOwner').onchange=()=>{$('expenseOwner').value=$('monthlyOwner').value;compareAllMonths()};
 $('expenseComparison').onclick=event=>{const button=event.target.closest('[data-compare]');if(button)compareExpenseMonths(button.dataset.compare)};
 $('expenseGroups').onclick=event=>{const button=event.target.closest('[data-compare]');if(button)compareExpenseMonths(button.dataset.compare)};
-$('homeSearchBtn').onclick=openHomeSearch;
 $('homeReviewBtn').onclick=()=>{
  $('reportOwners').querySelectorAll('input').forEach(input=>input.checked=!$('expenseOwner').value||input.value===$('expenseOwner').value);
  openReview();
