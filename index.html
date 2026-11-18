@@ -134,15 +134,13 @@ nav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:v
   <h3 style="margin:16px 0 5px">Menot eriteltynä</h3>
   <div id="expenseGroups"></div>
 </div>
-<div class="card monthly-list">
-  <h2>Kaikki menot kuukausittain</h2>
-  <label class="monthly-owner">Tarkastellaan <select id="monthlyOwner"><option value="">Luonela</option><option>Jaana</option><option>Janne</option></select></label>
-  <div id="expenseComparison" aria-live="polite"></div>
+
+<div class="home-actions">
+  <button class="home-action home-action-primary" type="button" onclick="show('reports');showReportTab('comparison')"><b>Kuukausivertailu</b><small>Kaikki menot kuukausittain</small></button>
+  <button class="home-action" type="button" onclick="show('reports');showReportTab('categories')"><b>Menoluokat</b><small>Mihin rahat menevät</small></button>
+  <button class="home-action" type="button" onclick="show('goals')"><b>Lisää tiliote</b><small>Päivitä tapahtumat</small></button>
 </div>
-<div class="expense-tools">
-  <button type="button" class="action-btn" id="homeSearchBtn">Hae menoja</button>
-  <button type="button" class="action-btn" id="homeReviewBtn">Tarkistettavat</button>
-</div>
+<div class="expense-tools"><button type="button" class="action-btn" id="homeSearchBtn">Hae menoja</button><button type="button" class="action-btn" id="homeReviewBtn">Tarkistettavat</button></div>
 </section>
 <section id="events" class="hidden">
 <div class="page-head"><h2>🧾 Tapahtumat</h2><p>Kaikki tiliotteiden tapahtumat. Valitse yksi tai useampi tarkasteltava henkilö.</p></div>
@@ -152,10 +150,15 @@ nav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:v
 <section id="reports" class="hidden">
 <div class="page-head"><h2>📊 Raportit</h2><p>Kotitalouden tulot ja menot.</p></div>
 <div class="card"><fieldset id="reportOwners" class="scope-filter"><legend>Tarkastellaan</legend><label><input type="checkbox" value="Jaana" checked> Jaana</label><label><input type="checkbox" value="Janne" checked> Janne</label></fieldset></div>
-<div class="report-kpis"><div class="report-kpi"><small>Tulot</small><b id="reportIncome"></b></div><div class="report-kpi"><small>Menot</small><b id="reportExpense"></b></div><div class="report-kpi"><small>Erotus</small><b id="reportNet"></b></div><div class="report-kpi"><small>Tapahtumia</small><b id="reportCount"></b></div></div>
-<div class="report-tabs"><button class="report-tab active" data-report="categories">Menoluokat</button><button class="report-tab" data-report="shops">🛒 Kaupat</button><button class="report-tab" data-report="months">Kuukaudet</button><button class="report-tab" data-report="review">⚠️ Tarkistettavat</button></div>
+<div class="report-kpis" id="reportKpis"><div class="report-kpi"><small>Tulot</small><b id="reportIncome"></b></div><div class="report-kpi"><small>Menot</small><b id="reportExpense"></b></div><div class="report-kpi"><small>Erotus</small><b id="reportNet"></b></div><div class="report-kpi"><small>Tapahtumia</small><b id="reportCount"></b></div></div>
+<div class="report-tabs"><button class="report-tab active" data-report="comparison">Kuukausivertailu</button><button class="report-tab" data-report="categories">Menoluokat</button><button class="report-tab" data-report="shops">🛒 Kaupat</button><button class="report-tab" data-report="months">Kuukaudet</button><button class="report-tab" data-report="review">⚠️ Tarkistettavat</button></div>
 <div id="reportMain">
-  <div id="reportCategories" class="card"><h3>Menoluokat</h3><div id="allcats"></div></div>
+  <div id="reportComparison"><div class="card monthly-list">
+  <h2>Kaikki menot kuukausittain</h2>
+  <label class="monthly-owner">Tarkastellaan <select id="monthlyOwner"><option value="">Luonela</option><option>Jaana</option><option>Janne</option></select></label>
+  <div id="expenseComparison" aria-live="polite"></div>
+</div></div>
+  <div id="reportCategories" class="card hidden"><h3>Menoluokat</h3><div id="allcats"></div></div>
   <div id="reportShops" class="card hidden"><h3>🛒 Kaupparaportti</h3><div id="shopList"></div></div>
   <div id="reportMonths" class="card hidden"><h3>Kuukausiyhteenveto</h3><div id="months"></div></div>
   <div id="reportReview" class="card hidden"><h3>⚠️ Tarkistettavat tapahtumat</h3><div class="report-note">Tässä näkyvät vain tapahtumat, joita ei ole voitu luokitella varmasti.</div><div id="reviewList"></div></div>
@@ -570,16 +573,16 @@ function renderReports(){
  $('shopList').innerHTML=Object.entries(shops).sort((a,b)=>b[1].sum-a[1].sum).map(([n,v])=>`<div class="merchant-row clickable" onclick="openShopDetail('${encodeURIComponent(n)}')"><div><b>${escapeHtml(n)}</b><div class="muted">${v.count} ostosta · keskiostos ${E(v.sum/v.count)}</div></div><b>${E(v.sum)}</b><span class="chev">›</span></div>`).join('')||'<div class="empty-state">Ei kauppaostoja.</div>';
  renderReview();closeReportDetail(false);
 }
-function showReportTab(name){document.querySelectorAll('.report-tab').forEach(b=>b.classList.toggle('active',b.dataset.report===name));$('reportCategories').classList.toggle('hidden',name!=='categories');$('reportShops').classList.toggle('hidden',name!=='shops');$('reportMonths').classList.toggle('hidden',name!=='months');$('reportReview').classList.toggle('hidden',name!=='review');$('reportMain').classList.remove('hidden');$('reportDetail').classList.add('hidden')}
+function showReportTab(name){document.querySelectorAll('.report-tab').forEach(b=>b.classList.toggle('active',b.dataset.report===name));$('reportComparison').classList.toggle('hidden',name!=='comparison');$('reportKpis').classList.toggle('hidden',name==='comparison');$('reportOwners').parentElement.classList.toggle('hidden',name==='comparison');$('reportCategories').classList.toggle('hidden',name!=='categories');$('reportShops').classList.toggle('hidden',name!=='shops');$('reportMonths').classList.toggle('hidden',name!=='months');$('reportReview').classList.toggle('hidden',name!=='review');$('reportMain').classList.remove('hidden');$('reportDetail').classList.add('hidden')}
 function openSelectedCategoryDetail(kind,encoded){const category=decodeURIComponent(encoded),rows=reportRows().filter(x=>x.type==='expense'&&householdMainCategory(x)===category).sort((a,b)=>b.date.localeCompare(a.date));openReportDetail('🏠 '+category,rows)}
 function openShopDetail(encoded){const shop=decodeURIComponent(encoded),rows=personalExpenses().filter(x=>householdMainCategory(x)===shoppingCategory&&shopGroup(x)===shop).sort((a,b)=>b.date.localeCompare(a.date));openReportDetail('🛒 '+shop,rows)}
 function openReportDetail(title,rows){const total=rows.reduce((s,x)=>s-x.amount,0);$('detailTitle').textContent=title;$('detailSummary').textContent=`${rows.length} tapahtumaa · yhteensä ${E(total)} · keskimäärin ${E(total/Math.max(rows.length,1))}`;$('detailList').innerHTML=rows.map(x=>transactionEntry(x,{positiveRaw:true})).join('')||'<p class="muted">Ei tapahtumia.</p>';$('reportMain').classList.add('hidden');$('reportDetail').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
 function closeReportDetail(showMain=true){if($('reportDetail'))$('reportDetail').classList.add('hidden');if(showMain&&$('reportMain'))$('reportMain').classList.remove('hidden')}
 function incomeValue(x){return x.type==='income'?Math.max(Number(x.amount)||0,0):0}
-function renderDebts(){const d=state.debts.reduce((s,x)=>s+x.balance,0),a=cash();$('debtTotal').textContent=E(d);$('funds').textContent=E(state.funds);$('assetCash').textContent=E(a);$('worth').textContent=E(a+state.funds-d);$('debtList').innerHTML=state.debts.map(x=>`<div class="debt"><span>${x.name}</span><b>${E(x.balance)}</b></div>`).join('')}function show(p){document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));const page=$(p);if(!page)return;page.classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='home')renderHome();if(p==='events')renderEvents();if(p==='reports')renderReports();if(p==='archive')renderArchive();if(p==='goals')initStatementAccounts();if(p==='debts')renderDebts();window.scrollTo({top:0,behavior:'smooth'})}$('search').oninput=renderEvents;$('eventOwners').onchange=renderEvents;$('etype').onchange=renderEvents;$('reportOwners').onchange=renderReports;document.querySelectorAll('.report-tab').forEach(b=>b.onclick=()=>showReportTab(b.dataset.report));
+function renderDebts(){const d=state.debts.reduce((s,x)=>s+x.balance,0),a=cash();$('debtTotal').textContent=E(d);$('funds').textContent=E(state.funds);$('assetCash').textContent=E(a);$('worth').textContent=E(a+state.funds-d);$('debtList').innerHTML=state.debts.map(x=>`<div class="debt"><span>${x.name}</span><b>${E(x.balance)}</b></div>`).join('')}function show(p){document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));const page=$(p);if(!page)return;page.classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='home')renderHome();if(p==='events')renderEvents();if(p==='reports'){renderReports();compareAllMonths();showReportTab('comparison');}if(p==='archive')renderArchive();if(p==='goals')initStatementAccounts();if(p==='debts')renderDebts();window.scrollTo({top:0,behavior:'smooth'})}$('search').oninput=renderEvents;$('eventOwners').onchange=renderEvents;$('etype').onchange=renderEvents;$('reportOwners').onchange=renderReports;document.querySelectorAll('.report-tab').forEach(b=>b.onclick=()=>showReportTab(b.dataset.report));
 $('expenseMonth').onchange=renderHome;
 $('expenseOwner').onchange=renderHome;
-$('monthlyOwner').onchange=()=>{$('expenseOwner').value=$('monthlyOwner').value;renderHome()};
+$('monthlyOwner').onchange=()=>{$('expenseOwner').value=$('monthlyOwner').value;compareAllMonths()};
 $('expenseComparison').onclick=event=>{const button=event.target.closest('[data-compare]');if(button)compareExpenseMonths(button.dataset.compare)};
 $('expenseGroups').onclick=event=>{const button=event.target.closest('[data-compare]');if(button)compareExpenseMonths(button.dataset.compare)};
 $('homeSearchBtn').onclick=openHomeSearch;
