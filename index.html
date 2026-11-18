@@ -175,6 +175,9 @@ nav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:v
 
 /* Etusivun sovitun mallin selkeät ikonit ja otsikointi */
 #home .page-head h1{color:#087b74!important;display:flex;align-items:center;gap:10px}#home .home-title-icon{font-size:1.65em;font-weight:400;line-height:.8}#home .home-period-label{font-weight:600}#home .home-choice .choice-icon{font-family:system-ui,sans-serif!important;font-size:1.65rem!important;color:#087b74!important;letter-spacing:-.13em;min-width:38px;text-align:center}#home .home-choices{gap:10px!important}
+
+/* Kuukausivertailun tiivis mallinmukainen mobiiliasettelu */
+#reports .monthly-list{padding:14px!important}#reports .monthly-list h2{font-size:1.22rem!important;margin:0 0 13px!important}#reports .monthly-owner{margin-bottom:13px!important}#reports .monthly-owner select{min-height:42px!important;font-weight:500!important}#reports .monthly-list .expense-group{margin:6px 0!important;border-radius:10px!important}#reports .monthly-list .expense-group summary{padding:10px 12px!important;min-height:46px!important;font-size:1rem!important}#reports .monthly-list .expense-month-detail{padding:0 12px 5px!important}#reports .monthly-category-button{min-height:43px!important;padding:5px 0!important;grid-template-columns:minmax(0,1fr) auto!important;font-size:.96rem!important}#reports .monthly-category-name{gap:10px!important}#reports .monthly-category-icon{font-size:1rem!important;width:25px!important;min-width:25px!important}#reports .monthly-category-icon svg{display:block;width:23px;height:23px}#reports .monthly-shop-toggle{margin:0 0 5px 35px!important;padding:0!important}#reports .monthly-shop-toggle>summary{display:list-item!important;min-height:0!important;padding:3px 0 5px!important;color:#087b74!important;font-size:.82rem!important;font-weight:600!important;background:none!important}#reports .monthly-shop-breakdown{margin:2px 0 5px!important;padding:5px 9px!important;background:#f4f7f6!important;border-radius:7px!important}#reports .monthly-shop-breakdown>div{padding:3px 0!important;font-size:.86rem!important}#reports .comparison-close{min-height:45px!important;margin-top:15px!important;font-size:.95rem!important}
 </style></head><body><div class="app">
 <section id="home">
 <div class="page-head"><h1><span class="home-title-icon" aria-hidden="true">⌂</span> Kodin talous</h1></div>
@@ -499,10 +502,10 @@ function compareAllMonths(){
  const comparison=$('expenseComparison');
  const months=[...byMonth].sort(([a],[b])=>b.localeCompare(a));
  const mainGroups=[
-  {label:'Kauppaostokset',icon:'🛒',match:n=>/kauppa|ruoka|market/i.test(n)},
-  {label:'Auto',icon:'🚗',match:n=>/auto|polttoaine|liikenne/i.test(n)},
-  {label:'Vesi',icon:'♧',match:n=>/vesi/i.test(n)},
-  {label:'Sähkö',icon:'ϟ',match:n=>/sähkö|energia/i.test(n)}
+  {label:'Kauppaostokset',icon:"<svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"9\" cy=\"21\" r=\"1\"/><circle cx=\"20\" cy=\"21\" r=\"1\"/><path d=\"M1 2h3l3.3 14h13l2-10H5\"/></svg>",match:n=>/kauppa|ruoka|market/i.test(n)},
+  {label:'Auto',icon:"<svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 17h14l1-5-2-6H6l-2 6 1 5Z\"/><path d=\"M5 12h14M7 17v2m10-2v2\"/><circle cx=\"7.5\" cy=\"14.5\" r=\".7\"/><circle cx=\"16.5\" cy=\"14.5\" r=\".7\"/></svg>",match:n=>/auto|polttoaine|liikenne/i.test(n)},
+  {label:'Vesi',icon:"<svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 2C9 7 5 11 5 15a7 7 0 0 0 14 0c0-4-4-8-7-13Z\"/></svg>",match:n=>/vesi/i.test(n)},
+  {label:'Sähkö',icon:"<svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m13 2-9 12h7l-1 8 10-13h-7l0-7Z\"/></svg>",match:n=>/sähkö|energia/i.test(n)}
  ];
  comparison.innerHTML=months.map(([month,items],index)=>{
   const cats=[...groupExpenses(items,householdMainCategory)];
@@ -515,7 +518,7 @@ function compareAllMonths(){
    if(g.label==='Kauppaostokset'){
     const shops=groupExpenses(g.expenses,shopGroup);
     const lines=shopOrder.filter(n=>shops.has(n)).map(n=>'<div><span>'+escapeHtml(n)+'</span><b>'+E(expenseTotal(shops.get(n)))+'</b></div>').join('');
-    if(lines)extra='<details class="monthly-shop-toggle"><summary>Näytä kaupat</summary><div class="monthly-shop-breakdown">'+lines+'</div></details>';
+    if(lines)extra='<details class="monthly-shop-toggle"><summary>Kauppojen erittely</summary><div class="monthly-shop-breakdown">'+lines+'</div></details>';
    }
    return '<div class="monthly-category"><button type="button" class="monthly-category-button" data-compare="'+escapeHtml(g.label==='Kauppaostokset'?shoppingCategory:g.label)+'"><span class="monthly-category-name"><span class="monthly-category-icon" aria-hidden="true">'+g.icon+'</span>'+g.label+'</span><b>'+E(amount)+'</b></button>'+extra+'</div>';
   }).join('');
