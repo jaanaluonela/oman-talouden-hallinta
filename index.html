@@ -559,6 +559,14 @@ for(const tx of septemberStatementRows){
  const exists=state.transactions.some(t=>t.id===tx.id||(t.date===tx.date&&t.account===tx.account&&t.description===tx.description&&Math.abs(Number(t.amount)-tx.amount)<0.005));
  if(!exists)state.transactions.push(automaticAudit(tx));
 }
+// Syyskuun 2026 käyttäjän vahvistamat tapahtumat. Säilytä luokittelut myös uudelleenavauksessa.
+const confirmedSeptember2026=[{"date":"2026-09-28","description":"MOB.PAY Sari Susanna Kilp","amount":-25,"category":"Matkailu","type":"expense","id":"confirmed_sep26_sari_25"},{"date":"2026-09-28","description":"MOB.PAY Sari Susanna Kilp","amount":-80,"category":"Matkailu","type":"expense","id":"confirmed_sep26_sari_80"},{"date":"2026-09-07","description":"MOB.PAY Asko Taneli","amount":-25,"category":"Tavaroiden myynnin palautus","type":"refund","id":"confirmed_sep26_asko_refund_25"},{"date":"2026-09-30","description":"Ropo Suomi","amount":-10,"category":"Muut menot","type":"expense","id":"confirmed_sep26_ropo_10"},{"date":"2026-09-15","description":"Liikenne- ja viestintävirasto","amount":-185.96,"category":"Auto","type":"expense","id":"confirmed_sep26_ajoneuvovero_18596"}];
+for(const item of confirmedSeptember2026){
+ const matches=state.transactions.filter(t=>t.date===item.date&&t.account==='sp_jaana'&&Math.abs(Number(t.amount)-item.amount)<0.005&&((item.id.includes('sari')&&/sari/i.test(t.description))||(item.id.includes('asko')&&/asko/i.test(t.description))||(item.id.includes('ropo')&&/ropo/i.test(t.description))||(item.id.includes('ajoneuvovero')&&/liikenne|viestintävirasto|traficom/i.test(t.description))));
+ const t=matches[0]||state.transactions.find(t=>t.id===item.id);
+ if(t){t.category=item.category;t.manualCategory=item.category;t.type=item.type;t.needsReview=false;t.scope='Koti';if(item.id.includes('sari'))t.description='Sari Susanna – lomamökin vuokra';if(item.id.includes('asko'))t.description='Asko Taneli – viallisen tuotteen myyntihinnan palautus';if(item.id.includes('ropo'))t.description='Ropo Suomi – laskun viivästysmaksu';if(item.id.includes('ajoneuvovero'))t.description='Ajoneuvovero – Liikenne- ja viestintävirasto';}
+ else state.transactions.push({id:item.id,date:item.date,account:'sp_jaana',owner:'Jaana',description:item.id.includes('sari')?'Sari Susanna – lomamökin vuokra':item.id.includes('asko')?'Asko Taneli – viallisen tuotteen myyntihinnan palautus':item.id.includes('ropo')?'Ropo Suomi – laskun viivästysmaksu':'Ajoneuvovero – Liikenne- ja viestintävirasto',amount:item.amount,category:item.category,manualCategory:item.category,type:item.type,scope:'Koti',needsReview:false});
+}
 const taxiPaidHomeBills=[
  ['2026-01-21','Elenia',261.30,'Sähkö'],
  ['2026-02-22','Elenia',381.18,'Sähkö'],
