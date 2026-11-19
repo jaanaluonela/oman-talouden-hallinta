@@ -614,37 +614,62 @@ for(const [date,recipient,amount,category] of taxiPaidHomeBills){
   description:recipient+' – kodin lasku, maksettu taksin tililtä',amount:-amount,
   category,type:'expense',scope:'Koti',manualCategory:category});
 }
-// Syyskuun 2026 lopputäsmäytys: poista aiempien kuvapäivitysten päällekkäiset rivit.
-// Käytetään pankkirivin päivää, summaa ja maksunsaajaa, mutta säilytetään aidot erilliset samanarvoiset maksut.
-const sepNorm=x=>textKey(x||'').replace(/\\b(?:LAHTI|KARISMA|VAAKSY|HOLMA|NASTOLA|KIOSKI|FINLAND|OY|LTD|SUOMI)\\b/g,'').trim();
-const sepMerchant=x=>{const d=sepNorm(x);if(/INSTRUMENTARIUM/.test(d))return 'instrumentarium';if(/SVEA BANK/.test(d))return 'svea';if(/IKEA/.test(d))return d.includes('KIOSK')?'ikea-kioski':'ikea';if(/K CITYMARKET/.test(d))return 'kcitymarket';if(/K SUPERMARKET/.test(d))return 'ksupermarket';if(/S MARKET/.test(d))return 'smarket';if(/ASIKKALAN APTEE/.test(d))return 'apteekki';if(/VIPPS|MOBILEPAY/.test(d))return 'mobilepay';if(/JANNE|LUONELA/.test(d))return 'sisainen';return d.slice(0,13)};
-const sepPriority=t=>String(t.id||'').startsWith('confirmed_sep26_')?0:String(t.id||'').startsWith('jaana_sep26_verified_')?1:String(t.id||'').startsWith('jaana_early_sep26_')?2:String(t.id||'').startsWith('jaana_late_sep26_')?3:4;
-const sepRows=state.transactions.filter(t=>t.date?.startsWith('2026-09-')&&t.account==='sp_jaana');
-const sepKept=new Set(),sepRemove=new Set();
-for(const t of [...sepRows].sort((a,b)=>sepPriority(a)-sepPriority(b))){
- const key=t.date+'|'+Number(t.amount).toFixed(2)+'|'+sepMerchant(t.description);
- // Vain eri tuontieristä tulleet saman maksun kaksoiskappaleet poistetaan.
- const prev=[...sepKept].find(p=>p.key===key&&p.source!==String(t.id||'').split('_').slice(0,3).join('_'));
- if(prev){sepRemove.add(t.id);continue}
- sepKept.add({key,source:String(t.id||'').split('_').slice(0,3).join('_')});
+// Syyskuun 2026 lopputäsmäytys: idempotentti tuonti ja tarkat tuplien poistot.
+// Poista vanhat automaattisesti tuodut Jaanan syyskuun rivit ja rakenna ne lähdeaineistosta uudelleen.
+const sepAutoId=id=>/^(?:jaana_sep26_verified_|jaana_early_sep26_|jaana_late_sep26_)/.test(String(id||''));
+state.transactions=state.transactions.filter(t=>!sepAutoId(t.id));
+const sepCanonical=[];
+const sepAdd=(date,description,amount,category,type,id)=>{
+ const d=textKey(description);
+ const key= d.includes('IKEA')?(d.includes('KIOSKI')?'ikea-kioski':'ikea'):
+ d.includes('INSTRUMENTARIUM')?'instrumentarium':d.includes('SVEA BANK')?'svea':
+ d.includes('CITYMARKET')?'citymarket':d.includes('SUPERMARKET')?'supermarket':
+ d.includes('S MARKET')?'smarket':d.includes('LIDL')?'lidl':d.includes('APTEEKKI')?'apteekki':
+ d.includes('PUUILO')?'puuilo':d.includes('PALVELUMAKSU')?'palvelumaksu':
+ d.includes('SIJOITUSRAHASTO')?'sijoitusrahasto':d.includes('VIPPS')?'vipps':
+ d.includes('NETFLIX')?'netflix':d.includes('HESBURGER')?'hesburger':
+ d.includes('CLAS OHLSON')?'clasohlson':d.includes('ABC ASIKKALA')?'abcasikkala':
+ d.includes('KELA')?'kela':d.replace(/\\b(?:LAHTI|KARISMA|VAAKSY|HOLMA|NASTOLA)\\b/g,'').trim();
+ const signature=date+'|'+Number(amount).toFixed(2)+'|'+key;
+ // Säilytä samalla tilillä tehdyt aidot samanarvoiset erilliset maksut: tuplia
+ // poistetaan vain, jos eri lähdelistojen tapahtumat täsmäävät.
+ const source=id.split('_')[1];
+ const previous=sepCanonical.find(x=>x.signature===signature&&x.source!==source);
+ if(previous)return;
+ const isTransfer=type==='transfer'||category==='Oma siirto'||category==='Sisäinen siirto'||category==='Säästäminen';
+ const normalizedType=isTransfer?'transfer':type|| (amount>0?'income':'expense');
+ const normalizedCategory=category==='Silmälasit'?'Terveys ja apteekki':
+ category==='Kodin menot'?'Muut kodin ostot':category==='Matkailu'?'Matkat ja lomat':
+ category==='Ravintolat'?'Ravintolat ja kahvilat':category==='Pankkikulut'?'Muut kodin ostot':
+ category==='Puhelin ja netti'?'Puhelimet ja netti':category==='Terveys'?'Terveys ja apteekki':
+ category==='Ruoka'||category==='Kaupat'?'Kaupat':category;
+ const finalCategory=key==='vipps'&&amount>0?'Muut tulot':normalizedCategory;
+ sepCanonical.push({signature,source});
+ state.transactions.push({id,date,description,amount,category:finalCategory,manualCategory:finalCategory,
+ type:normalizedType,account:'sp_jaana',owner:'Jaana',scope:'Koti',needsReview:finalCategory==='Tarkistettavat'});
+};
+for(let i=0;i<jaanaSeptember2026.length;i++){
+ const [date,description,amount,category,type]=jaanaSeptember2026[i];
+ sepAdd(date,description,amount,category,type,'jaana_verified_'+i);
 }
-state.transactions=state.transactions.filter(t=>!sepRemove.has(t.id));
-// Käyttäjän vahvistamat luokittelut; omat tilisiirrot ja sijoitukset eivät ole kulutusta.
+for(let i=0;i<jaanaEarlySeptember2026.length;i++){
+ const [day,description,amount,category]=jaanaEarlySeptember2026[i];
+ sepAdd('2026-'+day,description,amount,category,null,'jaana_early_'+i);
+}
+for(let i=0;i<jaanaLateSeptember2026.length;i++){
+ const [day,description,amount,category]=jaanaLateSeptember2026[i];
+ sepAdd('2026-'+day,description,amount,category,null,'jaana_late_'+i);
+}
+// Käyttäjän vahvistamat poikkeukset ja luotot.
 for(const t of state.transactions.filter(t=>t.date?.startsWith('2026-09-')&&t.account==='sp_jaana')){
- const d=textKey(t.description),amount=Number(t.amount);
- let category=null,type=null;
- if(/INSTRUMENTARIUM|SVEA BANK/.test(d))category='Terveys ja apteekki';
- if(/IKEA/.test(d))category='Muut kodin ostot';
- if(/ROPO/.test(d))category='Muut menot';
- if(/SARI SUSANNA/.test(d))category='Matkat ja lomat';
- if(/ASKO TANELI/.test(d)){category='Myynnin palautus';type='transfer'}
- if(/LIIKENNE.*VIESTINTAVIRASTO|AJONEUVOVERO/.test(d))category='Auto';
- if(/SA ASTOPANKKI.*SIJOITUSRAHASTO|SIJOITUSRAHASTO/.test(d)){category='Säästäminen';type='transfer'}
- if(/JANNE|LUONELA JANNE/.test(d)){category='Oma siirto';type='transfer'}
- if(/OTTO|VEETI/.test(d)&&/MOBILEPAY|MOB PAY/.test(d))category='Lapset – rahansiirrot';
- if(/VIPPS MOBILEPAY/.test(d)&&amount>0){category='Muut tulot';type='income';t.needsReview=false}
- if(category){t.category=category;t.manualCategory=category}
- if(type)t.type=type;
+ const d=textKey(t.description);
+ if(/SVEA BANK|INSTRUMENTARIUM/.test(d)){t.category='Terveys ja apteekki';t.manualCategory=t.category}
+ if(/SARI SUSANNA/.test(d)){t.category='Matkat ja lomat';t.manualCategory=t.category}
+ if(/ASKO TANELI/.test(d)){t.category='Myynnin palautus';t.manualCategory=t.category;t.type='transfer'}
+ if(/VIPPS/.test(d)&&Number(t.amount)>0){t.category='Muut tulot';t.manualCategory=t.category;t.type='income';t.needsReview=false}
+ if(/JANNE|LUONELA JANNE/.test(d)){t.category='Oma siirto';t.manualCategory=t.category;t.type='transfer'}
+ if(/SIJOITUSRAHASTO/.test(d)){t.category='Säästäminen';t.manualCategory=t.category;t.type='transfer'}
+ if(/SAASTOPANKKI|SÄÄSTÖPANKKI/.test(d)&&Number(t.amount)<0&&!/SIJOITUSRAHASTO/.test(d)){t.category='Visa-luotot';t.manualCategory=t.category}
 }
 state.transactions.sort((a,b)=>b.date.localeCompare(a.date));
 localStorage.setItem('talousV5',JSON.stringify(state));
