@@ -258,7 +258,7 @@ nav button{min-height:64px}
 <div class="card toolbar"><input id="search" placeholder="Hae tapahtumaa"><fieldset id="eventOwners" class="scope-filter"><legend>Tarkastellaan</legend><label><input type="checkbox" value="Jaana" checked> Jaana</label><label><input type="checkbox" value="Janne" checked> Janne</label></fieldset><select id="etype"><option value="">Kaikki tyypit</option><option value="expense">Menot</option><option value="income">Tulot</option><option value="transfer">Siirrot</option></select></div>
 <div class="card"><div id="eventList"></div></div>
 </section>
-<section id="spending" class="hidden"><div class="spend-head"><h2>Menot</h2><button type="button" id="spendChartToggle" class="spend-outline">▥ Kaavio</button></div><div class="spend-filters"><select id="spendMonth" aria-label="Kuukausi"></select><select id="spendOwner" aria-label="Henkilö"><option value="">Luonela · yhteensä</option><option value="Jaana">Jaana</option><option value="Janne">Janne</option></select></div><div class="spend-switch"><button id="spendCategoriesBtn" class="selected" type="button">Luokat</button><button id="spendShopsBtn" type="button">Kaupat</button></div><div class="spend-total"><span>Menot yhteensä</span><strong id="spendSum">0,00 €</strong></div><div id="spendList" class="spend-list"></div><div id="spendChart" class="hidden spend-chart"></div><p class="spend-note">Summat lasketaan tallennetuista kotitalouden tapahtumista. Sisäiset tilisiirrot ja yrityksen menot eivät kuulu kuluihin.</p></section>
+<section id="spending" class="hidden"><div class="spend-head"><h2>Menot</h2></div><div class="spend-filters"><select id="spendMonth" aria-label="Kuukausi"></select><select id="spendOwner" aria-label="Henkilö"><option value="">Luonela · yhteensä</option><option value="Jaana">Jaana</option><option value="Janne">Janne</option></select></div><div class="spend-switch"><button id="spendCategoriesBtn" class="selected" type="button">Luokat</button><button id="spendShopsBtn" type="button">Kaupat</button></div><div class="spend-total"><span>Menot yhteensä</span><strong id="spendSum">0,00 €</strong></div><div id="spendList" class="spend-list"></div><div id="spendChart" class="hidden spend-chart"></div><p class="spend-note">Summat lasketaan tallennetuista kotitalouden tapahtumista. Sisäiset tilisiirrot ja yrityksen menot eivät kuulu kuluihin.</p></section>
 <section id="reports" class="hidden">
 <div class="page-head"><h2>⌂ Kodin talous</h2></div>
 <div class="card hidden"><fieldset id="reportOwners" class="scope-filter"><label><input type="checkbox" value="Jaana" checked>Jaana</label><label><input type="checkbox" value="Janne" checked>Janne</label></fieldset></div><div class="report-kpis hidden" id="reportKpis"><span id="reportIncome"></span><span id="reportExpense"></span><span id="reportNet"></span><span id="reportCount"></span></div><div class="report-tabs hidden"><button class="report-tab active" data-report="comparison">Kuukausivertailu</button><button class="report-tab" data-report="categories">Menoluokat</button><button class="report-tab" data-report="shops">🛒 Kaupat</button><button class="report-tab" data-report="months">Kuukaudet</button><button class="report-tab" data-report="review">⚠️ Tarkistettavat</button></div>
@@ -748,7 +748,7 @@ let spendingMode='categories',spendingChart=false;
 const spendingIcons={'Kauppaostokset':'🛒','Ruoka ja kaupat':'🛒','Auto':'🚙','Vesi':'💧','Sähkö':'⚡','Vakuutukset':'♧','Puhelimet ja netti':'☎','Puhelin ja netti':'☎','Terveys':'♡','Muut menot':'•••'};
 function renderSpending(){
  const monthSelect=$('spendMonth'),owner=$('spendOwner').value;
- const months=[...new Set(state.transactions.filter(isHouseholdTransaction).map(x=>x.date.slice(0,7)).filter(x=>/^\\d{4}-\\d{2}$/.test(x)))].sort().reverse();
+ const months=[...new Set(state.transactions.filter(isHouseholdTransaction).map(x=>x.date.slice(0,7)).filter(x=>/^\d{4}-\d{2}$/.test(x)))].sort().reverse();
  const previous=monthSelect.value||$('homePeriod').value;
  monthSelect.innerHTML=months.map(m=>'<option value="'+m+'">'+monthLabel(m)+'</option>').join('');
  monthSelect.value=months.includes(previous)?previous:(months[0]||'');
@@ -763,13 +763,13 @@ function renderSpending(){
  }).join('')||'<p style="padding:18px">Ei menoja valitulle kuukaudelle.</p>';
  $('spendChart').innerHTML=entries.map(([name,items])=>{const amount=expenseTotal(items);return '<div class="spend-chart-row"><span>'+escapeHtml(name)+'</span><b>'+E(amount)+'</b><div class="spend-progress" style="grid-column:1/3"><i style="width:'+(total?amount/total*100:0)+'%"></i></div></div>'}).join('');
  $('spendList').classList.toggle('hidden',spendingChart);$('spendChart').classList.toggle('hidden',!spendingChart);
- $('spendChartToggle').textContent=spendingChart?'☷ Lista':'▥ Kaavio';
+
  $('spendCategoriesBtn').classList.toggle('selected',spendingMode==='categories');$('spendShopsBtn').classList.toggle('selected',spendingMode==='shops');
 }
 $('spendMonth').addEventListener('change',renderSpending);$('spendOwner').addEventListener('change',renderSpending);
 $('spendCategoriesBtn').addEventListener('click',()=>{spendingMode='categories';renderSpending()});
 $('spendShopsBtn').addEventListener('click',()=>{spendingMode='shops';renderSpending()});
-$('spendChartToggle').addEventListener('click',()=>{spendingChart=!spendingChart;renderSpending()});
+
 function show(p){document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));const page=$(p);if(!page)return;page.classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='home')renderHome();if(p==='spending')renderSpending();if(p==='events')renderEvents();if(p==='reports'){renderReports();compareAllMonths();showReportTab('comparison');}if(p==='archive')renderArchive();if(p==='goals')initStatementAccounts();if(p==='debts')renderDebts();window.scrollTo({top:0,behavior:'smooth'})}$('search').oninput=renderEvents;$('eventOwners').onchange=renderEvents;$('etype').onchange=renderEvents;$('reportOwners').onchange=renderReports;document.querySelectorAll('.report-tab').forEach(b=>b.onclick=()=>showReportTab(b.dataset.report));
 $('expenseMonth').onchange=renderHome;
 $('homePeriod').onchange=()=>{$('expenseMonth').value=$('homePeriod').value;renderHome()};
