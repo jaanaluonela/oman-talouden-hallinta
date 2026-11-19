@@ -124,7 +124,7 @@
 .home-balance-row strong{white-space:nowrap;font-variant-numeric:tabular-nums}
 .home-choices{display:grid;gap:10px;margin-bottom:14px}
 .home-choice{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:12px;width:100%;min-height:78px;padding:12px 14px;background:white;border:1px solid var(--line);border-radius:15px;text-align:left;color:var(--ink);font:inherit;cursor:pointer}
-.home-choice .choice-icon{font-size:1.45rem;color:var(--accent);text-align:center}
+.home-choice .choice-icon{display:flex;align-items:center;justify-content:center;color:#087c48}.home-choice .choice-icon svg{width:32px;height:32px;flex:none}
 .home-choice small{display:block;color:var(--muted);font-size:.82rem;margin-top:3px}
 .home-review-link{border:0;background:transparent;color:#a75413;text-decoration:underline;padding:10px 2px;font:inherit;font-weight:700}
 .compare-button{border:1px solid var(--line);border-radius:10px;background:white;color:var(--accent);font:inherit;font-weight:700;padding:8px 12px;min-height:44px;margin:8px 0}
@@ -242,9 +242,9 @@ nav button{min-height:64px}
   <div class="home-balance-row"><span>Rahaa jää</span><strong id="homeRemaining"></strong></div>
 </div>
 <div class="home-choices">
-  <button class="home-choice" type="button" id="homeExpenseBtn"><span class="choice-icon" aria-hidden="true">◴</span><span><b>Mihin rahat menivät?</b><small>Menoluokat ja kaupat</small></span><span>›</span></button>
-  <button class="home-choice" type="button" onclick="show('reports');showReportTab('comparison')"><span class="choice-icon" aria-hidden="true">▥</span><span><b>Vertaa kuukausia</b><small>Menot eri kuukausina</small></span><span>›</span></button>
-  <button class="home-choice" type="button" onclick="show('goals')"><span class="choice-icon">▱</span><span><b>Lisää tiliote</b><small>Päivitä tapahtumat</small></span><span>›</span></button>
+  <button class="home-choice" type="button" id="homeExpenseBtn"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v10h10"/><path d="M12 2a10 10 0 1 0 10 10H12z"/></svg></span><span><b>Mihin rahat menivät?</b><small>Menoluokat ja kaupat</small></span><span>›</span></button>
+  <button class="home-choice" type="button" onclick="show('reports');showReportTab('comparison')"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="14" width="4" height="7" rx="1"/><rect x="10" y="9" width="4" height="12" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></span><span><b>Vertaa kuukausia</b><small>Menot eri kuukausina</small></span><span>›</span></button>
+  <button class="home-choice" type="button" onclick="show('goals')"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h9l5 5v14a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg></span><span><b>Lisää tiliote</b><small>Päivitä tapahtumat</small></span><span>›</span></button>
 </div>
 <button type="button" class="home-review-link hidden" id="homeReviewBtn"></button>
 <div class="card" id="singleMonthCard" hidden>
