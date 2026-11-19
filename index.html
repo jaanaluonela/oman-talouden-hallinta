@@ -235,20 +235,49 @@ nav button{min-height:64px}
 </style><style>
 .compare-new{color:#17211e}.compare-new h2{font-size:1.7rem;margin:0 0 16px}.compare-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}.compare-controls>label,.compare-controls>div{background:#fff;border:1px solid #cbd6d2;border-radius:16px;padding:12px;font-weight:700}.compare-controls select{width:100%;margin-top:8px;padding:10px;border:1px solid #cbd6d2;border-radius:11px;background:#fff;font:inherit;color:#17211e}.compare-label{display:block}.compare-period{display:flex;margin-top:8px;border:1px solid #cbd6d2;border-radius:11px;overflow:hidden}.compare-period button{flex:1;border:0;background:#fff;padding:11px 4px;font:inherit;font-weight:700;color:#17211e}.compare-period button.selected{background:#087b59;color:white;border-radius:10px}.compare-panel,.compare-monthly{background:white;border:1px solid #cbd6d2;border-radius:18px;overflow:hidden;margin-bottom:14px}.compare-panel h3,.compare-monthly summary{margin:0;background:#e0f1ee;padding:14px 16px;font-size:1.1rem;font-weight:800}.compare-monthly summary{cursor:pointer}.compare-chart{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 8px;padding:16px 10px;overflow-x:hidden;min-width:0}.compare-bar-item{min-width:0;height:176px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;text-align:center;font-size:.75rem}.compare-bar-value{font-size:.78rem;font-weight:700;white-space:nowrap}.compare-bar{width:54%;max-width:55px;min-height:2px;background:#71c98d;border-radius:4px 4px 0 0}.compare-bar-item:last-child .compare-bar{background:#087b59}.compare-bar-month{font-size:.8rem}.compare-chart .compare-bar-item{box-sizing:border-box}
 .compare-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#f0f7f5;padding:12px 4px;text-align:center;gap:4px}.compare-stats div{font-size:.75rem}.compare-stats strong{display:block;font-size:.94rem;margin-top:5px}.compare-month-row{display:flex;justify-content:space-between;gap:10px;padding:12px 15px;border-bottom:1px solid #e3e8e5}.compare-month-row:last-child{border-bottom:0}.compare-legacy{display:none!important}@media(max-width:540px){.compare-controls{grid-template-columns:1fr}.compare-chart{min-height:205px}.compare-bar-value{font-size:.65rem}.compare-bar-item{min-width:35px}.compare-new h2{font-size:1.5rem}}
+</style><style>
+#home .page-head{margin-bottom:16px}
+#home .home-month-picker{display:flex;align-items:center;gap:12px;background:white;border:1px solid #d1d8d5;border-radius:16px;padding:0 16px;margin-bottom:16px;min-height:62px}
+#home .home-month-picker select{border:0;background:transparent;width:100%;min-width:0;font:inherit;font-weight:700;color:#192321;padding:16px 0}
+#home .home-calendar-icon{color:#087d71;font-size:25px}
+#home .home-finance-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+#home .home-finance-tile{display:flex;align-items:center;gap:9px;padding:16px 12px;border-radius:18px;min-width:0}
+#home .home-finance-tile.income{background:#e7f7f2}
+#home .home-finance-tile.spending{background:#e9f3fb}
+#home .home-finance-symbol{font-size:25px;color:#087d71}
+#home .home-finance-tile div{min-width:0}
+#home .home-finance-tile div span{display:block;font-weight:700}
+#home .home-finance-tile strong{display:block;font-size:clamp(17px,4.1vw,27px);white-space:nowrap;letter-spacing:-.5px}
+#home .home-difference{background:#e7f7f2;border-radius:18px;padding:17px 20px;margin-bottom:16px}
+#home .home-difference.negative{background:#fff0f0}
+#home .home-difference span{display:block;font-weight:700}
+#home .home-difference strong{display:block;font-size:clamp(26px,7vw,36px);color:#087d71;margin-top:4px}
+#home .home-difference.negative strong{color:#b42328}
+#home .home-choices-new{display:grid;gap:10px}
+#home .home-choices-new .home-choice{width:100%;background:#fff;border:1px solid #d3d9d7;border-radius:16px;padding:15px;min-height:76px;display:flex;align-items:center;gap:14px;text-align:left;color:#16221f}
+#home .home-choices-new .home-choice .choice-icon{font-size:30px;color:#087d71;min-width:32px;text-align:center}
+#home .home-choices-new .home-choice>span:nth-child(2){flex:1}
+#home .home-choices-new .home-choice small{display:block;color:#64716d;margin-top:3px}
+#home .home-backup summary{cursor:pointer;list-style:none}
+#home .home-backup summary::-webkit-details-marker{display:none}
+#home .home-backup-body{padding:12px 16px;background:#fff;border:1px solid #d3d9d7;border-radius:0 0 16px 16px}
+#home .home-backup[open] summary{border-radius:16px 16px 0 0}
+#home .home-backup-actions{display:flex;gap:10px}
+#home .home-backup-actions button{padding:10px 16px;border-radius:10px;border:1px solid #087d71;background:#fff;color:#087d71;font:inherit}
 </style></head><body><div class="app">
 <div class="global-brand"><span aria-hidden="true" class="brand-house"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v11H3z"/><path d="M9 21v-8h6v8"/></svg></span><span>Kodin talous</span></div>
 <section id="home">
 <div class="page-head"><h1><span class="home-title-icon" aria-hidden="true">⌂</span> Kodin talous</h1></div>
-<label class="monthly-owner">Luonela · <span class="home-period-label">Valitse kuukausi</span> <select id="homePeriod" aria-label="Luonela – valitse kuukausi"></select></label>
-<div class="card home-balance">
-  <div class="home-balance-row"><span>Tulot</span><strong id="homeIncome"></strong></div>
-  <div class="home-balance-row"><span>Menot</span><strong id="homeSpent"></strong></div>
-  <div class="home-balance-row"><span>Rahaa jää</span><strong id="homeRemaining"></strong></div>
+<label class="home-month-picker"><span class="home-calendar-icon" aria-hidden="true">▦</span><select id="homePeriod" aria-label="Valitse kuukausi"></select></label>
+<div class="home-finance-grid">
+ <div class="home-finance-tile income"><span class="home-finance-symbol" aria-hidden="true">▤</span><div><span>Tulot</span><strong id="homeIncome"></strong></div></div>
+ <div class="home-finance-tile spending"><span class="home-finance-symbol" aria-hidden="true">▣</span><div><span>Menot</span><strong id="homeSpent"></strong></div></div>
 </div>
-<details class="card" style="padding:12px 16px;margin:12px 0"><summary style="cursor:pointer;font-weight:650;color:#087d71">Varmuuskopiointi</summary><p style="font-size:.88em;color:#586764">Omat muutokset tallentuvat selaimeen. Säilytä varmuuskopio myös iCloud Drivessa.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" id="backupDownload" style="padding:10px;border:1px solid #087d71;border-radius:10px;background:white;color:#087d71">Tallenna</button><button type="button" id="backupRestore" style="padding:10px;border:1px solid #aaa;border-radius:10px;background:white">Palauta</button><input id="backupFile" type="file" accept=".json,application/json" style="display:none"></div><p id="backupStatus" style="font-size:.85em"></p></details><div class="home-choices">
-  <button class="home-choice" type="button" id="homeExpenseBtn"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v10h10"/><path d="M12 2a10 10 0 1 0 10 10H12z"/></svg></span><span><b>Mihin rahat menivät?</b><small>Menoluokat ja kaupat</small></span><span>›</span></button>
-  <button class="home-choice" type="button" onclick="show('reports');showReportTab('comparison')"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="14" width="4" height="7" rx="1"/><rect x="10" y="9" width="4" height="12" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></span><span><b>Vertaa kuukausia</b><small>Menot eri kuukausina</small></span><span>›</span></button>
-  <button class="home-choice" type="button" onclick="show('goals')"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h9l5 5v14a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg></span><span><b>Lisää tiliote</b><small>Päivitä tapahtumat</small></span><span>›</span></button>
+<div class="home-difference"><span>Kuukauden erotus</span><strong id="homeRemaining"></strong></div>
+<div class="home-choices home-choices-new">
+<button class="home-choice" type="button" id="homeExpenseBtn"><span class="choice-icon" aria-hidden="true">◴</span><span><b>Mihin rahat menivät?</b><small>Menot luokittain</small></span><span>›</span></button>
+<button class="home-choice" type="button" onclick="show('reports');showReportTab('comparison')"><span class="choice-icon" aria-hidden="true">▥</span><span><b>Vertaile kuukausia</b><small>Sähkö, vesi ja muut menot</small></span><span>›</span></button>
+<details class="home-backup"><summary class="home-choice"><span class="choice-icon" aria-hidden="true">▤</span><span><b>Varmuuskopiointi</b><small>Tallennus ja palautus</small></span><span class="home-backup-chevron">›</span></summary><div class="home-backup-body"><p>Omat muutokset tallentuvat selaimeen. Säilytä varmuuskopio myös iCloud Drivessa.</p><div class="home-backup-actions"><button type="button" id="backupDownload">Tallenna</button><button type="button" id="backupRestore">Palauta</button><input id="backupFile" type="file" accept=".json,application/json" style="display:none"></div><p id="backupStatus"></p></div></details>
 </div>
 <button type="button" class="home-review-link hidden" id="homeReviewBtn"></button>
 <div class="card" id="singleMonthCard" hidden>
@@ -860,6 +889,7 @@ function renderHome(){
  $('homeSpent').textContent=E(spent);
  $('homeRemaining').textContent=E(income-spent);
  $('homeRemaining').className=income-spent<0?'neg':'pos';
+ document.querySelector('#home .home-difference').classList.toggle('negative',income-spent<0);
  const reviewCount=householdMonth.filter(x=>x.type==='expense'&&x.needsReview).length;
  $('homeReviewBtn').textContent=`Tarkistettavia ${reviewCount}`;
  $('homeReviewBtn').classList.toggle('hidden',reviewCount===0);
