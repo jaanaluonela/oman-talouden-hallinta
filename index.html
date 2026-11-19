@@ -516,6 +516,7 @@ function automaticAudit(x){
     ['Muut ostokset','Muut kodin ostot','Muut menot','Kodin menot'].includes(r.category)){
   const clear=[
    [/INSTRUMENTARIUM|SILMAASEMA|SPECSAVERS/,'Optikko ja silmälasit'],
+   [/SVEA BANK|SVEA BANK AB|SVEA EKONOMI/,'Optikko ja silmälasit'],
    [/\\bYA SALO\\b|\\bAPTEEKKI\\b/,'Terveys ja apteekki'],
    [/NETFLIX/,'Tilaukset'],
    [/KULTAINEN RENGAS|GOLDEN RING/,'Harrastukset ja jäsenmaksut'],
@@ -718,6 +719,7 @@ function householdMainCategory(x){
  if(x.needsReview)return 'Tarkistettavat';
  if(householdCategoryOrder.includes(c))return c;
  if(!x.manualCategory){
+  if(/\bSVEA BANK\b|\bSVEA EKONOMI\b/.test(d))return 'Terveys ja apteekki';
   if(/\bSF CARAVAN\b/.test(d))return 'Harrastukset ja jäsenmaksut';
  }
  return householdCategoryAliases.get(c)||'Muut kodin ostot';
