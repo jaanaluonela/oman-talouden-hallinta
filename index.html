@@ -642,7 +642,7 @@ for(const t of state.transactions.filter(t=>t.date?.startsWith('2026-09-')&&t.ac
  if(/SA ASTOPANKKI.*SIJOITUSRAHASTO|SIJOITUSRAHASTO/.test(d)){category='Säästäminen';type='transfer'}
  if(/JANNE|LUONELA JANNE/.test(d)){category='Oma siirto';type='transfer'}
  if(/OTTO|VEETI/.test(d)&&/MOBILEPAY|MOB PAY/.test(d))category='Lapset – rahansiirrot';
- if(/VIPPS MOBILEPAY/.test(d)&&amount>0){category='Tarkistettavat';t.needsReview=true}
+ if(/VIPPS MOBILEPAY/.test(d)&&amount>0){category='Muut tulot';type='income';t.needsReview=false}
  if(category){t.category=category;t.manualCategory=category}
  if(type)t.type=type;
 }
