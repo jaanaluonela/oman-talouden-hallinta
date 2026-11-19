@@ -271,7 +271,7 @@ nav button{min-height:64px}
 <div class="page-head"><h2>⌂ Kodin talous</h2></div>
 <div class="card hidden"><fieldset id="reportOwners" class="scope-filter"><label><input type="checkbox" value="Jaana" checked>Jaana</label><label><input type="checkbox" value="Janne" checked>Janne</label></fieldset></div><div class="report-kpis hidden" id="reportKpis"><span id="reportIncome"></span><span id="reportExpense"></span><span id="reportNet"></span><span id="reportCount"></span></div><div class="report-tabs hidden"><button class="report-tab active" data-report="comparison">Kuukausivertailu</button><button class="report-tab" data-report="categories">Menoluokat</button><button class="report-tab" data-report="shops">🛒 Kaupat</button><button class="report-tab" data-report="months">Kuukaudet</button><button class="report-tab" data-report="review">⚠️ Tarkistettavat</button></div>
 <div id="reportMain">
-  <div id="reportComparison"><div class="compare-new"><h2>Vertailu</h2><div class="compare-controls"><label>Valitse meno<select id="compareCategory"><option value="Sähkö">⚡ Sähkö</option><option value="Vesi">Vesi</option><option value="Ruoka ja kaupat">Ruoka ja kaupat</option><option value="Auto">Auto</option><option value="Vakuutukset">Vakuutukset</option><option value="Puhelimet ja netti">Puhelin ja netti</option><option value="Terveys ja apteekki">Terveys</option><option value="Jätehuolto">Jätehuolto</option><option value="Muut menot">Muut menot</option><option value="Kaikki menot">Kaikki menot</option></select></label><div><span class="compare-label">Vertailujakso</span><div class="compare-period"><button data-period="3" type="button">3 kk</button><button data-period="6" class="selected" type="button">6 kk</button><button data-period="12" type="button">12 kk</button></div></div></div><div class="compare-panel"><h3 id="compareTitle">Sähkö – 6 kuukauden vertailu</h3><div class="compare-chart" id="compareChart"></div><div class="compare-stats" id="compareStats"></div></div><details class="compare-monthly" open><summary>Kuukausittaiset summat</summary><div id="compareMonthRows"></div></details></div><div class="card monthly-list compare-legacy">
+  <div id="reportComparison"><div class="compare-new"><h2>Vertailu</h2><div class="compare-controls"><label>Valitse meno<select id="compareCategory"><option value="Sähkö">⚡ Sähkö</option><option value="Vesi">Vesi</option><option value="Ruoka ja kaupat">Ruoka ja kaupat</option><option value="Auto">Auto</option><option value="Vakuutukset">Vakuutukset</option><option value="Puhelimet ja netti">Puhelin ja netti</option><option value="Terveys ja apteekki">Terveys</option><option value="Jätehuolto">Jätehuolto</option><option value="Muut menot">Muut menot</option><option value="Kaikki menot">Kaikki menot</option></select></label><div><span class="compare-label">Vertailujakso</span><div class="compare-period"><button data-period="3" type="button">3 kk</button><button data-period="6" type="button">6 kk</button><button data-period="12" class="selected" type="button">12 kk</button></div></div></div><div class="compare-panel"><h3 id="compareTitle">Sähkö – 6 kuukauden vertailu</h3><div class="compare-chart" id="compareChart"></div><div class="compare-stats" id="compareStats"></div></div><details class="compare-monthly" open><summary>Kuukausittaiset summat</summary><div id="compareMonthRows"></div></details></div><div class="card monthly-list compare-legacy">
   <h2>Kaikki menot kuukausittain</h2>
   <label class="monthly-owner"><select id="monthlyOwner" aria-label="Valitse tarkasteltava henkilö"><option value="">Jaana ja Janne</option><option>Jaana</option><option>Janne</option></select></label>
   <div id="expenseComparison" aria-live="polite"></div><button type="button" class="comparison-close" onclick="show('home')">Sulje vertailu</button>
@@ -810,7 +810,7 @@ function renderReports(){
  renderReview();closeReportDetail(false);
 }
 
-let comparePeriod=6;
+let comparePeriod=12;
 function renderNewComparison(){
  const category=$('compareCategory').value;
  const today=new Date();
@@ -818,16 +818,17 @@ function renderNewComparison(){
  const categories=category==='Muut menot'?['Muut kodin ostot','Tilaukset','Lemmikit','Harrastukset ja jäsenmaksut','Tarkistettavat']:null;
  const matching=rows.filter(x=>category==='Kaikki menot'||(categories?categories.includes(householdMainCategory(x)):householdMainCategory(x)===category));
  const available=[...new Set(rows.map(x=>x.date.slice(0,7)))].sort();
- const end=available.length?available[available.length-1]:today.toISOString().slice(0,7);
+ const currentMonth=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+ const end=available.length&&available[available.length-1]>currentMonth?available[available.length-1]:currentMonth;
  const [year,month]=end.split('-').map(Number);
  const periods=Array.from({length:comparePeriod},(_,i)=>{const d=new Date(Date.UTC(year,month-1-(comparePeriod-1-i),1));return d.toISOString().slice(0,7)});
- const values=periods.map(m=>({month:m,sum:expenseTotal(matching.filter(x=>x.date.slice(0,7)===m)),hasData:rows.some(x=>x.date.slice(0,7)===m)}));
+ const values=periods.map(m=>({month:m,sum:expenseTotal(matching.filter(x=>x.date.slice(0,7)===m)),hasData:matching.some(x=>x.date.slice(0,7)===m)}));
  const max=Math.max(1,...values.map(x=>x.sum));
  $('compareTitle').textContent=category+' – '+comparePeriod+' kuukauden vertailu';
  $('compareChart').innerHTML=values.map(x=>'<div class="compare-bar-item"><span class="compare-bar-value">'+(x.hasData?E(x.sum):'–')+'</span><div class="compare-bar" style="height:'+Math.max(2,Math.round(x.sum/max*125))+'px;'+(!x.hasData?'background:#e5e9e7;':'')+'"></div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>').join('');
  const known=values.filter(x=>x.hasData),sums=known.map(x=>x.sum);
  $('compareStats').innerHTML='<div>Keskimäärin / kk<strong>'+(known.length?E(sums.reduce((a,b)=>a+b,0)/known.length):'–')+'</strong></div><div>Korkein<strong>'+(known.length?E(Math.max(...sums)):'–')+'</strong></div><div>Matalin<strong>'+(known.length?E(Math.min(...sums)):'–')+'</strong></div>';
- $('compareMonthRows').innerHTML=values.map(x=>'<div class="compare-month-row"><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei tietoja')+'</strong></div>').join('');
+ $('compareMonthRows').innerHTML=values.map(x=>'<div class="compare-month-row"><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei merkintää')+'</strong></div>').join('');
  document.querySelectorAll('.compare-period button').forEach(b=>b.classList.toggle('selected',Number(b.dataset.period)===comparePeriod));
 }
 $('compareCategory').addEventListener('change',renderNewComparison);
