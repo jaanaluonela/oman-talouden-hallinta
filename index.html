@@ -510,6 +510,22 @@ function automaticAudit(x){
    r.needsReview=true;
   }
  }
+ // Korjaa vanhoista tiliotteista Muut kodin ostot -ryhmään jääneet selvät maksut.
+ // Käyttäjän käsin valitsemaa luokkaa ei ylikirjoiteta.
+ if(r.type==='expense'&&!isTaxi&&!business&&r.scope==='Koti'&&!r.manualCategory&&
+    ['Muut ostokset','Muut kodin ostot','Muut menot','Kodin menot'].includes(r.category)){
+  const clear=[
+   [/INSTRUMENTARIUM|SILMAASEMA|SPECSAVERS/,'Optikko ja silmälasit'],
+   [/\\bYA SALO\\b|\\bAPTEEKKI\\b/,'Terveys ja apteekki'],
+   [/NETFLIX/,'Tilaukset'],
+   [/HESBURGER|BURGER MAFIA|RAVINTOLAT VK OY|MOMENTO KARISMA/,'Ravintolat ja kahvilat'],
+   [/\\bMAJOITUS VK OY\\b|\\bNORRBY HAMN\\b|\\bM S REPLOT\\b/,'Matkat ja lomat'],
+   [/\\bSF CARAVAN\\b/,'Harrastukset ja jäsenmaksut'],
+   [/\\bIKEA\\b/,'Muut kodin ostot']
+  ];
+  const found=clear.find(([rx])=>rx.test(d));
+  if(found){r.category=found[1];r.needsReview=false}
+ }
  return r
 }
 function auditAll(rows){return (rows||[]).map(automaticAudit)}
