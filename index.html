@@ -704,7 +704,7 @@ function shopGroup(x){
  return 'Muut kaupat';
 }
 function personalExpenses(){return reportRows().filter(x=>x.type==='expense'&&x.scope!=='Yritys')}
-const reviewCategories=[...new Set([...householdCategoryOrder.filter(c=>c!=='Tarkistettavat'),'Oma siirto','S-ryhmä','K-ryhmä','Muut kaupat','Muut ostokset','S-market','Prisma','Sale','Alepa','K-Market','K-Supermarket','K-Citymarket','Lidl','Tokmanni','Kaupat','Kodin menot','Kukkakauppa','Vapaa-aika','Alkoholi','Asuminen','Sähkö','Vesi','Polttoaine','Auto','Matkailu','Terveys','Terveys ja hyvinvointi','Lemmikit','Vaatteet','Ravintolat','Puhelin ja netti','Vakuutukset','Harrastukset','Lahjoitukset','Pankkipalvelut','Muut'])];
+const reviewCategories=[...householdCategoryOrder.filter(c=>c!=='Tarkistettavat'),'Säästäminen ja sijoitukset','Oma siirto','Yrityksen meno'];
 function reviewRows(){return reportRows().filter(x=>x.needsReview===true).sort((a,b)=>b.date.localeCompare(a.date))}
 function setCategory(id,category){
  const index=state.transactions.findIndex(t=>t.id===id);
