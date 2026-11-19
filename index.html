@@ -405,6 +405,7 @@ function automaticAudit(x){
  else if(r.type==='transfer'||r.category==='Oma siirto'||r.category==='Lainanlyhennys'||r.category==='Sijoitukset'){r.type='transfer'}
  else if(r.type==='expense'){
   const rules=[
+   [/MOB PAY.*(?:OTTO EEMELI|VEETI ELIAS)|MOBILEPAY.*(?:OTTO EEMELI|VEETI ELIAS)/,'Lapset – rahansiirrot'],
    [/TOKMANNI|PRISMA|S MARKET|SMARKET|SALE |ALEPA|K CITYMARKET|CITYMARKET|K SUPERMARKET|K MARKET|LIDL|KARKKAINEN|TAVARAPUOTI|RUOKAPUOTI|LIHA MERONEN|NORMAL /,'Kaupat'],
    [/IKEA|BAUHAUS|K RAUTA|JYSK|RUSTA|POWER|GIGANTTI|LUOMATEC|JUHA ANTTILAINEN|ANTTILAINEN JUHA|HAMALAINEN|HÄMÄLÄINEN|PUUSEP|LVI/,'Kodin menot'],
    [/ALKO/,'Alkoholi'],
@@ -668,7 +669,7 @@ const shoppingCategory='Ruoka ja muut kauppaostokset';
 const householdCategoryOrder=[
  shoppingCategory,'Asuntolaina','Remonttilaina','Sähkö','Vesi','Jätehuolto','Vakuutukset','Auto',
  'Puhelimet ja netti','Visa-luotot','Terveys ja apteekki','Tilaukset','Lemmikit',
- 'Harrastukset ja jäsenmaksut','Muut kodin ostot','Tarkistettavat'
+ 'Harrastukset ja jäsenmaksut','Lapset – rahansiirrot','Muut kodin ostot','Tarkistettavat'
 ];
 const householdCategoryAliases=new Map(Object.entries({
  'Kaupat':shoppingCategory,'Ruoka':shoppingCategory,'S-market':shoppingCategory,'Prisma':shoppingCategory,
