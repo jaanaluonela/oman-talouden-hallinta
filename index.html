@@ -828,7 +828,18 @@ function renderNewComparison(){
  $('compareChart').innerHTML=values.map(x=>'<div class="compare-bar-item"><span class="compare-bar-value">'+(x.hasData?E(x.sum):'–')+'</span><div class="compare-bar" style="height:'+Math.max(2,Math.round(x.sum/max*125))+'px;'+(!x.hasData?'background:#e5e9e7;':'')+'"></div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>').join('');
  const known=values.filter(x=>x.hasData),sums=known.map(x=>x.sum);
  $('compareStats').innerHTML='<div>Keskimäärin / kk<strong>'+(known.length?E(sums.reduce((a,b)=>a+b,0)/known.length):'–')+'</strong></div><div>Korkein<strong>'+(known.length?E(Math.max(...sums)):'–')+'</strong></div><div>Matalin<strong>'+(known.length?E(Math.min(...sums)):'–')+'</strong></div>';
- $('compareMonthRows').innerHTML=values.map(x=>'<div class="compare-month-row"><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei merkintää')+'</strong></div>').join('');
+ $('compareMonthRows').innerHTML=values.map(x=>{
+  let extra='';
+  if(category==='Sähkö'&&x.hasData){
+   const items=matching.filter(t=>t.date.slice(0,7)===x.month);
+   const oomi=items.filter(t=>/OOMI/.test(textKey(t.description)));
+   const elenia=items.filter(t=>/ELENIA/.test(textKey(t.description)));
+   const other=items.filter(t=>!/OOMI|ELENIA/.test(textKey(t.description)));
+   extra='<div class="muted" style="grid-column:1/-1;font-size:.86em">Oomi '+(oomi.length?E(expenseTotal(oomi)):'ei merkintää')+' · Elenia '+(elenia.length?E(expenseTotal(elenia)):'ei merkintää')+(other.length?' · Muut '+E(expenseTotal(other)):'')+'</div>';
+  }
+  return '<div class="compare-month-row"><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei merkintää')+'</strong>'+extra+'</div>';
+ }).join('');
+ if(category==='Sähkö')$('compareMonthRows').insertAdjacentHTML('beforeend','<p class="muted" style="padding:10px 0">Sähkö yhteensä = Oomin sähköenergia + Elenian sähkönsiirto pankista kirjattujen maksujen mukaan. Laskutuspalvelun laskuja ei lisätä uudelleen, joten samaa maksua ei lasketa kahdesti. Puuttuva merkintä ei tarkoita maksamatonta laskua.</p>');
  document.querySelectorAll('.compare-period button').forEach(b=>b.classList.toggle('selected',Number(b.dataset.period)===comparePeriod));
 }
 $('compareCategory').addEventListener('change',renderNewComparison);
