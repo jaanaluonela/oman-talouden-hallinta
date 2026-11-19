@@ -543,7 +543,33 @@ if(state.version!=='11.0'){
  const migratedAccounts=(state.accounts||seed.accounts).map(a=>a.id==='sp_jaana'?{...a,balance:122.57}:a.id==='sp_janne'?{...a,balance:114.83}:a.id==='op_jaana'?{...a,balance:19.84}:a.id==='op_janne'?{...a,balance:0.61}:a.id==='taxi'?{...a,balance:56.06}:a);
  state={...seed,...state,accounts:migratedAccounts,version:'11.0',transactions:auditAll(corrected).sort((a,b)=>b.date.localeCompare(a.date))};
  localStorage.setItem('talousV5',JSON.stringify(state));
-}else{state.transactions=auditAll(state.transactions);localStorage.setItem('talousV5',JSON.stringify(state));}const E=n=>Number(n||0).toLocaleString('fi-FI',{style:'currency',currency:'EUR'});const $=id=>document.getElementById(id);const isHouseholdOwner=owner=>owner==='Jaana'||owner==='Janne';
+}else{state.transactions=auditAll(state.transactions);localStorage.setItem('talousV5',JSON.stringify(state));}// Vain käyttäjän vahvistamat taksitililtä maksetut KODIN sähkö- ja vesilaskut.
+// Ei tuoda taksitilin muita menoja, eikä laskutuslistan laskuja pankkimaksuina.
+const taxiPaidHomeBills=[
+ ['2026-01-21','Elenia',261.30,'Sähkö'],
+ ['2026-02-22','Elenia',381.18,'Sähkö'],
+ ['2026-03-18','Oomi',331.99,'Sähkö'],
+ ['2026-03-20','Elenia',315.86,'Sähkö'],
+ ['2026-04-13','Aurinkovuoren Vesi',281.20,'Vesi'],
+ ['2026-05-26','Oomi',177.23,'Sähkö'],
+ ['2026-05-27','Elenia',185.49,'Sähkö'],
+ ['2026-06-21','Oomi',122.30,'Sähkö'],
+ ['2026-06-22','Elenia',139.49,'Sähkö'],
+ ['2026-08-19','Oomi',96.37,'Sähkö']
+];
+for(const [date,recipient,amount,category] of taxiPaidHomeBills){
+ const id='taxi_home_'+date+'_'+recipient.toLowerCase().replace(/[^a-z]/g,'');
+ const duplicate=state.transactions.some(t=>t.id===id||
+  (t.date===date&&Math.abs(Math.abs(Number(t.amount))-amount)<0.005&&
+   textKey(t.description).includes(textKey(recipient))&&t.type==='expense'&&
+   (t.account==='taxi_home'||t.account==='taxi'||t.account==='sp_jaana'||t.account==='sp_janne')));
+ if(!duplicate)state.transactions.push({id,date,account:'taxi_home',owner:'Jaana',
+  description:recipient+' – kodin lasku, maksettu taksin tililtä',amount:-amount,
+  category,type:'expense',scope:'Koti',manualCategory:category});
+}
+state.transactions.sort((a,b)=>b.date.localeCompare(a.date));
+localStorage.setItem('talousV5',JSON.stringify(state));
+const E=n=>Number(n||0).toLocaleString('fi-FI',{style:'currency',currency:'EUR'});const $=id=>document.getElementById(id);const isHouseholdOwner=owner=>owner==='Jaana'||owner==='Janne';
 const isHouseholdAccount=account=>isHouseholdOwner(account.owner)&&account.id!=='taxi';
 const isHouseholdTransaction=x=>isHouseholdOwner(x.owner)&&x.account!=='taxi'&&x.scope!=='Yritys';
 const countEl=$('count');if(countEl)countEl.textContent=state.transactions.filter(isHouseholdTransaction).length+' pankkitapahtumaa';
