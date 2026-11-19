@@ -519,6 +519,7 @@ function automaticAudit(x){
    [/\\bYA SALO\\b|\\bAPTEEKKI\\b/,'Terveys ja apteekki'],
    [/NETFLIX/,'Tilaukset'],
    [/KULTAINEN RENGAS|GOLDEN RING/,'Harrastukset ja jäsenmaksut'],
+   [/KARKKAINEN|KÄRKKÄINEN/,'Muut kodin ostot'],
    [/TAVARAPUOTI VK OY|RUOKAPUOTI VK OY|NORMAL HELSINKI/,'Kaupat'],
    [/HESBURGER|BURGER MAFIA|RAVINTOLAT VK OY|MOMENTO KARISMA/,'Ravintolat ja kahvilat'],
    [/\\bMAJOITUS VK OY\\b|\\bNORRBY HAMN\\b|\\bM S REPLOT\\b/,'Matkat ja lomat'],
@@ -701,7 +702,7 @@ const householdCategoryOrder=[
 const householdCategoryAliases=new Map(Object.entries({
  'Kaupat':shoppingCategory,'Ruoka':shoppingCategory,'S-market':shoppingCategory,'Prisma':shoppingCategory,
  'Sale':shoppingCategory,'Alepa':shoppingCategory,'K-Market':shoppingCategory,'K-Supermarket':shoppingCategory,
- 'K-Citymarket':shoppingCategory,'S-ryhmä':shoppingCategory,'K-ryhmä':shoppingCategory,'Muut kaupat':shoppingCategory,'Lidl':shoppingCategory,'Tokmanni':shoppingCategory,'Kärkkäinen':shoppingCategory,
+ 'K-Citymarket':shoppingCategory,'S-ryhmä':shoppingCategory,'K-ryhmä':shoppingCategory,'Muut kaupat':shoppingCategory,'Lidl':shoppingCategory,'Tokmanni':shoppingCategory,'Kärkkäinen':'Muut kodin ostot',
  'Sähköenergia':'Sähkö','Sähkönsiirto':'Sähkö',
  'Auton osamaksu':'Auto','Auton huolto':'Auto','Auton pesu':'Auto','Polttoaine':'Auto','Pysäköinti':'Auto',
  'Katsastus':'Auto','Renkaat':'Auto','Varaosat':'Auto','Ajoneuvovero':'Auto','Huollot ja korjaukset':'Auto',
