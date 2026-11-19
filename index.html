@@ -412,6 +412,7 @@ function automaticAudit(x){
    [/NESTE|SHELL|ST1|ABC |TEBOIL|SEO /,'Polttoaine'],
    [/PH AUTOHUOLTO|AUTOHUOLTO|AUTOKORJAAMO/,'Auton huolto'],
    [/POHJOLA VAKUUTUS|LAHITAPIOLA|IF VAKUUTUS|FENNIA/,'Vakuutukset'],
+   [/SILMAASEMA|SILMÄASEMA|INSTRUMENTARIUM|SPECSAVERS|NAKOKESKUS|NÄKÖKESKUS|OPTIKKO|OPTICAL|SILMALASIT|SILMÄLASIT/,'Optikko ja silmälasit'],
    [/PAIJAT HAMEEN HYVINVOINTIALUE|APTEEKKI|YLIOPISTON APTEEKKI|YA SALO|TERVEYSTALO|MEHILAINEN/,'Terveys'],
    [/MUSTI JA MIRRI|MUSTI MIRRI|PETEN KOIRATARVIKE|SALPAUSSELAN KENN|SHOWLINK/,'Lemmikit'],
    [/LAGER 157|FIFTH AVENUE|DIFFERENSES|H M |ZALANDO/,'Vaatteet'],
@@ -680,7 +681,7 @@ const householdCategoryAliases=new Map(Object.entries({
  'Katsastus':'Auto','Renkaat':'Auto','Varaosat':'Auto','Ajoneuvovero':'Auto','Huollot ja korjaukset':'Auto',
  'Puhelin ja netti':'Puhelimet ja netti','Puhelin ja tietoliikenne':'Puhelimet ja netti',
  'Puhelin ja internet':'Puhelimet ja netti','Terveys':'Terveys ja apteekki',
- 'Terveys ja hyvinvointi':'Terveys ja apteekki','Harrastukset':'Harrastukset ja jäsenmaksut',
+ 'Terveys ja hyvinvointi':'Terveys ja apteekki','Optikko ja silmälasit':'Terveys ja apteekki','Harrastukset':'Harrastukset ja jäsenmaksut',
  'Vapaa-aika':'Harrastukset ja jäsenmaksut','Veikkaus':'Harrastukset ja jäsenmaksut'
 }));
 function householdMainCategory(x){
