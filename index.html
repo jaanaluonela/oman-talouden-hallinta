@@ -768,7 +768,7 @@ function groupExpenses(rows,classify){
  return groups;
 }
 function expenseGroup(label,rows,content){
- const compare=householdCategoryOrder.includes(label)?`<button type="button" class="compare-button" data-compare="${escapeHtml(label)}">Vertaa kuukausia</button>`:'';
+ const compare='';
  return `<details class="expense-group"><summary><span>${escapeHtml(label)}</span><b>${E(expenseTotal(rows))}</b></summary><div class="expense-breakdown">${compare}${content}</div></details>`;
 }
 function compareExpenseMonths(category){
@@ -1136,10 +1136,10 @@ $('spendMonth').addEventListener('change',renderSpending);$('spendOwner').addEve
 $('spendCategoriesBtn').addEventListener('click',()=>{spendingMode='categories';renderSpending()});
 $('spendShopsBtn').addEventListener('click',()=>{spendingMode='shops';renderSpending()});
 
-function show(p){document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));const page=$(p);if(!page)return;page.classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='home')renderHome();if(p==='spending')renderSpending();if(p==='events')renderEvents();if(p==='reports'){renderReports();compareAllMonths();showReportTab('comparison');renderNewComparison();}if(p==='archive')renderArchive();if(p==='goals')initStatementAccounts();if(p==='debts')renderDebts();window.scrollTo({top:0,behavior:'smooth'})}$('search').oninput=renderEvents;$('eventOwners').onchange=renderEvents;$('etype').onchange=renderEvents;$('reportOwners').onchange=renderReports;document.querySelectorAll('.report-tab').forEach(b=>b.onclick=()=>showReportTab(b.dataset.report));
+function show(p){if(p!=='home')$('singleMonthCard').hidden=true;document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));const page=$(p);if(!page)return;page.classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='home')renderHome();if(p==='spending')renderSpending();if(p==='events')renderEvents();if(p==='reports'){renderReports();compareAllMonths();showReportTab('comparison');renderNewComparison();}if(p==='archive')renderArchive();if(p==='goals')initStatementAccounts();if(p==='debts')renderDebts();window.scrollTo({top:0,behavior:'smooth'})}$('search').oninput=renderEvents;$('eventOwners').onchange=renderEvents;$('etype').onchange=renderEvents;$('reportOwners').onchange=renderReports;document.querySelectorAll('.report-tab').forEach(b=>b.onclick=()=>showReportTab(b.dataset.report));
 $('expenseMonth').onchange=renderHome;
 $('homePeriod').onchange=()=>{$('expenseMonth').value=$('homePeriod').value;renderHome()};
-$('homeExpenseBtn').onclick=()=>{$('singleMonthCard').hidden=false;$('singleMonthCard').scrollIntoView({behavior:'smooth',block:'start'})};
+$('homeExpenseBtn').onclick=()=>{$('spendMonth').value=$('homePeriod').value;$('spendOwner').value=$('expenseOwner').value;show('spending');};
 $('expenseOwner').onchange=renderHome;
 $('monthlyOwner').onchange=()=>{$('expenseOwner').value=$('monthlyOwner').value;compareAllMonths()};
 $('expenseComparison').onclick=event=>{const button=event.target.closest('[data-compare]');if(button)compareExpenseMonths(button.dataset.compare)};
