@@ -225,7 +225,13 @@ nav button.active small{color:#087b74;font-weight:800}
 nav button.active{background:#e0f1ee;border-radius:15px}
 nav button{min-height:64px}
 @media(max-width:700px){nav div{padding:5px 4px calc(6px + env(safe-area-inset-bottom))!important}nav button{min-height:65px;padding:7px 0!important}nav button small{font-size:.7rem!important}.global-brand{gap:10px}}
-</style><style>nav div{grid-template-columns:repeat(4,minmax(0,1fr))!important}nav button.active{background:transparent!important;position:relative}nav button.active:after{content:"";position:absolute;bottom:0;left:22%;right:22%;height:3px;background:#087b74;border-radius:5px}nav button.active .nav-icon svg{stroke:#087b74}nav button.active small{color:#087b74}</style></head><body><div class="app">
+</style><style>nav div{grid-template-columns:repeat(4,minmax(0,1fr))!important}nav button.active{background:transparent!important;position:relative}nav button.active:after{content:"";position:absolute;bottom:0;left:22%;right:22%;height:3px;background:#087b74;border-radius:5px}nav button.active .nav-icon svg{stroke:#087b74}nav button.active small{color:#087b74}</style><style>
+.spend-compare{margin:18px 0;background:white;border:1px solid #cbd9d5;border-radius:18px;padding:17px 15px;scroll-margin-top:20px}
+.spend-compare-head{display:flex;justify-content:space-between;gap:8px;align-items:start}.spend-compare-head h3{margin:0 0 15px;font-size:1.2rem}.spend-compare-head button{border:0;background:transparent;font-size:1.35rem}
+.spend-compare-open{display:block;margin:10px 0 2px;border:1px solid #087b74;border-radius:10px;background:white;color:#087b74;padding:9px 13px;font-weight:750;cursor:pointer}
+.spend-compare-period{display:flex;gap:8px;margin-bottom:15px}.spend-compare-period button{flex:1;border:1px solid #087b74;background:white;color:#087b74;border-radius:10px;padding:9px;font-weight:750}.spend-compare-period button.selected{background:#087b74;color:white}
+.spend-compare-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 12px;padding:9px 0;border-bottom:1px solid #e7ece9}.spend-compare-row strong{white-space:nowrap}.spend-compare-track{grid-column:1/-1;background:#e2f0ed;height:9px;border-radius:8px;overflow:hidden}.spend-compare-track i{display:block;background:#087b74;height:100%;border-radius:8px}
+</style></head><body><div class="app">
 <div class="global-brand"><span aria-hidden="true" class="brand-house"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v11H3z"/><path d="M9 21v-8h6v8"/></svg></span><span>Kodin talous</span></div>
 <section id="home">
 <div class="page-head"><h1><span class="home-title-icon" aria-hidden="true">⌂</span> Kodin talous</h1></div>
@@ -258,7 +264,7 @@ nav button{min-height:64px}
 <div class="card toolbar"><input id="search" placeholder="Hae tapahtumaa"><fieldset id="eventOwners" class="scope-filter"><legend>Tarkastellaan</legend><label><input type="checkbox" value="Jaana" checked> Jaana</label><label><input type="checkbox" value="Janne" checked> Janne</label></fieldset><select id="etype"><option value="">Kaikki tyypit</option><option value="expense">Menot</option><option value="income">Tulot</option><option value="transfer">Siirrot</option></select></div>
 <div class="card"><div id="eventList"></div></div>
 </section>
-<section id="spending" class="hidden"><div class="spend-head"><h2>Menot</h2></div><div class="spend-filters"><select id="spendMonth" aria-label="Kuukausi"></select><select id="spendOwner" aria-label="Henkilö"><option value="">Luonela · yhteensä</option><option value="Jaana">Jaana</option><option value="Janne">Janne</option></select></div><div class="spend-switch"><button id="spendCategoriesBtn" class="selected" type="button">Luokat</button><button id="spendShopsBtn" type="button">Kaupat</button></div><div class="spend-total"><span>Menot yhteensä</span><strong id="spendSum">0,00 €</strong></div><div id="spendList" class="spend-list"></div><div id="spendChart" class="hidden spend-chart"></div><p class="spend-note">Summat lasketaan tallennetuista kotitalouden tapahtumista. Sisäiset tilisiirrot ja yrityksen menot eivät kuulu kuluihin.</p></section>
+<section id="spending" class="hidden"><div class="spend-head"><h2>Menot</h2></div><div class="spend-filters"><select id="spendMonth" aria-label="Kuukausi"></select><select id="spendOwner" aria-label="Henkilö"><option value="">Luonela · yhteensä</option><option value="Jaana">Jaana</option><option value="Janne">Janne</option></select></div><div class="spend-switch"><button id="spendCategoriesBtn" class="selected" type="button">Luokat</button><button id="spendShopsBtn" type="button">Kaupat</button></div><div class="spend-total"><span>Menot yhteensä</span><strong id="spendSum">0,00 €</strong></div><div id="spendList" class="spend-list"></div><div id="spendChart" class="hidden spend-chart"></div><div id="spendCompare" class="hidden spend-compare" aria-live="polite"></div><p class="spend-note">Summat lasketaan tallennetuista kotitalouden tapahtumista. Sisäiset tilisiirrot ja yrityksen menot eivät kuulu kuluihin.</p></section>
 <section id="reports" class="hidden">
 <div class="page-head"><h2>⌂ Kodin talous</h2></div>
 <div class="card hidden"><fieldset id="reportOwners" class="scope-filter"><label><input type="checkbox" value="Jaana" checked>Jaana</label><label><input type="checkbox" value="Janne" checked>Janne</label></fieldset></div><div class="report-kpis hidden" id="reportKpis"><span id="reportIncome"></span><span id="reportExpense"></span><span id="reportNet"></span><span id="reportCount"></span></div><div class="report-tabs hidden"><button class="report-tab active" data-report="comparison">Kuukausivertailu</button><button class="report-tab" data-report="categories">Menoluokat</button><button class="report-tab" data-report="shops">🛒 Kaupat</button><button class="report-tab" data-report="months">Kuukaudet</button><button class="report-tab" data-report="review">⚠️ Tarkistettavat</button></div>
@@ -759,12 +765,34 @@ function renderSpending(){
  $('spendList').innerHTML=entries.map(([name,items])=>{
   const amount=expenseTotal(items),percent=total?amount/total*100:0;
   const sub=spendingMode==='categories'&&name===shoppingCategory?[...groupExpenses(items,shopGroup)].sort((a,b)=>expenseTotal(b[1])-expenseTotal(a[1])):[...groupExpenses(items,x=>x.category||'Muut')].sort((a,b)=>expenseTotal(b[1])-expenseTotal(a[1]));
-  return '<details class="spend-item"><summary><span class="spend-icon">'+(spendingIcons[name]||'•')+'</span><span><span class="spend-name">'+escapeHtml(name)+'</span><span class="spend-progress"><i style="width:'+Math.min(100,percent).toFixed(1)+'%"></i></span></span><span class="spend-money">'+E(amount)+'<span class="spend-pct">'+percent.toFixed(1).replace('.',',')+' %</span></span><span>›</span></summary><div class="spend-inner">'+sub.map(([n,r])=>'<div class="spend-sub"><span>'+escapeHtml(n)+'</span><b>'+E(expenseTotal(r))+'</b></div>').join('')+'</div></details>'
+  return '<details class="spend-item"><summary><span class="spend-icon">'+(spendingIcons[name]||'•')+'</span><span><span class="spend-name">'+escapeHtml(name)+'</span><span class="spend-progress"><i style="width:'+Math.min(100,percent).toFixed(1)+'%"></i></span></span><span class="spend-money">'+E(amount)+'<span class="spend-pct">'+percent.toFixed(1).replace('.',',')+' %</span></span><span>›</span></summary><div class="spend-inner">'+sub.map(([n,r])=>'<div class="spend-sub"><span>'+escapeHtml(n)+'</span><b>'+E(expenseTotal(r))+'</b></div>').join('')+'</div><button type="button" class="spend-compare-open" data-compare="'+escapeHtml(name)+'">Vertaa kuukausia ›</button></details>'
  }).join('')||'<p style="padding:18px">Ei menoja valitulle kuukaudelle.</p>';
  $('spendChart').innerHTML=entries.map(([name,items])=>{const amount=expenseTotal(items);return '<div class="spend-chart-row"><span>'+escapeHtml(name)+'</span><b>'+E(amount)+'</b><div class="spend-progress" style="grid-column:1/3"><i style="width:'+(total?amount/total*100:0)+'%"></i></div></div>'}).join('');
  $('spendList').classList.toggle('hidden',spendingChart);$('spendChart').classList.toggle('hidden',!spendingChart);
 
+ $('spendList').querySelectorAll('.spend-compare-open').forEach(b=>b.addEventListener('click',()=>openSpendingComparison(b.dataset.compare)));
  $('spendCategoriesBtn').classList.toggle('selected',spendingMode==='categories');$('spendShopsBtn').classList.toggle('selected',spendingMode==='shops');
+}
+function openSpendingComparison(category,period=6){
+ const root=$('spendCompare'), owner=$('spendOwner').value,selected=$('spendMonth').value;
+ const [year,month]=selected.split('-').map(Number);
+ if(!year||!month)return;
+ const periods=[3,6,12];
+ const data=Array.from({length:period},(_,i)=>{
+  const d=new Date(year,month-1-(period-1-i),1);
+  const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+  const rows=state.transactions.filter(x=>x.type==='expense'&&isHouseholdTransaction(x)&&x.date.startsWith(key)&&(!owner||x.owner===owner)&&householdMainCategory(x)===category);
+  return {key,label:monthLabel(key),value:expenseTotal(rows)};
+ });
+ const max=Math.max(1,...data.map(x=>x.value));
+ root.classList.remove('hidden');
+ root.innerHTML='<div class="spend-compare-head"><h3>'+escapeHtml(category)+' – kuukausivertailu</h3><button type="button" id="spendCompareClose" aria-label="Sulje vertailu">✕</button></div>'+
+ '<div class="spend-compare-period" aria-label="Vertailujakso">'+periods.map(n=>'<button type="button" data-period="'+n+'" class="'+(n===period?'selected':'')+'">'+n+' kk</button>').join('')+'</div>'+
+ '<div class="spend-compare-rows">'+data.map(x=>'<div class="spend-compare-row"><span>'+escapeHtml(x.label)+'</span><strong>'+E(x.value)+'</strong><div class="spend-compare-track"><i style="width:'+(x.value/max*100).toFixed(1)+'%"></i></div></div>').join('')+'</div>'+
+ '<p class="spend-note">Näytetään tallennettujen tapahtumien euromäärät. 0 € tarkoittaa, ettei valitulle kuukaudelle ole kirjattu tämän luokan menoa. Veden laskut näkyvät maksukuukautena.</p>';
+ root.querySelector('#spendCompareClose').addEventListener('click',()=>root.classList.add('hidden'));
+ root.querySelectorAll('[data-period]').forEach(b=>b.addEventListener('click',()=>openSpendingComparison(category,Number(b.dataset.period))));
+ root.scrollIntoView({behavior:'smooth',block:'start'});
 }
 $('spendMonth').addEventListener('change',renderSpending);$('spendOwner').addEventListener('change',renderSpending);
 $('spendCategoriesBtn').addEventListener('click',()=>{spendingMode='categories';renderSpending()});
