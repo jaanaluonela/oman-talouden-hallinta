@@ -298,7 +298,7 @@ nav button{min-height:64px}
   <div class="paste-actions"><button type="button" id="pasteClipboardBtn" class="action-btn">📋 Liitä leikepöydältä</button><button type="button" id="previewPasteBtn" class="action-btn primary">Tarkista tapahtumat</button></div>
   <div id="statementPreview" class="statement-preview hidden"></div>
   <div class="muted" id="statementStatus">Mitään ei tallenneta ennen kuin olet tarkistanut tapahtumat.</div>
-  <details class="file-fallback"><summary>Lisää tiedostosta (CSV tai JSON)</summary><div class="statement-import"><button id="statementImportBtn">📁 Valitse tiedosto</button><input class="file-input" type="file" id="statementFile" accept=".csv,.json,text/csv,application/json"></div></details>
+  <details class="file-fallback"><summary>Lisää tiliote tiedostosta (PDF, CSV tai JSON)</summary><div class="statement-import"><button id="statementImportBtn">📁 Valitse tiedosto</button><input class="file-input" type="file" id="statementFile" accept=".pdf,.csv,.json,application/pdf,text/csv,application/json"></div></details>
 </div>
 <h3>Tilirakenne</h3><div class="list"><div class="debt"><span>🏠 Jaana – Säästöpankki</span><b>Päätili</b></div><div class="debt"><span>🏠 Janne – Säästöpankki</span><b>Päätili</b></div></div></div></section><section id="debts" class="hidden"><div class="card"><h2 style="margin:0 0 8px">Velat</h2><p class="muted">Viimeksi tallennetut saldot. Tarkista ajantasainen saldo pankista tai rahoittajalta.</p><div id="debtList"></div></div></section></div>
 <nav aria-label="Päävalikko"><div><button class="active" data-page="home"><span class="nav-icon"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v11H3z"/><path d="M9 21v-8h6v8"/></svg></span><small>Etusivu</small></button><button data-page="spending"><span class="nav-icon"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18M3 10h18M3 15h18M3 20h18"/></svg></span><small>Menot</small></button><button data-page="reports"><span class="nav-icon"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="12" width="4" height="9" rx=".5"/><rect x="10" y="7" width="4" height="14" rx=".5"/><rect x="17" y="3" width="4" height="18" rx=".5"/></svg></span><small>Vertailu</small></button><button data-page="debts"><span class="nav-icon"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="8" cy="7" rx="5" ry="2.5"/><path d="M3 7v5c0 1.4 2.2 2.5 5 2.5 1.2 0 2.2-.2 3-.6M3 12v4c0 1.4 2.2 2.5 5 2.5 1.2 0 2.2-.2 3-.6"/><ellipse cx="17" cy="12" rx="5" ry="2.5"/><path d="M12 12v7c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5v-7M12 16c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5"/></svg></span><small>Velat</small></button></div></nav>
@@ -944,16 +944,71 @@ function renderStatementPreview(rows){
  preview.innerHTML=`<div class="preview-summary"><div><small>Uusia</small><b>${fresh.length}</b></div><div><small>Tulot</small><b>${E(income)}</b></div><div><small>Menot</small><b>${E(expense)}</b></div></div><div class="preview-list">${pendingStatement.map(x=>`<div class="preview-item ${x.duplicate?'duplicate':''}"><span>${x.date.split('-').reverse().join('.')}</span><span>${x.description}${x.duplicate?' · jo lisätty':''}</span><span class="amt ${x.amount<0?'negative':'positive'}">${E(x.amount)}</span></div>`).join('')}</div><div class="preview-confirm"><button type="button" class="action-btn" id="cancelPasteBtn">Peruuta</button><button type="button" class="action-btn primary" id="confirmPasteBtn" ${fresh.length?'':'disabled'}>Lisää ${fresh.length} tapahtumaa</button></div>`;preview.classList.remove('hidden');$('cancelPasteBtn').onclick=()=>{pendingStatement=[];preview.classList.add('hidden')};$('confirmPasteBtn').onclick=commitPastedStatement;$('statementStatus').textContent=pendingStatement.some(x=>x.duplicate)?'Harmaat tapahtumat löytyvät jo sovelluksesta eikä niitä lisätä uudelleen.':'Tarkista tapahtumat ennen lisäämistä.'
 }
 function commitPastedStatement(){const added=pendingStatement.filter(x=>!x.duplicate);state.transactions=[...state.transactions,...added].sort((a,b)=>b.date.localeCompare(a.date));state.lastImport=new Date().toISOString().slice(0,10);persist();renderHome();renderEvents();initArchiveFilters();$('statementPaste').value='';$('statementPreview').classList.add('hidden');$('statementStatus').textContent=`Lisätty ${added.length} uutta tapahtumaa. Päällekkäiset ohitettiin.`;pendingStatement=[]}
+
+async function readPdfStatement(file,accountId){
+ // PDF luetaan selaimessa paikallisesti; mitään tiliotetta ei lähetetä palvelimelle.
+ if(!window.pdfjsLib){
+  await new Promise((resolve,reject)=>{
+   const script=document.createElement('script');
+   script.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+   script.onload=resolve;script.onerror=()=>reject(new Error('PDF-lukijan lataus epäonnistui. Tarkista verkkoyhteys.'));
+   document.head.appendChild(script);
+  });
+ }
+ window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+ const pdf=await window.pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+ const rows=[];let statementYear=Number($('statementYear').value)||2026;
+ for(let pageNum=1;pageNum<=pdf.numPages;pageNum++){
+  const page=await pdf.getPage(pageNum),content=await page.getTextContent(),lines=new Map();
+  for(const item of content.items){
+   const value=String(item.str||'').trim();if(!value)continue;
+   const y=Math.round(item.transform[5]*2)/2;
+   if(!lines.has(y))lines.set(y,[]);
+   lines.get(y).push({x:item.transform[4],value});
+  }
+  const sorted=[...lines.entries()].sort((a,b)=>b[0]-a[0]).map(([,items])=>items.sort((a,b)=>a.x-b.x).map(i=>i.value).join(' '));
+  const yearMatch=sorted.slice(0,18).join(' ').match(/(?:Kausi|Kausi\s*).*?(\d{2}\.\d{2}\.(20\d{2}))/i);
+  if(yearMatch)statementYear=Number(yearMatch[1].slice(-4));
+  let current=null;
+  for(const line of sorted){
+   const m=line.match(/^(\d{1,2})\.(\d{2})\s+\d{1,2}\.\d{2}\s+(.+)$/);
+   if(m){
+    if(current)rows.push(current);
+    current={day:Number(m[1]),month:Number(m[2]),year:statementYear,parts:[m[3]]};
+   }else if(current && !/^(?:Helmi Säästöpankki Oy|TILIOTE|Lähettäjä|Vastaanottaja|Kirjaus-|päivämäärä|SALDO|SIIRTO|PANOT|OTOT|NOSTOVARA|YHTEENSÄ)/i.test(line)){
+    current.parts.push(line);
+   }
+  }
+  if(current)rows.push(current);
+ }
+ const acc=state.accounts.find(a=>a.id===accountId);
+ const output=[];
+ for(const b of rows){
+  const first=b.parts[0]||'';
+  const amt=first.match(/([+\-]\s*\d[\d\s.]*,\d{2})\s*$/);
+  if(!amt)continue;
+  const amount=parseFinnishAmount(amt[1]);
+  const description=first.slice(0,amt.index).replace(/\s+\/[AJK]\s*$/,'').trim();
+  if(!description||/^(SALDO|SIIRTO|PANOT|OTOT)/i.test(description))continue;
+  const date=`${b.year}-${String(b.month).padStart(2,'0')}-${String(b.day).padStart(2,'0')}`;
+  const row=automaticAudit({date,account:accountId,owner:acc.owner,description,amount,category:importedCategory(description,amount,accountId),type:amount<0?'expense':'income'});
+  row.id=importedId(row);
+  output.push(row);
+ }
+ if(!output.length)throw new Error('PDF:stä ei löytynyt tunnistettavia tapahtumia. Varmista, että se on Säästöpankin tekstimuotoinen tiliote.');
+ return output;
+}
 async function importStatement(file){
  const accountId=$('statementAccount').value;if(!accountId)throw new Error('Valitse tili');
- const text=await file.text();let incoming;
- if(file.name.toLowerCase().endsWith('.json')){const data=JSON.parse(text);incoming=Array.isArray(data)?data:data.transactions;if(!Array.isArray(incoming))throw new Error('JSON-tiedosto ei sisällä tapahtumia');const acc=state.accounts.find(a=>a.id===accountId);incoming=incoming.map((x,i)=>automaticAudit({...x,account:accountId,owner:x.owner||acc.owner,id:x.id||`json-${Date.now()}-${i}`}));}
- else incoming=parseStatementCsv(text,accountId);
- const existing=new Set(state.transactions.map(x=>x.id));const added=incoming.filter(x=>!existing.has(x.id));state.transactions=[...state.transactions,...added].sort((a,b)=>b.date.localeCompare(a.date));state.lastImport=new Date().toISOString().slice(0,10);persist();renderHome();renderEvents();initArchiveFilters();$('statementStatus').textContent=`Lisätty ${added.length} uutta tapahtumaa. Päällekkäiset ohitettiin.`;
+ let incoming;
+ if(file.name.toLowerCase().endsWith('.pdf'))incoming=await readPdfStatement(file,accountId);
+ else if(file.name.toLowerCase().endsWith('.json')){const data=JSON.parse(await file.text());incoming=Array.isArray(data)?data:data.transactions;if(!Array.isArray(incoming))throw new Error('JSON-tiedosto ei sisällä tapahtumia');const acc=state.accounts.find(a=>a.id===accountId);incoming=incoming.map((x,i)=>automaticAudit({...x,account:accountId,owner:x.owner||acc.owner,id:x.id||`json-${Date.now()}-${i}`}));}
+ else incoming=parseStatementCsv(await file.text(),accountId);
+ renderStatementPreview(incoming);$('statementStatus').textContent='PDF luettu. Tarkista tapahtumat ja paina Lisää tapahtumat. Päällekkäiset ohitetaan.';
 }
 initStatementAccounts();
 $('statementImportBtn').onclick=()=>$('statementFile').click();
-$('statementFile').onchange=async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{$('statementStatus').textContent='Lisätään tiliotetta…';await importStatement(file)}catch(err){$('statementStatus').textContent='Tiliotteen lisäys epäonnistui: '+err.message}finally{e.target.value=''}};
+$('statementFile').onchange=async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{$('statementStatus').textContent='Luetaan tiliotetta…';await importStatement(file)}catch(err){$('statementStatus').textContent='Tiliotteen lisäys epäonnistui: '+err.message}finally{e.target.value=''}};
 $('pasteClipboardBtn').onclick=async()=>{try{if(!navigator.clipboard?.readText)throw new Error('Puhelin ei sallinut automaattista liittämistä. Paina tekstikenttää pitkään ja valitse Liitä.');const text=await navigator.clipboard.readText();$('statementPaste').value=text;$('statementStatus').textContent='Tiliote liitetty. Paina Tarkista tapahtumat.'}catch(err){$('statementStatus').textContent=err.message;$('statementPaste').focus()}};
 $('previewPasteBtn').onclick=()=>{try{const rows=parsePastedStatement($('statementPaste').value,$('statementAccount').value,Number($('statementYear').value)||new Date().getFullYear());renderStatementPreview(rows)}catch(err){$('statementPreview').classList.add('hidden');$('statementStatus').textContent='Tarkistus epäonnistui: '+err.message}};
 
