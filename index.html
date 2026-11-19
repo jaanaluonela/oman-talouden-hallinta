@@ -919,6 +919,12 @@ function renderSpending(){
  $('spendChart').innerHTML=entries.map(([name,items])=>{const amount=expenseTotal(items);return '<div class="spend-chart-row"><span>'+escapeHtml(name)+'</span><b>'+E(amount)+'</b><div class="spend-progress" style="grid-column:1/3"><i style="width:'+(total?amount/total*100:0)+'%"></i></div></div>'}).join('');
  $('spendList').classList.toggle('hidden',spendingChart);$('spendChart').classList.toggle('hidden',!spendingChart);
 
+ // Avattu luokka tuodaan näkyviin myös pitkän menolistan alaosassa.
+ $('spendList').querySelectorAll('details.spend-item').forEach(details=>details.addEventListener('toggle',()=>{
+  if(!details.open)return;
+  const top=details.getBoundingClientRect().top+window.scrollY-18;
+  window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+ }));
  $('spendList').querySelectorAll('[data-review-id]').forEach(select=>select.addEventListener('change',()=>{
   const row=state.transactions.find(x=>x.id===select.dataset.reviewId);
   if(!row||!select.value)return;
