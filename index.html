@@ -391,6 +391,12 @@ seed.transactions.push(
 );
 seed.transactions.sort((a,b)=>b.date.localeCompare(a.date));
 function textKey(v){return String(v||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9ÅÄÖ ]/g,' ').replace(/\s+/g,' ').trim()}
+function travelSubcategory(description){
+ if(/\b(?:AUTOAVEC|GOCAMPER|MCRENT|INDIE CAMPERS|MYCAMPSY)\b|\b(?:ASUNTOAUTO|MATKAILUAUTO)[A-Z]*\b.*\bVUOKR|\bVUOKR[A-Z]*\b.*\b(?:ASUNTOAUTO|MATKAILUAUTO)/.test(description))return 'Asuntoauton vuokraus';
+ if(/\bKYLPYLA[A-Z]*\b|\bHOLIDAY CLUB\b|\bSPA HOTEL\b/.test(description))return 'Kylpylät';
+ if(/\b(?:AIRBNB|BOOKING COM|HOTEL[A-Z]*|MAJOITUS[A-Z]*)\b/.test(description))return 'Majoitus';
+ return null;
+}
 function automaticAudit(x){
  const d=textKey(x.description),r={...x,needsReview:false};
  const isTaxi=(r.account==='taxi'||r.owner==='Yritys');
@@ -416,7 +422,7 @@ function automaticAudit(x){
    [/PAIJAT HAMEEN HYVINVOINTIALUE|APTEEKKI|YLIOPISTON APTEEKKI|YA SALO|TERVEYSTALO|MEHILAINEN/,'Terveys'],
    [/MUSTI JA MIRRI|MUSTI MIRRI|PETEN KOIRATARVIKE|SALPAUSSELAN KENN|SHOWLINK/,'Lemmikit'],
    [/LAGER 157|FIFTH AVENUE|DIFFERENSES|H M |ZALANDO/,'Vaatteet'],
-   [/HESBURGER|MCDONALD|BURGER KING|RAVINTOLA|RESTAUR|KAHVILA|PIZZA|KOTIPIZZA|LIMETTE/,'Ravintolat'],
+   [/HESBURGER|MCDONALD|BURGER KING|RAVINTOLA|RESTAUR|KAHVILA|PIZZA|KOTIPIZZA|LIMETTE|\bCAFE\b/,'Ravintolat'],
    [/TUI|SF CARAVAN|VR MATKALLA|FINNAIR|MAJOITUS|HOTEL|FINNKINO|LIPPUPISTE|TYKKIMAEN HUVIPUISTO|LUCKIEFUN|HEINOLAN HEINASAARI|LAIVARANTA/,'Matkailu'],
    [/MESSUKESKUS|R LAHTI|R KIOSKI|VEIKKAUS/,'Vapaa-aika'],
    [/OOMI|ELENIA|FORTUM|HELEN|VARE ENERGIA|VAASA SAHKO|KERAVAN ENERGIA/,'Sähkö'],
@@ -429,7 +435,8 @@ function automaticAudit(x){
    [/SEURAKUNTAYHTYMA/,'Muut menot'],
    [/ROPO SUOMI/,'Muut menot']
   ];
-  for(const [rx,c] of rules){if(rx.test(d)){r.category=c;break}}
+  if(travelSubcategory(d))r.category='Matkailu';
+  else for(const [rx,c] of rules){if(rx.test(d)){r.category=c;break}}
   if(!d&&(Math.abs(Number(r.amount)+4.5)<0.01||Math.abs(Number(r.amount)+7)<0.01))r.category='Pankkipalvelut';
   if(r.category==='Muut ostokset')r.needsReview=true;
  }
@@ -670,7 +677,8 @@ const shoppingCategory='Ruoka ja muut kauppaostokset';
 const householdCategoryOrder=[
  shoppingCategory,'Asuntolaina','Remonttilaina','Sähkö','Vesi','Jätehuolto','Vakuutukset','Auto',
  'Puhelimet ja netti','Visa-luotot','Terveys ja apteekki','Tilaukset','Lemmikit',
- 'Harrastukset ja jäsenmaksut','Lapset – rahansiirrot','Muut kodin ostot','Tarkistettavat'
+ 'Matkat ja lomat','Ravintolat ja kahvilat','Harrastukset ja jäsenmaksut',
+ 'Lapset – rahansiirrot','Muut kodin ostot','Tarkistettavat'
 ];
 const householdCategoryAliases=new Map(Object.entries({
  'Kaupat':shoppingCategory,'Ruoka':shoppingCategory,'S-market':shoppingCategory,'Prisma':shoppingCategory,
@@ -682,7 +690,8 @@ const householdCategoryAliases=new Map(Object.entries({
  'Puhelin ja netti':'Puhelimet ja netti','Puhelin ja tietoliikenne':'Puhelimet ja netti',
  'Puhelin ja internet':'Puhelimet ja netti','Terveys':'Terveys ja apteekki',
  'Terveys ja hyvinvointi':'Terveys ja apteekki','Optikko ja silmälasit':'Terveys ja apteekki','Harrastukset':'Harrastukset ja jäsenmaksut',
- 'Vapaa-aika':'Harrastukset ja jäsenmaksut','Veikkaus':'Harrastukset ja jäsenmaksut'
+ 'Vapaa-aika':'Harrastukset ja jäsenmaksut','Veikkaus':'Harrastukset ja jäsenmaksut',
+ 'Matkailu':'Matkat ja lomat','Ravintolat':'Ravintolat ja kahvilat'
 }));
 function householdMainCategory(x){
  const c=x.category;
@@ -707,6 +716,8 @@ function shopGroup(x){
 function expenseSubcategory(x,main){
  const d=textKey(x.description),c=x.category||'';
  if(main===shoppingCategory)return shopGroup(x);
+ if(main==='Matkat ja lomat')return travelSubcategory(d)||'Muut matkakulut';
+ if(main==='Ravintolat ja kahvilat')return null;
  if(main==='Lapset – rahansiirrot'){
   if(/\\bOTTO\\b/.test(d))return 'Otto';
   if(/\\bVEETI\\b/.test(d))return 'Veeti';
