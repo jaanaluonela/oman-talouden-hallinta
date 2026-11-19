@@ -272,7 +272,7 @@ nav button{min-height:64px}
 <div class="page-head"><h2>⌂ Kodin talous</h2></div>
 <div class="card hidden"><fieldset id="reportOwners" class="scope-filter"><label><input type="checkbox" value="Jaana" checked>Jaana</label><label><input type="checkbox" value="Janne" checked>Janne</label></fieldset></div><div class="report-kpis hidden" id="reportKpis"><span id="reportIncome"></span><span id="reportExpense"></span><span id="reportNet"></span><span id="reportCount"></span></div><div class="report-tabs hidden"><button class="report-tab active" data-report="comparison">Kuukausivertailu</button><button class="report-tab" data-report="categories">Menoluokat</button><button class="report-tab" data-report="shops">🛒 Kaupat</button><button class="report-tab" data-report="months">Kuukaudet</button><button class="report-tab" data-report="review">⚠️ Tarkistettavat</button></div>
 <div id="reportMain">
-  <div id="reportComparison"><div class="compare-new"><h2>Vertailu</h2><div class="compare-controls"><label>Valitse meno<select id="compareCategory"><option value="Sähkö">⚡ Sähkö</option><option value="Vesi">Vesi</option><option value="Ruoka ja kaupat">Ruoka ja kaupat</option><option value="Auto">Auto</option><option value="Vakuutukset">Vakuutukset</option><option value="Puhelimet ja netti">Puhelin ja netti</option><option value="Terveys ja apteekki">Terveys</option><option value="Jätehuolto">Jätehuolto</option><option value="Muut menot">Muut menot</option><option value="Kaikki menot">Kaikki menot</option></select></label><div><span class="compare-label">Vertailujakso</span><div class="compare-period"><button data-period="3" type="button">3 kk</button><button data-period="6" type="button">6 kk</button><button data-period="12" class="selected" type="button">12 kk</button></div></div></div><div class="compare-panel"><h3 id="compareTitle">Sähkö – 6 kuukauden vertailu</h3><div class="compare-chart" id="compareChart"></div><div class="compare-stats" id="compareStats"></div></div><details class="compare-monthly" open><summary>Kuukausittaiset summat</summary><div id="compareMonthRows"></div></details></div><div class="card monthly-list compare-legacy">
+  <div id="reportComparison"><div class="compare-new"><h2>Vertailu</h2><div class="compare-controls"><label>Valitse meno<select id="compareCategory"><option value="Sähkö">⚡ Sähkö yhteensä</option><option value="Sähköenergia">Sähköenergia</option><option value="Sähkönsiirto">Sähkönsiirto</option><option value="Vesi">Vesi</option><option value="Ruoka ja kaupat">Ruoka ja kaupat</option><option value="Auto">Auto</option><option value="Vakuutukset">Vakuutukset</option><option value="Puhelimet ja netti">Puhelin ja netti</option><option value="Terveys ja apteekki">Terveys</option><option value="Jätehuolto">Jätehuolto</option><option value="Muut menot">Muut menot</option><option value="Kaikki menot">Kaikki menot</option></select></label><div><span class="compare-label">Vertailujakso</span><div class="compare-period"><button data-period="3" type="button">3 kk</button><button data-period="6" type="button">6 kk</button><button data-period="12" class="selected" type="button">12 kk</button></div></div></div><div class="compare-panel"><h3 id="compareTitle">Sähkö – 6 kuukauden vertailu</h3><div class="compare-chart" id="compareChart"></div><div class="compare-stats" id="compareStats"></div></div><details class="compare-monthly" open><summary>Kuukausittaiset summat</summary><div id="compareMonthRows"></div></details></div><div class="card monthly-list compare-legacy">
   <h2>Kaikki menot kuukausittain</h2>
   <label class="monthly-owner"><select id="monthlyOwner" aria-label="Valitse tarkasteltava henkilö"><option value="">Jaana ja Janne</option><option>Jaana</option><option>Janne</option></select></label>
   <div id="expenseComparison" aria-live="polite"></div><button type="button" class="comparison-close" onclick="show('home')">Sulje vertailu</button>
@@ -768,6 +768,12 @@ function shopGroup(x){
 }
 function expenseSubcategory(x,main){
  const d=textKey(x.description),c=x.category||'';
+ if(main==='Sähkö'){
+  const kind=textKey(x.manualCategory||x.category||'')+' '+d;
+  if(/ELENIA|SAHKONSIIRTO|VERKKOPALVELU/.test(kind))return 'Sähkönsiirto';
+  if(/OOMI|SAHKOENERGIA|SAHKOMYYNTI/.test(kind))return 'Sähköenergia';
+  return 'Muu sähkö / tarkista';
+ }
  if(main===shoppingCategory)return shopGroup(x);
  if(main==='Matkat ja lomat')return travelSubcategory(d)||'Muut matkakulut';
  if(main==='Ravintolat ja kahvilat')return null;
@@ -848,7 +854,7 @@ function renderNewComparison(){
  const today=new Date();
  const rows=state.transactions.filter(x=>x.type==='expense'&&isHouseholdTransaction(x));
  const categories=category==='Muut menot'?['Muut kodin ostot','Tilaukset','Lemmikit','Harrastukset ja jäsenmaksut','Tarkistettavat']:null;
- const matching=rows.filter(x=>category==='Kaikki menot'||(categories?categories.includes(householdMainCategory(x)):householdMainCategory(x)===category));
+ const matching=rows.filter(x=>category==='Kaikki menot'||(categories?categories.includes(householdMainCategory(x)):(category==='Sähköenergia'||category==='Sähkönsiirto')?(householdMainCategory(x)==='Sähkö'&&expenseSubcategory(x,'Sähkö')===category):householdMainCategory(x)===category));
  const available=[...new Set(rows.map(x=>x.date.slice(0,7)))].sort();
  const currentMonth=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
  const end=available.length&&available[available.length-1]>currentMonth?available[available.length-1]:currentMonth;
@@ -862,7 +868,7 @@ function renderNewComparison(){
  $('compareStats').innerHTML='<div>Keskimäärin / kk<strong>'+(known.length?E(sums.reduce((a,b)=>a+b,0)/known.length):'–')+'</strong></div><div>Korkein<strong>'+(known.length?E(Math.max(...sums)):'–')+'</strong></div><div>Matalin<strong>'+(known.length?E(Math.min(...sums)):'–')+'</strong></div>';
  $('compareMonthRows').innerHTML=values.map(x=>{
   let extra='';
-  if(category==='Sähkö'&&x.hasData){
+  if((category==='Sähkö'||category==='Sähköenergia'||category==='Sähkönsiirto')&&x.hasData){
    const items=matching.filter(t=>t.date.slice(0,7)===x.month);
    const oomi=items.filter(t=>/OOMI/.test(textKey(t.description)));
    const elenia=items.filter(t=>/ELENIA/.test(textKey(t.description)));
