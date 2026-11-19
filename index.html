@@ -798,9 +798,20 @@ function renderSpending(){
  $('spendList').querySelectorAll('[data-review-id]').forEach(select=>select.addEventListener('change',()=>{
   const row=state.transactions.find(x=>x.id===select.dataset.reviewId);
   if(!row||!select.value)return;
-  if(select.value==='Oma siirto'){row.type='transfer';row.category='Oma siirto';row.manualCategory='Oma siirto';row.needsReview=false;}
-  else if(select.value==='Yrityksen meno'){row.scope='Yritys';row.businessExpense=true;row.needsReview=false;}
-  else{row.manualCategory=select.value;row.category=select.value;row.needsReview=false;row.type='expense';}
+  const category=select.value;
+  const merchant=textKey(merchantName(row.description));
+  // Käytä täsmälleen samaa tunnistettua maksunsaajaa; älä niputa henkilösiirtoja.
+  const unsafe=/^(?:MOB PAY|MOBILEPAY|LUONELA|TILISIIRTO|SEPA|TUNTEMATON)/.test(merchant)||merchant.length<4;
+  const candidates=unsafe?[row]:state.transactions.filter(x=>x.type==='expense'&&isHouseholdTransaction(x)&&textKey(merchantName(x.description))===merchant);
+  const count=candidates.length;
+  if(count>1&&!confirm('Sama maksunsaaja: '+merchantName(row.description)+'\\nLajitellaanko kaikki '+count+' tapahtumaa luokkaan '+category+'?\\n\\nOK = kaikki, Peruuta = vain tämä tapahtuma')){
+   candidates.length=0;candidates.push(row);
+  }
+  for(const item of candidates){
+   if(category==='Oma siirto'){item.type='transfer';item.category='Oma siirto';item.manualCategory='Oma siirto';item.needsReview=false;}
+   else if(category==='Yrityksen meno'){item.scope='Yritys';item.businessExpense=true;item.needsReview=false;}
+   else{item.manualCategory=category;item.category=category;item.needsReview=false;item.type='expense';}
+  }
   persist();renderSpending();renderHome();
  }));
  $('spendList').querySelectorAll('.spend-compare-open').forEach(b=>b.addEventListener('click',()=>openSpendingComparison(b.dataset.compare)));
