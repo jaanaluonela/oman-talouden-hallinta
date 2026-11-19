@@ -587,6 +587,30 @@ for(const t of state.transactions.filter(x=>x.date?.startsWith('2026-10-')&&x.id
  if(type)t.type=type;
  if(scope==='Yritys'){t.scope='Yritys';t.businessExpense=true}
 }
+// Lokakuun 1.–7.10. Jaanan pankkikuvista vahvistetut tapahtumat.
+const jaanaOctStart=[
+ ['2026-10-01','IKEA Lahti HFB Main',-7.99,'Kodin menot','expense'],
+ ['2026-10-01','Instrumentarium Karisma',-184.80,'Optikko ja silmälasit','expense'],
+ ['2026-10-01','Musti ja Mirri Oy',-54.97,'Lemmikit','expense'],
+ ['2026-10-05','MOB.PAY*OTTO EEMELI LUONE',-0.40,'Lapset – rahansiirrot','expense'],
+ ['2026-10-05','MOB.PAY*OTTO EEMELI LUONE',-4.00,'Lapset – rahansiirrot','expense'],
+ ['2026-10-05','MOB.PAY*OTTO EEMELI LUONE',-4.00,'Lapset – rahansiirrot','expense'],
+ ['2026-10-05','MOB.PAY*OTTO EEMELI LUONE',-5.50,'Lapset – rahansiirrot','expense'],
+ ['2026-10-05','Burger King Neste Kivistö',-9.30,'Ravintolat','expense'],
+ ['2026-10-05','MOB.PAY*OTTO EEMELI LUONE',-3.00,'Lapset – rahansiirrot','expense'],
+ ['2026-10-06','MOB.PAY*OTTO EEMELI LUONE',-2.20,'Lapset – rahansiirrot','expense'],
+ ['2026-10-06','MOB.PAY*OTTO EEMELI LUONE',-26.50,'Lapset – rahansiirrot','expense'],
+ ['2026-10-06','MOB.PAY*OTTO EEMELI LUONE',-2.00,'Lapset – rahansiirrot','expense'],
+ ['2026-10-07','LUONELA JANNE MIKA ANTERO',60.00,'Oma siirto','transfer'],
+ ['2026-10-07','MOB.PAY*OTTO EEMELI LUONE',-2.20,'Lapset – rahansiirrot','expense'],
+ ['2026-10-07','MOB.PAY*VEETI ELIAS LUONE',-12.00,'Lapset – rahansiirrot','expense']
+];
+// Tunniste per pankkirivi: kaksi erillistä 4 euron MobilePay-maksua säilyvät.
+for(let i=0;i<jaanaOctStart.length;i++){
+ const [date,description,amount,category,type]=jaanaOctStart[i];
+ const id='jaana_oct26_start_'+String(i).padStart(3,'0');
+ if(!state.transactions.some(t=>t.id===id))state.transactions.push({id,date,description,amount,category,manualCategory:category,type,account:'sp_jaana',owner:'Jaana',scope:'Koti',needsReview:false});
+}
 localStorage.setItem('talousV5',JSON.stringify(state));
 // Syyskuun 2026 Jannen tiliotteet aiemmin toimitetusta Excelistä.
 // Tapahtumat lisätään vain kerran, eikä olemassa olevia luokittelumuutoksia ylikirjoiteta.
