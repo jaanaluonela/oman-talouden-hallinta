@@ -585,6 +585,13 @@ for(let i=0;i<jaanaEarlySeptember2026.length;i++){
  const existing=state.transactions.find(t=>t.id===id||(t.account==='sp_jaana'&&t.date===date&&Math.abs(Number(t.amount)-amount)<0.005&&String(t.description).toLowerCase().includes(description.toLowerCase().slice(0,8))));
  if(!existing)state.transactions.push({id,date,account:'sp_jaana',owner:'Jaana',description,amount,category,manualCategory:category,type,scope:'Koti',needsReview:category==='Tarkistettavat'});
 }
+// Jaanan syyskuun loppupuolen pankkikuvien uudet tapahtumat (ei aiempien kuvien toistoja).
+const jaanaLateSeptember2026=[["09-21","S-Market Vääksy",-23,"Ruoka"],["09-21","K-Supermarket Vääksy",-32.77,"Ruoka"],["09-22","Hesburger",-19.55,"Ravintolat"],["09-22","K-Citymarket Karisma",-25.01,"Ruoka"],["09-22","Instrumentarium",-78,"Silmälasit"],["09-22","Instrumentarium",-5,"Silmälasit"],["09-22","ABC Asikkala",-40,"Polttoaine"],["09-22","Clas Ohlson",-27.95,"Kodin menot"],["09-23","S-Market Vääksy",-11.6,"Ruoka"],["09-23","IKEA Lahti",-17.97,"Kodin menot"],["09-23","IKEA kioski",-1.49,"Kodin menot"],["09-23","Puuilo Lahti",-9.99,"Kodin menot"],["09-23","Svea Bank",-61,"Silmälasit"],["09-23","Otto MobilePay",-2.2,"Lapset – rahansiirrot"],["09-23","Vipps MobilePay",10,"Tarkistettavat"],["09-24","Janne sisäinen siirto",20,"Sisäinen siirto"],["09-25","K-Supermarket Vääksy",-57.62,"Ruoka"],["09-25","Netflix",-10.99,"Tilaukset"],["09-25","Otto MobilePay",-2,"Lapset – rahansiirrot"],["09-25","Veeti MobilePay",-5.45,"Lapset – rahansiirrot"],["09-25","Kela",94.88,"Lapsilisä"],["09-26","Janne sisäinen siirto",40,"Sisäinen siirto"],["09-28","S-Market Vääksy",-28.94,"Ruoka"],["09-28","Palvelumaksu",-4.5,"Pankkikulut"],["09-29","S-Market Vääksy",-25.78,"Ruoka"],["09-29","Lidl Nastola",-13.56,"Ruoka"],["09-29","Asikkalan apteekki",-22.53,"Terveys"],["09-30","K-Citymarket Karisma",-28.15,"Ruoka"],["09-30","Vipps MobilePay",55,"Tarkistettavat"],["09-30","Säästöpankki Kantti sijoitusrahasto",-50,"Säästäminen"]];
+for(let i=0;i<jaanaLateSeptember2026.length;i++){
+ const [day,description,amount,category]=jaanaLateSeptember2026[i],date='2026-'+day,id='jaana_late_sep26_'+i;
+ const existing=state.transactions.find(t=>t.id===id||(t.account==='sp_jaana'&&t.date===date&&Math.abs(Number(t.amount)-amount)<0.005&&String(t.description).toLowerCase().includes(description.toLowerCase().slice(0,8))));
+ if(!existing)state.transactions.push({id,date,account:'sp_jaana',owner:'Jaana',description,amount,category,manualCategory:category,type:category==='Sisäinen siirto'?'transfer':amount>0?'income':'expense',scope:'Koti',needsReview:category==='Tarkistettavat'});
+}
 const taxiPaidHomeBills=[
  ['2026-01-21','Elenia',261.30,'Sähkö'],
  ['2026-02-22','Elenia',381.18,'Sähkö'],
