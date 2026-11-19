@@ -894,7 +894,7 @@ function renderSpending(){
  const rows=state.transactions.filter(x=>x.type==='expense'&&isHouseholdTransaction(x)&&x.date.startsWith(monthSelect.value)&&(!owner||x.owner===owner));
  const total=expenseTotal(rows);$('spendSum').textContent=E(total);
  const groups=groupExpenses(rows,spendingMode==='shops'?x=>householdMainCategory(x)===shoppingCategory?shopGroup(x):'Muut kuin kauppaostokset':householdMainCategory);
- const entries=[...groups].sort((a,b)=>expenseTotal(b[1])-expenseTotal(a[1]));
+ const entries=[...groups].sort((a,b)=>a[0]==='Tarkistettavat'?1:b[0]==='Tarkistettavat'?-1:expenseTotal(b[1])-expenseTotal(a[1]));
  $('spendList').innerHTML=entries.map(([name,items])=>{
   const amount=expenseTotal(items),percent=total?amount/total*100:0;
   const meaningful=items.some(x=>expenseSubcategory(x,name));
