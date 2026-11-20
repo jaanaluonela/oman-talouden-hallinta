@@ -326,7 +326,17 @@ nav button{min-height:64px}
 #home .home-finance-symbol svg,#home .home-calendar-icon svg{stroke-width:3.4!important}
 #home .home-choices-new .choice-icon svg{stroke-width:3.4!important}
 #home .home-difference-icon svg{stroke-width:3.5!important}
-</style></head><body><div class="app">
+</style>
+<style id="compact-vertical-comparison-v1">
+/* Tiiviit pystypylväät: 3, 6 ja 12 kk samalla rivillä, ei vaakapylväitä. */
+.compare-chart{display:grid!important;grid-template-columns:repeat(var(--comparison-columns,12),minmax(0,1fr));gap:3px!important;align-items:end!important;overflow-x:hidden!important;min-height:0!important;height:185px!important;padding:15px 6px 10px!important;scroll-snap-type:none!important}
+.compare-chart .compare-bar-item{flex:none!important;width:auto!important;min-width:0!important;height:155px!important;gap:4px!important;scroll-snap-align:none!important}
+.compare-chart .compare-bar{width:clamp(8px,55%,23px)!important;max-width:23px!important}
+.compare-chart .compare-bar-value{font-size:clamp(.46rem,1.7vw,.68rem)!important;max-width:100%;letter-spacing:-.35px;white-space:nowrap!important}
+.compare-chart .compare-bar-month{font-size:clamp(.6rem,2vw,.78rem)!important;white-space:nowrap}
+@media(max-width:430px){.compare-chart{gap:1px!important;padding-left:2px!important;padding-right:2px!important}.compare-chart .compare-bar-value{font-size:.49rem!important}}
+</style>
+</head><body><div class="app">
 <div class="global-brand"><span aria-hidden="true" class="brand-house"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v11H3z"/><path d="M9 21v-8h6v8"/></svg></span><span>Kodin talous</span></div>
 <section id="home">
 <div class="page-head"><h1><span class="home-title-icon" aria-hidden="true"><svg viewBox="0 0 64 64" width="44" height="44" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 28 32 8l25 20v28H7V28ZM25 56V35h14v21"/></svg></span> Kodin talous</h1></div>
@@ -1146,6 +1156,7 @@ function renderNewComparison(){
  const values=periods.map(m=>({month:m,sum:expenseTotal(matching.filter(x=>x.date.slice(0,7)===m)),hasData:rows.some(x=>x.date.slice(0,7)===m)}));
  const max=Math.max(1,...values.map(x=>x.sum));
  $('compareTitle').textContent=category+' – '+comparePeriod+' kuukauden vertailu';
+ $('compareChart').style.setProperty('--comparison-columns',String(comparePeriod));
  $('compareChart').setAttribute('aria-label','Kuukausikaavio aikajärjestyksessä, vieritä sivusuunnassa');
  $('compareChart').innerHTML=values.map(x=>'<div class="compare-bar-item"><span class="compare-bar-value">'+(x.hasData?E(x.sum):'–')+'</span><div class="compare-bar" style="height:'+(x.hasData?Math.max(2,Math.round(x.sum/max*125)):2)+'px;'+(!x.hasData?'background:#e5e9e7;':'')+'"></div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>').join('');
  const known=values.filter(x=>x.hasData),sums=known.map(x=>x.sum);
