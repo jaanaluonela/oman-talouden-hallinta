@@ -871,6 +871,23 @@ for(const t of state.transactions.filter(x=>x.date?.startsWith('2026-09-')&&['sp
 }
 state.transactions.sort((a,b)=>b.date.localeCompare(a.date));
 localStorage.setItem('talousV5',JSON.stringify(state));
+// Lokakuu 2026: Instrumentariumin sama 184,80 euron pankkiosto oli tuotu kolmesta lähteestä.
+// Pidetään vain yksi kirjaus. Svean 61 euron rahoituslyhennys ei ole uusi optikko-ostos.
+{
+ const seenOptician=new Set();
+ state.transactions=state.transactions.filter(t=>{
+  if(t.date!=='2026-10-01'||t.account!=='sp_jaana'||Math.abs(Number(t.amount)+184.80)>0.001||!/INSTRUMENTARIUM/i.test(t.description||''))return true;
+  const key=t.date+'|'+t.account+'|'+Number(t.amount);
+  if(seenOptician.has(key))return false;
+  seenOptician.add(key);return true;
+ });
+ for(const t of state.transactions){
+  if(t.date?.startsWith('2026-10')&&/SVEA BANK/i.test(t.description||'')&&Math.abs(Number(t.amount)+61)<0.001){
+   t.category='Lainanlyhennys';t.manualCategory='Lainanlyhennys';t.type='transfer';t.needsReview=false;
+  }
+ }
+ localStorage.setItem('talousV5',JSON.stringify(state));
+}
 const E=n=>Number(n||0).toLocaleString('fi-FI',{style:'currency',currency:'EUR'});const $=id=>document.getElementById(id);const isHouseholdOwner=owner=>owner==='Jaana'||owner==='Janne';
 const isHouseholdAccount=account=>isHouseholdOwner(account.owner)&&account.id!=='taxi';
 const isHouseholdTransaction=x=>isHouseholdOwner(x.owner)&&x.account!=='taxi'&&x.scope!=='Yritys';
