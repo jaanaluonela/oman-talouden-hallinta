@@ -374,7 +374,7 @@ nav button{min-height:64px}
 <div class="page-head"><h2>⌂ Kodin talous</h2></div>
 <div class="card hidden"><fieldset id="reportOwners" class="scope-filter"><label><input type="checkbox" value="Jaana" checked>Jaana</label><label><input type="checkbox" value="Janne" checked>Janne</label></fieldset></div><div class="report-kpis hidden" id="reportKpis"><span id="reportIncome"></span><span id="reportExpense"></span><span id="reportNet"></span><span id="reportCount"></span></div><div class="report-tabs hidden"><button class="report-tab active" data-report="comparison">Kuukausivertailu</button><button class="report-tab" data-report="categories">Menoluokat</button><button class="report-tab" data-report="shops">🛒 Kaupat</button><button class="report-tab" data-report="months">Kuukaudet</button><button class="report-tab" data-report="review">⚠️ Tarkistettavat</button></div>
 <div id="reportMain">
-  <div id="reportComparison"><div class="compare-new"><h2>Vertailu</h2><div class="compare-controls"><label>Valitse meno<select id="compareCategory"><option value="Sähkö">⚡ Sähkö yhteensä</option><option value="Sähköenergia">Sähköenergia</option><option value="Sähkönsiirto">Sähkönsiirto</option><option value="Vesi">Vesi</option><option value="Ruoka ja kaupat">Ruoka ja kaupat</option><option value="Auto">Auto</option><option value="Vakuutukset">Vakuutukset</option><option value="Puhelimet ja netti">Puhelin ja netti</option><option value="Terveys ja apteekki">Terveys</option><option value="Jätehuolto">Jätehuolto</option><option value="Muut menot">Muut menot</option><option value="Kaikki menot">Kaikki menot</option></select></label><div><span class="compare-label">Vertailujakso</span><div class="compare-period"><button data-period="3" type="button">3 kk</button><button data-period="6" type="button">6 kk</button><button data-period="12" class="selected" type="button">12 kk</button></div></div></div><div class="compare-panel"><h3 id="compareTitle">Sähkö – 6 kuukauden vertailu</h3><div class="compare-chart" id="compareChart"></div><div class="compare-stats" id="compareStats"></div></div><details class="compare-monthly" open><summary>Kuukausittaiset summat</summary><div id="compareMonthRows"></div></details></div><div class="card monthly-list compare-legacy">
+  <div id="reportComparison"><div class="compare-new"><h2>Vertailu</h2><div class="compare-controls"><label>Valitse meno<select id="compareCategory"><option value="Sähkö">⚡ Sähkö yhteensä</option><option value="Sähköenergia">Sähköenergia</option><option value="Sähkönsiirto">Sähkönsiirto</option><option value="Vesi">Vesi</option><option value="Asuminen">Asuminen</option><option value="Ruoka ja kaupat">Ruoka ja kaupat</option><option value="Auto">Auto</option><option value="Vakuutukset">Vakuutukset</option><option value="Puhelimet ja netti">Puhelin ja netti</option><option value="Terveys ja apteekki">Terveys</option><option value="Jätehuolto">Jätehuolto</option><option value="Muut menot">Muut menot</option><option value="Kaikki menot">Kaikki menot</option></select></label><div><span class="compare-label">Vertailujakso</span><div class="compare-period"><button data-period="3" type="button">3 kk</button><button data-period="6" type="button">6 kk</button><button data-period="12" class="selected" type="button">12 kk</button></div></div></div><div class="compare-panel"><h3 id="compareTitle">Sähkö – 6 kuukauden vertailu</h3><div class="compare-chart" id="compareChart"></div><div class="compare-stats" id="compareStats"></div></div><details class="compare-monthly" open><summary>Kuukausittaiset summat</summary><div id="compareMonthRows"></div></details></div><div class="card monthly-list compare-legacy">
   <h2>Kaikki menot kuukausittain</h2>
   <label class="monthly-owner"><select id="monthlyOwner" aria-label="Valitse tarkasteltava henkilö"><option value="">Jaana ja Janne</option><option>Jaana</option><option>Janne</option></select></label>
   <div id="expenseComparison" aria-live="polite"></div><button type="button" class="comparison-close" onclick="show('home')">Sulje vertailu</button>
@@ -1041,13 +1041,13 @@ function merchantName(desc){const d=(desc||'').toUpperCase();const rules=[
 function reportRows(){const owners=selectedOwners('reportOwners');return state.transactions.filter(x=>isHouseholdTransaction(x)&&owners.includes(x.owner))}
 const shoppingCategory='Ruoka ja muut kauppaostokset';
 const householdCategoryOrder=[
- shoppingCategory,'Asuntolaina','Remonttilaina','Sähkö','Vesi','Jätehuolto','Vakuutukset','Auto',
+ shoppingCategory,'Asuminen','Asuntolaina','Remonttilaina','Sähkö','Vesi','Jätehuolto','Vakuutukset','Auto',
  'Puhelimet ja netti','Visa-luotot','Terveys ja apteekki','Tilaukset','Lemmikit',
  'Matkat ja lomat','Ravintolat ja kahvilat','Harrastukset ja jäsenmaksut',
  'Lapset – rahansiirrot','Muut kodin ostot','Tarkistettavat'
 ];
 const householdCategoryAliases=new Map(Object.entries({
- 'Kaupat':shoppingCategory,'Ruoka':shoppingCategory,'S-market':shoppingCategory,'Prisma':shoppingCategory,
+ 'Kiinteistövero':'Asuminen','Kiinteistöverot':'Asuminen','Kaupat':shoppingCategory,'Ruoka':shoppingCategory,'S-market':shoppingCategory,'Prisma':shoppingCategory,
  'Sale':shoppingCategory,'Alepa':shoppingCategory,'K-Market':shoppingCategory,'K-Supermarket':shoppingCategory,
  'K-Citymarket':shoppingCategory,'S-ryhmä':shoppingCategory,'K-ryhmä':shoppingCategory,'Muut kaupat':shoppingCategory,'Lidl':shoppingCategory,'Tokmanni':shoppingCategory,'Kärkkäinen':'Muut kodin ostot',
  'Sähköenergia':'Sähkö','Sähkönsiirto':'Sähkö',
@@ -1063,6 +1063,7 @@ function householdMainCategory(x){
  const c=x.category;
  const d=textKey(x.description);
  if(x.needsReview)return 'Tarkistettavat';
+ if(!x.manualCategory&&/KIINTEISTOVER|KIINTEISTÖVER/.test(d))return 'Asuminen';
  if(householdCategoryOrder.includes(c))return c;
  if(!x.manualCategory){
   if(/\bSVEA BANK\b|\bSVEA EKONOMI\b/.test(d))return 'Terveys ja apteekki';
@@ -1082,6 +1083,7 @@ function shopGroup(x){
 }
 function expenseSubcategory(x,main){
  const d=textKey(x.description),c=x.category||'';
+ if(main==='Asuminen')return /KIINTEISTOVER|KIINTEISTÖVER/.test(d)||c==='Kiinteistövero'?'Kiinteistövero':(c==='Asuminen'?null:c);
  if(main==='Sähkö'){
   const kind=textKey(x.manualCategory||x.category||'')+' '+d;
   if(/ELENIA|SAHKONSIIRTO|VERKKOPALVELU/.test(kind))return 'Sähkönsiirto';
