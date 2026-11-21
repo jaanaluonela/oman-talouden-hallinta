@@ -380,6 +380,13 @@ nav button{min-height:64px}
 #compareChart.electric-paired-chart .electric-axis{height:132px!important;justify-content:space-between!important}
 #compareChart.electric-paired-chart .electric-paired-bars{height:132px!important}
 #compareChart.electric-paired-chart .electric-paired-month{height:155px!important}
+</style><style id="utility-chart-scale-20261121">
+#compareChart.electric-paired-chart .electric-plot{background:none!important;position:relative!important}
+#compareChart.electric-paired-chart .electric-axis{height:132px!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;align-items:flex-end!important;position:relative!important;z-index:2!important}
+#compareChart.electric-paired-chart .utility-grid-lines{position:absolute!important;inset:0 0 auto 0!important;height:132px!important;pointer-events:none!important;z-index:0!important}
+#compareChart.electric-paired-chart .utility-grid-lines>div{position:absolute!important;left:0!important;right:0!important;border-top:1px solid #e0e8e4!important;height:0!important}
+#compareChart.electric-paired-chart .utility-grid-lines>div:last-child{border-top-color:#95aaa0!important}
+#compareChart.electric-paired-chart .electric-paired-month{position:relative!important;z-index:1!important}
 </style></head><body><div class="app">
 <div class="global-brand"><span aria-hidden="true" class="brand-house"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v11H3z"/><path d="M9 21v-8h6v8"/></svg></span><span>Kodin talous</span></div>
 <section id="home">
@@ -1370,14 +1377,22 @@ function renderNewComparison(){
    const verified=verifiedElectric2026[x.month];
    return {...x,energy:verified?verified.energy:(energyItems.length?expenseTotal(energyItems):null),transfer:verified?verified.transfer:(transferItems.length?expenseTotal(transferItems):null)};
  });
+ const utilityChart=category==='Sähkö'||category==='Vesi';
+ $('compareChart').classList.toggle('electric-paired-chart',utilityChart);
  const pairMax=Math.max(1,...paired.flatMap(x=>[Math.max(0,x.energy??0),Math.max(0,x.transfer??0)]));
- const axisMax=Math.max(100,Math.ceil(pairMax/100)*100);
+ const utilityMax=category==='Sähkö'?pairMax:Math.max(1,...values.map(x=>Math.max(0,x.sum)));
+ const axisMax=Math.max(200,Math.ceil(utilityMax/200)*200);
  const barHeight=132;
- $('compareChart').innerHTML=electricTogether
-  ? '<div class="electric-axis"><span>'+E(axisMax)+'</span><span>'+E(axisMax/2)+'</span><span>0 €</span></div><div class="electric-plot">'+paired.map(x=>{
+ const ticks=Array.from({length:axisMax/200+1},(_,i)=>axisMax-i*200);
+ const axisHtml='<div class="electric-axis">'+ticks.map(t=>'<span>'+E(t)+'</span>').join('')+'</div>';
+ const plotLines='<div class="utility-grid-lines">'+ticks.map((t,i)=>'<div style="top:'+(i/(ticks.length-1)*132)+'px"></div>').join('')+'</div>';
+ $('compareChart').innerHTML=category==='Sähkö'
+  ? axisHtml+'<div class="electric-plot">'+plotLines+paired.map(x=>{
      const bar=(amount,color)=>'<div class="electric-paired-column" title="'+(amount===null?'Ei laskua':E(amount))+'"><div class="electric-paired-bar" style="height:'+(amount===null?0:Math.max(0,Math.min(barHeight,Math.round(Math.max(0,amount)/axisMax*barHeight))))+'px;background:'+color+'"></div></div>';
      return '<div class="compare-bar-item electric-paired-month"><div class="electric-paired-bars">'+bar(x.energy,'#71c98d')+bar(x.transfer,'#4187ce')+'</div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>';
     }).join('')+'</div>'
+  :category==='Vesi'
+  ? axisHtml+'<div class="electric-plot">'+plotLines+values.map(x=>'<div class="compare-bar-item electric-paired-month"><div class="electric-paired-bars"><div class="electric-paired-column" title="'+(x.hasData?E(x.sum):'Ei laskua')+'"><div class="electric-paired-bar" style="height:'+(x.hasData?Math.max(0,Math.min(barHeight,Math.round(Math.max(0,x.sum)/axisMax*barHeight))):0)+'px;background:#4187ce"></div></div></div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>').join('')+'</div>'
   :values.map(x=>'<div class="compare-bar-item"><span class="compare-bar-value">'+(x.hasData?E(x.sum):'–')+'</span><div class="compare-bar" style="height:'+(x.hasData?Math.max(2,Math.round(x.sum/max*125)):2)+'px;'+(!x.hasData?'background:#e5e9e7;':'')+'"></div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>').join('');
  document.getElementById('electricLegend')?.remove();
  if(electricTogether)$('compareChart').insertAdjacentHTML('beforebegin','<div id="electricLegend" style="font-size:.82rem;padding:8px 12px"><span style="color:#27804b">■</span> Kulutus &nbsp; <span style="color:#4187ce">■</span> Siirto</div>');
