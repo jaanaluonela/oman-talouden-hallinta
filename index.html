@@ -1188,7 +1188,19 @@ function renderNewComparison(){
  $('compareTitle').textContent=category+' – '+comparePeriod+' kuukauden vertailu';
  $('compareChart').style.setProperty('--comparison-columns',String(comparePeriod));
  $('compareChart').setAttribute('aria-label','Kuukausikaavio aikajärjestyksessä, vieritä sivusuunnassa');
- $('compareChart').innerHTML=values.map(x=>'<div class="compare-bar-item"><span class="compare-bar-value">'+(x.hasData?E(x.sum):'–')+'</span><div class="compare-bar" style="height:'+(x.hasData?Math.max(2,Math.round(x.sum/max*125)):2)+'px;'+(!x.hasData?'background:#e5e9e7;':'')+'"></div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>').join('');
+ const electricTogether=category==='Sähkö';
+ $('compareChart').innerHTML=electricTogether
+  ? values.map(x=>{
+     const items=matching.filter(t=>t.date.slice(0,7)===x.month);
+     const oomi=expenseTotal(items.filter(t=>/OOMI/.test(textKey(t.description))));
+     const elenia=expenseTotal(items.filter(t=>/ELENIA/.test(textKey(t.description))));
+     const bar=(amount,color)=>'<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;min-width:0"><span style="font-size:.59rem;white-space:nowrap;font-weight:650">'+(amount?E(amount):'–')+'</span><div style="width:14px;height:'+(amount?Math.max(2,Math.round(amount/max*112)):2)+'px;background:'+(amount?color:'#e5e9e7')+';border-radius:4px 4px 0 0"></div></div>';
+     return '<div class="compare-bar-item" style="flex:0 0 82px"><div style="display:flex;align-items:flex-end;justify-content:center;gap:6px;height:150px">'+bar(oomi,'#71c98d')+bar(elenia,'#4187ce')+'</div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>';
+    }).join('')
+  :values.map(x=>'<div class="compare-bar-item"><span class="compare-bar-value">'+(x.hasData?E(x.sum):'–')+'</span><div class="compare-bar" style="height:'+(x.hasData?Math.max(2,Math.round(x.sum/max*125)):2)+'px;'+(!x.hasData?'background:#e5e9e7;':'')+'"></div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>').join('');
+ document.getElementById('electricLegend')?.remove();
+ if(electricTogether)$('compareChart').insertAdjacentHTML('beforebegin','<div id="electricLegend" style="font-size:.82rem;padding:8px 12px"><span style="color:#27804b">■</span> Kulutus · Oomi &nbsp; <span style="color:#4187ce">■</span> Siirto · Elenia</div>');
+ else document.getElementById('electricLegend')?.remove();
  const known=values.filter(x=>x.hasData),sums=known.map(x=>x.sum);
  $('compareStats').innerHTML='<div>Keskimäärin / kk<strong>'+(known.length?E(sums.reduce((a,b)=>a+b,0)/known.length):'–')+'</strong></div><div>Korkein<strong>'+(known.length?E(Math.max(...sums)):'–')+'</strong></div><div>Matalin<strong>'+(known.length?E(Math.min(...sums)):'–')+'</strong></div>';
  $('compareMonthRows').innerHTML=values.map(x=>{
