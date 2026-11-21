@@ -804,6 +804,27 @@ for(const [date,recipient,amount,category] of taxiPaidHomeBills){
   description:recipient+' – kodin lasku, maksettu taksin tililtä',amount:-amount,
   category,type:'expense',scope:'Koti',manualCategory:category});
 }
+// Pankkikuvista 21.11.2026 vahvistetut Elenian kotitalouden sähkönsiirrot.
+// Säilytä maksutili; lisää vain puuttuvat rivit. Älä monista jo tuotuja tapahtumia.
+const confirmedElenia=[
+ ['2026-05-15','sp_jaana','Jaana',215.26],
+ ['2026-05-27','taxi','Yritys',185.49],
+ ['2026-08-08','sp_jaana','Jaana',127.01],
+ ['2026-09-15','sp_jaana','Jaana',117.81],
+ ['2026-10-22','sp_jaana','Jaana',129.35],
+ ['2026-11-19','sp_janne','Janne',168.71]
+];
+for(const [date,account,owner,amount] of confirmedElenia){
+ const matches=state.transactions.filter(t=>t.date===date&&t.account===account&&t.type==='expense'&&
+  Math.abs(Math.abs(Number(t.amount))-amount)<0.005&&/ELENIA/.test(textKey(t.description)));
+ if(matches.length){
+  for(const t of matches){t.category='Sähkö';t.manualCategory='Sähkö';t.scope='Koti';t.needsReview=false;}
+ }else{
+  state.transactions.push({id:'confirmed_elenia_'+date+'_'+account,date,account,owner,
+   description:'Elenia Verkko Oyj – vahvistettu pankkikuvasta',amount:-amount,
+   category:'Sähkö',manualCategory:'Sähkö',type:'expense',scope:'Koti'});
+ }
+}
 // Syyskuun 2026 lopputäsmäytys: idempotentti tuonti ja tarkat tuplien poistot.
 // Poista vanhat automaattisesti tuodut Jaanan syyskuun rivit ja rakenna ne lähdeaineistosta uudelleen.
 const sepAutoId=id=>/^(?:jaana_sep26_verified_|jaana_early_sep26_|jaana_late_sep26_|jaana_verified_|jaana_early_|jaana_late_)/.test(String(id||''));
