@@ -1237,24 +1237,16 @@ function renderNewComparison(){
  // Vahvistettu pankkikuvista: vuoden 2026 sähkövertailu käyttää maksukohtaista
  // täsmäytyslistaa, ei vanhojen tuontien mahdollisesti kahdentuneita rivejä.
  const verifiedElectric2026={
- '2026-01':{energy:266.30,transfer:261.30},
- '2026-02':{energy:408.96,transfer:381.18},
- '2026-03':{energy:331.99,transfer:315.86},
- '2026-04':{energy:213.77,transfer:0},
- '2026-05':{energy:177.23,transfer:400.75},
- '2026-06':{energy:122.30,transfer:139.49},
- '2026-07':{energy:107.02,transfer:0},
- '2026-08':{energy:96.37,transfer:127.01},
- '2026-09':{energy:95.31,transfer:117.81},
- '2026-10':{energy:109.24,transfer:129.35},
- '2026-11':{energy:154.75,transfer:168.71}
+ '2026-08':{energy:null,transfer:117.37},
+ '2026-09':{energy:109.24,transfer:129.35},
+ '2026-10':{energy:154.75,transfer:168.71}
  };
  const available=[...new Set(rows.map(x=>x.date.slice(0,7)))].sort();
  const currentMonth=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
  const end=currentMonth;
  const [year,month]=end.split('-').map(Number);
  const periods=Array.from({length:comparePeriod},(_,i)=>{const d=new Date(Date.UTC(year,month-1-(comparePeriod-1-i),1));return d.toISOString().slice(0,7)});
- const values=periods.map(m=>{const monthItems=matching.filter(x=>x.date.slice(0,7)===m);const verified=category==='Sähkö'?verifiedElectric2026[m]:null;return {month:m,sum:verified?Math.round((verified.energy+verified.transfer)*100)/100:expenseTotal(monthItems),hasData:!!verified||monthItems.length>0};});
+ const values=periods.map(m=>{const monthItems=matching.filter(x=>x.date.slice(0,7)===m);const verified=category==='Sähkö'?verifiedElectric2026[m]:null;return {month:m,sum:verified?Math.round(((verified.energy||0)+(verified.transfer||0))*100)/100:expenseTotal(monthItems),hasData:!!verified||monthItems.length>0};});
  const max=Math.max(1,...values.map(x=>x.sum));
  $('compareTitle').textContent=category+' – '+comparePeriod+' kuukauden vertailu';
  $('compareChart').style.setProperty('--comparison-columns',String(comparePeriod));
@@ -1265,7 +1257,7 @@ function renderNewComparison(){
    const items=matching.filter(t=>t.date.slice(0,7)===x.month);
    const energy=expenseTotal(items.filter(t=>expenseSubcategory(t,'Sähkö')==='Sähköenergia'));
    const transfer=expenseTotal(items.filter(t=>expenseSubcategory(t,'Sähkö')==='Sähkönsiirto'));
-   const verified=verifiedElectric2026[x.month];return {...x,energy:verified?verified.energy:energy,transfer:verified?verified.transfer:transfer};
+   const verified=verifiedElectric2026[x.month];return {...x,energy:verified?(verified.energy??0):energy,transfer:verified?(verified.transfer??0):transfer};
  });
  const pairMax=Math.max(1,...paired.flatMap(x=>[x.energy,x.transfer]));
  $('compareChart').innerHTML=electricTogether
