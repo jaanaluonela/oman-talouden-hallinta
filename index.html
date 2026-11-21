@@ -336,7 +336,14 @@ nav button{min-height:64px}
 .compare-chart .compare-bar-month{font-size:clamp(.6rem,2vw,.78rem)!important;white-space:nowrap}
 @media(max-width:430px){.compare-chart{gap:1px!important;padding-left:2px!important;padding-right:2px!important}.compare-chart .compare-bar-value{font-size:.49rem!important}}
 </style>
-</head><body><div class="app">
+<style id="electric-paired-chart-v2">
+.compare-chart.electric-paired-chart .electric-paired-month{width:auto!important;min-width:0!important;flex:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;overflow:visible!important}
+.electric-paired-bars{display:flex;align-items:flex-end;justify-content:center;gap:2px;width:100%;height:132px;min-width:0}
+.electric-paired-column{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;min-width:0;flex:1;max-width:45px}
+.electric-paired-bar{width:clamp(3px,65%,14px);border-radius:3px 3px 0 0;flex-shrink:0}
+.electric-paired-value{font-size:clamp(.35rem,1.15vw,.59rem);white-space:nowrap;letter-spacing:-.4px;font-weight:650}
+@media(max-width:430px){.electric-paired-bars{gap:1px}.electric-paired-value{font-size:.38rem}.electric-paired-bar{width:clamp(3px,70%,10px)}}
+</style></head><body><div class="app">
 <div class="global-brand"><span aria-hidden="true" class="brand-house"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v11H3z"/><path d="M9 21v-8h6v8"/></svg></span><span>Kodin talous</span></div>
 <section id="home">
 <div class="page-head"><h1><span class="home-title-icon" aria-hidden="true"><svg viewBox="0 0 64 64" width="44" height="44" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 28 32 8l25 20v28H7V28ZM25 56V35h14v21"/></svg></span> Kodin talous</h1></div>
@@ -374,7 +381,7 @@ nav button{min-height:64px}
 <div class="page-head"><h2>⌂ Kodin talous</h2></div>
 <div class="card hidden"><fieldset id="reportOwners" class="scope-filter"><label><input type="checkbox" value="Jaana" checked>Jaana</label><label><input type="checkbox" value="Janne" checked>Janne</label></fieldset></div><div class="report-kpis hidden" id="reportKpis"><span id="reportIncome"></span><span id="reportExpense"></span><span id="reportNet"></span><span id="reportCount"></span></div><div class="report-tabs hidden"><button class="report-tab active" data-report="comparison">Kuukausivertailu</button><button class="report-tab" data-report="categories">Menoluokat</button><button class="report-tab" data-report="shops">🛒 Kaupat</button><button class="report-tab" data-report="months">Kuukaudet</button><button class="report-tab" data-report="review">⚠️ Tarkistettavat</button></div>
 <div id="reportMain">
-  <div id="reportComparison"><div class="compare-new"><h2>Vertailu</h2><div class="compare-controls"><label>Valitse meno<select id="compareCategory"><option value="Sähkö">⚡ Sähkö yhteensä</option><option value="Sähköenergia">Sähköenergia</option><option value="Sähkönsiirto">Sähkönsiirto</option><option value="Vesi">Vesi</option><option value="Asuminen">Asuminen</option><option value="Ruoka ja kaupat">Ruoka ja kaupat</option><option value="Auto">Auto</option><option value="Vakuutukset">Vakuutukset</option><option value="Puhelimet ja netti">Puhelin ja netti</option><option value="Terveys ja apteekki">Terveys</option><option value="Jätehuolto">Jätehuolto</option><option value="Muut menot">Muut menot</option><option value="Kaikki menot">Kaikki menot</option></select></label><div><span class="compare-label">Vertailujakso</span><div class="compare-period"><button data-period="3" type="button">3 kk</button><button data-period="6" type="button">6 kk</button><button data-period="12" class="selected" type="button">12 kk</button></div></div></div><div class="compare-panel"><h3 id="compareTitle">Sähkö – 6 kuukauden vertailu</h3><div class="compare-chart" id="compareChart"></div><div class="compare-stats" id="compareStats"></div></div><details class="compare-monthly" open><summary>Kuukausittaiset summat</summary><div id="compareMonthRows"></div></details></div><div class="card monthly-list compare-legacy">
+  <div id="reportComparison"><div class="compare-new"><h2>Vertailu</h2><div class="compare-controls"><label>Valitse meno<select id="compareCategory"><option value="Asuminen">Asuminen</option><option value="Auto">Auto</option><option value="Jätehuolto">Jätehuolto</option><option value="Kaikki menot">Kaikki menot</option><option value="Muut menot">Muut menot</option><option value="Puhelimet ja netti">Puhelin ja netti</option><option value="Ruoka ja kaupat">Ruoka ja kaupat</option><option value="Sähkö" selected>⚡ Sähkö yhteensä</option><option value="Sähköenergia">Sähköenergia</option><option value="Sähkönsiirto">Sähkönsiirto</option><option value="Terveys ja apteekki">Terveys</option><option value="Vakuutukset">Vakuutukset</option><option value="Vesi">Vesi</option></select></label><div><span class="compare-label">Vertailujakso</span><div class="compare-period"><button data-period="3" type="button">3 kk</button><button data-period="6" type="button">6 kk</button><button data-period="12" class="selected" type="button">12 kk</button></div></div></div><div class="compare-panel"><h3 id="compareTitle">Sähkö – 6 kuukauden vertailu</h3><div class="compare-chart" id="compareChart"></div><div class="compare-stats" id="compareStats"></div></div><details class="compare-monthly" open><summary>Kuukausittaiset summat</summary><div id="compareMonthRows"></div></details></div><div class="card monthly-list compare-legacy">
   <h2>Kaikki menot kuukausittain</h2>
   <label class="monthly-owner"><select id="monthlyOwner" aria-label="Valitse tarkasteltava henkilö"><option value="">Jaana ja Janne</option><option>Jaana</option><option>Janne</option></select></label>
   <div id="expenseComparison" aria-live="polite"></div><button type="button" class="comparison-close" onclick="show('home')">Sulje vertailu</button>
@@ -1189,32 +1196,25 @@ function renderNewComparison(){
  $('compareChart').style.setProperty('--comparison-columns',String(comparePeriod));
  $('compareChart').setAttribute('aria-label','Kuukausikaavio aikajärjestyksessä, vieritä sivusuunnassa');
  const electricTogether=category==='Sähkö';
+ $('compareChart').classList.toggle('electric-paired-chart',electricTogether);
+ const paired=values.map(x=>{
+   const items=matching.filter(t=>t.date.slice(0,7)===x.month);
+   const energy=expenseTotal(items.filter(t=>expenseSubcategory(t,'Sähkö')==='Sähköenergia'));
+   const transfer=expenseTotal(items.filter(t=>expenseSubcategory(t,'Sähkö')==='Sähkönsiirto'));
+   return {...x,energy,transfer};
+ });
+ const pairMax=Math.max(1,...paired.flatMap(x=>[x.energy,x.transfer]));
  $('compareChart').innerHTML=electricTogether
-  ? values.map(x=>{
-     const items=matching.filter(t=>t.date.slice(0,7)===x.month);
-     const oomi=expenseTotal(items.filter(t=>/OOMI/.test(textKey(t.description))));
-     const elenia=expenseTotal(items.filter(t=>/ELENIA/.test(textKey(t.description))));
-     const bar=(amount,color)=>'<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;min-width:0"><span style="font-size:.59rem;white-space:nowrap;font-weight:650">'+(amount?E(amount):'–')+'</span><div style="width:14px;height:'+(amount?Math.max(2,Math.round(amount/max*112)):2)+'px;background:'+(amount?color:'#e5e9e7')+';border-radius:4px 4px 0 0"></div></div>';
-     return '<div class="compare-bar-item" style="flex:0 0 82px"><div style="display:flex;align-items:flex-end;justify-content:center;gap:6px;height:150px">'+bar(oomi,'#71c98d')+bar(elenia,'#4187ce')+'</div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>';
+  ? paired.map(x=>{
+     const bar=(amount,color)=>'<div class="electric-paired-column"><span class="electric-paired-value">'+(amount?E(amount):'–')+'</span><div class="electric-paired-bar" style="height:'+(amount?Math.max(2,Math.round(amount/pairMax*105)):2)+'px;background:'+(amount?color:'#e5e9e7')+'"></div></div>';
+     return '<div class="compare-bar-item electric-paired-month"><div class="electric-paired-bars">'+bar(x.energy,'#71c98d')+bar(x.transfer,'#4187ce')+'</div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>';
     }).join('')
   :values.map(x=>'<div class="compare-bar-item"><span class="compare-bar-value">'+(x.hasData?E(x.sum):'–')+'</span><div class="compare-bar" style="height:'+(x.hasData?Math.max(2,Math.round(x.sum/max*125)):2)+'px;'+(!x.hasData?'background:#e5e9e7;':'')+'"></div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>').join('');
  document.getElementById('electricLegend')?.remove();
- if(electricTogether)$('compareChart').insertAdjacentHTML('beforebegin','<div id="electricLegend" style="font-size:.82rem;padding:8px 12px"><span style="color:#27804b">■</span> Kulutus · Oomi &nbsp; <span style="color:#4187ce">■</span> Siirto · Elenia</div>');
- else document.getElementById('electricLegend')?.remove();
+ if(electricTogether)$('compareChart').insertAdjacentHTML('beforebegin','<div id="electricLegend" style="font-size:.82rem;padding:8px 12px"><span style="color:#27804b">■</span> Kulutus &nbsp; <span style="color:#4187ce">■</span> Siirto</div>');
  const known=values.filter(x=>x.hasData),sums=known.map(x=>x.sum);
  $('compareStats').innerHTML='<div>Keskimäärin / kk<strong>'+(known.length?E(sums.reduce((a,b)=>a+b,0)/known.length):'–')+'</strong></div><div>Korkein<strong>'+(known.length?E(Math.max(...sums)):'–')+'</strong></div><div>Matalin<strong>'+(known.length?E(Math.min(...sums)):'–')+'</strong></div>';
- $('compareMonthRows').innerHTML=values.map(x=>{
-  let extra='';
-  if((category==='Sähkö'||category==='Sähköenergia'||category==='Sähkönsiirto'||category==='Vesi')&&x.hasData){
-   const items=matching.filter(t=>t.date.slice(0,7)===x.month);
-   const oomi=items.filter(t=>/OOMI/.test(textKey(t.description)));
-   const elenia=items.filter(t=>/ELENIA/.test(textKey(t.description)));
-   const other=items.filter(t=>!/OOMI|ELENIA/.test(textKey(t.description)));
-   const paymentLine=(label,arr)=>'<div>'+label+': '+(arr.length?E(expenseTotal(arr)):'—')+'</div>';
-   extra='<div style="grid-column:1/-1;font-size:.86em;line-height:1.5">'+(category==='Vesi'?paymentLine('Aurinkovuoren Vesi',items):paymentLine('Kulutus · Oomi',oomi)+paymentLine('Siirto · Elenia',elenia)+(other.length?paymentLine('Muut',other):''))+'</div>';
-  }
-  return '<div class="compare-month-row"><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei merkintää')+'</strong>'+extra+'</div>';
- }).join('');
+ $('compareMonthRows').innerHTML=values.map(x=>'<div class="compare-month-row"><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei merkintää')+'</strong></div>').join('');
 
  document.querySelectorAll('.compare-period button').forEach(b=>b.classList.toggle('selected',Number(b.dataset.period)===comparePeriod));
 }
