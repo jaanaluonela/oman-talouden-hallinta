@@ -702,6 +702,13 @@ for(const tx of janneNovRows){
  const previous=janneNovRows.filter(t=>t.id<tx.id&&t.date===tx.date&&t.amount===tx.amount&&normalize(t.description)===normalize(tx.description)).length;
  if(!state.transactions.some(t=>t.id===tx.id)&&candidates.length<=previous)state.transactions.push(tx);
 }
+// Jannen 21.11.2026 vahvistunut taksiyritykseltä saatu tulo.
+// Älä lisää pankin katevarauksia toteutuneiksi menoiksi ennen veloitusta.
+const taxiNovIncome={id:'spjn_20261121_taxi_400_income',date:'2026-11-21',account:'sp_janne',owner:'Janne',description:'VÄÄKSYN PALVELUTAKSI JANNE LUONELA',amount:400,category:'Taksilta saatu tulo',manualCategory:'Taksilta saatu tulo',type:'income',scope:'Koti',needsReview:false};
+if(!state.transactions.some(t=>t.id===taxiNovIncome.id||(t.account===taxiNovIncome.account&&t.date===taxiNovIncome.date&&Number(t.amount)===400&&textKey(t.description).includes('VAAKSYN PALVELUTAKSI'))))state.transactions.push(taxiNovIncome);
+// Veikkauksen pelitilille maksu on meno, ei kotitalouden sisäinen siirto.
+for(const t of state.transactions){if(t.account==='sp_janne'&&t.date==='2026-11-20'&&Number(t.amount)===-15&&textKey(t.description).includes('VEIKKAUS')){t.type='expense';t.category='Vapaa-aika';t.manualCategory='Vapaa-aika';}}
+localStorage.setItem('talousV5',JSON.stringify(state));
 localStorage.setItem('talousV5',JSON.stringify(state));
 // Marraskuun 2026 Jaanan kuvista poimitut tapahtumat sekä Jannen puuttuva oma siirto.
 // Näytetään pankin toteutuneet tapahtumat; katevaraukset jätetään pois.
