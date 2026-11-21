@@ -1187,11 +1187,11 @@ function renderNewComparison(){
    const oomi=items.filter(t=>/OOMI/.test(textKey(t.description)));
    const elenia=items.filter(t=>/ELENIA/.test(textKey(t.description)));
    const other=items.filter(t=>!/OOMI|ELENIA/.test(textKey(t.description)));
-   extra='<div class="muted" style="grid-column:1/-1;font-size:.86em">Oomi '+(oomi.length?E(expenseTotal(oomi)):'ei merkintää')+' · Elenia '+(elenia.length?E(expenseTotal(elenia)):'ei merkintää')+(other.length?' · Muut '+E(expenseTotal(other)):'')+'</div>';
+   extra='<div class="muted" style="grid-column:1/-1;font-size:.86em">Kulutus · Oomi: '+(oomi.length?E(expenseTotal(oomi)):'—')+' · Siirto · Elenia: '+(elenia.length?E(expenseTotal(elenia)):'—')+(other.length?' · Muut: '+E(expenseTotal(other)):'')+'</div>';
   }
   return '<div class="compare-month-row"><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei merkintää')+'</strong>'+extra+'</div>';
  }).join('');
- if(category==='Sähkö')$('compareMonthRows').insertAdjacentHTML('beforeend','<p class="muted" style="padding:10px 0">Sähkö yhteensä = Oomin sähköenergia + Elenian sähkönsiirto pankista kirjattujen maksujen mukaan. Laskutuspalvelun laskuja ei lisätä uudelleen, joten samaa maksua ei lasketa kahdesti. Puuttuva merkintä ei tarkoita maksamatonta laskua.</p>');
+
  document.querySelectorAll('.compare-period button').forEach(b=>b.classList.toggle('selected',Number(b.dataset.period)===comparePeriod));
 }
 $('compareCategory').addEventListener('change',renderNewComparison);
