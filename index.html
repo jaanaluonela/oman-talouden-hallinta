@@ -729,6 +729,14 @@ for(const t of state.transactions.filter(x=>x.account==='sp_janne'&&x.date?.star
  }
 }
 localStorage.setItem('talousV5',JSON.stringify(state));
+// Marraskuu: Jaanan ja Jannen väliset siirrot ovat aina kotitalouden sisäisiä.
+for(const t of state.transactions.filter(x=>x.date?.startsWith('2026-11-')&&['sp_jaana','sp_janne'].includes(x.account))){
+ const d=textKey(t.description);
+ if(/LUONELA JAANA MARIANNE|LUONELA JANNE MIKA ANTERO|JAANA LUONELA|JANNE LUONELA/.test(d)&&!/VAAKSYN PALVELUTAKSI/.test(d)){
+  t.type='transfer';t.category='Oma siirto';t.manualCategory='Oma siirto';t.needsReview=false;
+ }
+}
+localStorage.setItem('talousV5',JSON.stringify(state));
 // Lokakuun 2026 seurattavien menojen vahvistetut luokittelut.
 // Säilytä yksittäiset samansuuruiset pankkitapahtumat, älä yhdistä niitä automaattisesti.
 for(const t of state.transactions.filter(x=>x.date?.startsWith('2026-10-')&&x.id?.startsWith('sp_oct26_'))){
