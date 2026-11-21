@@ -1187,7 +1187,9 @@ function renderNewComparison(){
    const oomi=items.filter(t=>/OOMI/.test(textKey(t.description)));
    const elenia=items.filter(t=>/ELENIA/.test(textKey(t.description)));
    const other=items.filter(t=>!/OOMI|ELENIA/.test(textKey(t.description)));
-   extra='<div class="muted" style="grid-column:1/-1;font-size:.86em">Kulutus · Oomi: '+(oomi.length?E(expenseTotal(oomi)):'—')+' · Siirto · Elenia: '+(elenia.length?E(expenseTotal(elenia)):'—')+(other.length?' · Muut: '+E(expenseTotal(other)):'')+'</div>';
+   const paymentSources=arr=>[...new Set(arr.map(t=>{const a=state.accounts.find(a=>a.id===t.account);const k=textKey((a?.name||'')+' '+(t.account||''));return /TAKSI|YRITYS/.test(k)?'taksin tililtä':/JAANA/.test(k)?'Jaanan tililtä':/JANNE/.test(k)?'Jannen tililtä':'tili ei tiedossa'}))].join(', ');
+   const paymentLine=(label,arr)=>'<div>'+label+': '+(arr.length?E(expenseTotal(arr)):'—')+(arr.length?'<div style="font-size:.78em;color:var(--muted)">Maksettu '+escapeHtml(paymentSources(arr))+'</div>':'')+'</div>';
+   extra='<div style="grid-column:1/-1;font-size:.86em;line-height:1.5">'+paymentLine('Kulutus · Oomi',oomi)+paymentLine('Siirto · Elenia',elenia)+(other.length?paymentLine('Muut',other):'')+'</div>';
   }
   return '<div class="compare-month-row"><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei merkintää')+'</strong>'+extra+'</div>';
  }).join('');
