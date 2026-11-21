@@ -343,6 +343,16 @@ nav button{min-height:64px}
 .electric-paired-bar{width:clamp(3px,65%,14px);border-radius:3px 3px 0 0;flex-shrink:0}
 .electric-paired-value{display:none!important}
 @media(max-width:430px){.electric-paired-bars{gap:1px}.electric-paired-value{font-size:.38rem}.electric-paired-bar{width:clamp(3px,70%,10px)}}
+</style><style id="electric-month-click-v3">
+#compareMonthRows .electric-month-detail{border-bottom:1px solid #dfe5e0}
+#compareMonthRows .electric-month-detail>summary{display:grid;grid-template-columns:minmax(0,1fr) auto 22px;gap:10px;align-items:center;cursor:pointer;list-style:none;padding:16px 12px;min-height:58px}
+#compareMonthRows .electric-month-detail>summary::-webkit-details-marker{display:none}
+#compareMonthRows .electric-month-detail>summary strong{white-space:nowrap}
+#compareMonthRows .electric-month-chevron{font-size:1.2rem;color:#126e68;transition:transform .15s}
+#compareMonthRows .electric-month-detail[open] .electric-month-chevron{transform:rotate(180deg)}
+#compareMonthRows .electric-month-breakdown{display:grid;gap:8px;padding:2px 16px 16px 26px;background:#f7faf9}
+#compareMonthRows .electric-month-breakdown>div{display:flex;justify-content:space-between;gap:12px}
+#compareMonthRows .electric-month-breakdown strong{font-weight:750}
 </style></head><body><div class="app">
 <div class="global-brand"><span aria-hidden="true" class="brand-house"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v11H3z"/><path d="M9 21v-8h6v8"/></svg></span><span>Kodin talous</span></div>
 <section id="home">
@@ -1214,7 +1224,11 @@ function renderNewComparison(){
  if(electricTogether)$('compareChart').insertAdjacentHTML('beforebegin','<div id="electricLegend" style="font-size:.82rem;padding:8px 12px"><span style="color:#27804b">■</span> Kulutus &nbsp; <span style="color:#4187ce">■</span> Siirto</div>');
  const known=values.filter(x=>x.hasData),sums=known.map(x=>x.sum);
  $('compareStats').innerHTML='<div>Keskimäärin / kk<strong>'+(known.length?E(sums.reduce((a,b)=>a+b,0)/known.length):'–')+'</strong></div><div>Korkein<strong>'+(known.length?E(Math.max(...sums)):'–')+'</strong></div><div>Matalin<strong>'+(known.length?E(Math.min(...sums)):'–')+'</strong></div>';
- $('compareMonthRows').innerHTML=values.map(x=>'<div class="compare-month-row"><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei merkintää')+'</strong>'+(electricTogether?'<div class="electric-month-breakdown">Kulutus '+E(paired.find(p=>p.month===x.month).energy)+' · Siirto '+E(paired.find(p=>p.month===x.month).transfer)+'</div>':'')+'</div>').join('');
+ $('compareMonthRows').innerHTML=values.map(x=>{
+  const p=paired.find(item=>item.month===x.month);
+  const breakdown=electricTogether&&x.hasData?'<div class="electric-month-breakdown"><div><span>Kulutus</span><strong>'+E(p.energy)+'</strong></div><div><span>Siirto</span><strong>'+E(p.transfer)+'</strong></div></div>':'';
+  return '<details class="electric-month-detail"><summary><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei merkintää')+'</strong><span class="electric-month-chevron" aria-hidden="true">⌄</span></summary>'+breakdown+'</details>';
+ }).join('');
 
  document.querySelectorAll('.compare-period button').forEach(b=>b.classList.toggle('selected',Number(b.dataset.period)===comparePeriod));
 }
