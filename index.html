@@ -1010,7 +1010,7 @@ function renderHome(){
  $('expenseTotal').textContent=E(expenseTotal(rows));
  $('expenseTotalLabel').textContent=month.value?monthLabel(month.value)+' yhteensä':'Menot yhteensä';
  const groups=groupExpenses(rows,householdMainCategory);
- $('expenseGroups').innerHTML=householdCategoryOrder.filter(c=>groups.has(c)).sort((a,b)=>expenseTotal(groups.get(b))-expenseTotal(groups.get(a))).map(c=>{
+ $('expenseGroups').innerHTML=householdCategoryOrder.filter(c=>groups.has(c)).sort((a,b)=>a.localeCompare(b,'fi')).map(c=>{
   const items=groups.get(c);
   let content;
   if(c===shoppingCategory){
