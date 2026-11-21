@@ -713,6 +713,15 @@ for(const tx of novemberReviewRows){
  if(!state.transactions.some(t=>t.id===tx.id)&&matching.length<=earlier)state.transactions.push(tx);
 }
 localStorage.setItem('talousV5',JSON.stringify(state));
+// Marraskuun 2026 tulojen erottelu: palkka, palautukset ja sisäiset siirrot.
+for(const t of state.transactions.filter(x=>x.date?.startsWith('2026-11-')&&(x.account==='sp_jaana'||x.account==='sp_janne'))){
+ const d=textKey(t.description);
+ if(t.account==='sp_jaana'&&t.date==='2026-11-13'&&Math.abs(Number(t.amount)-2129.58)<0.01){t.type='income';t.category='Palkka';t.manualCategory='Palkka';t.needsReview=false}
+ else if(t.account==='sp_janne'&&/VEIKKAUS/.test(d)&&Number(t.amount)>0){t.category='Pelitilin palautukset';t.manualCategory='Pelitilin palautukset';t.type='transfer';t.needsReview=false}
+ else if(t.account==='sp_janne'&&/VAAKSYN TAKSIASEMA/.test(d)&&Math.abs(Number(t.amount)-50)<0.01){t.category='Kulun palautus';t.manualCategory='Kulun palautus';t.type='transfer';t.needsReview=false}
+ else if(t.account==='sp_jaana'&&/VIPPS MOBILEPAY|^MOBILEPAY$/.test(d)&&Number(t.amount)>0){t.category='Muut tulot – tarkistettava';t.manualCategory='Muut tulot – tarkistettava';t.needsReview=true}
+}
+localStorage.setItem('talousV5',JSON.stringify(state));
 // Lokakuun 2026 seurattavien menojen vahvistetut luokittelut.
 // Säilytä yksittäiset samansuuruiset pankkitapahtumat, älä yhdistä niitä automaattisesti.
 for(const t of state.transactions.filter(x=>x.date?.startsWith('2026-10-')&&x.id?.startsWith('sp_oct26_'))){
