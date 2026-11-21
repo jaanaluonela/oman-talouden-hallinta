@@ -341,7 +341,7 @@ nav button{min-height:64px}
 .electric-paired-bars{display:flex;align-items:flex-end;justify-content:center;gap:2px;width:100%;height:132px;min-width:0}
 .electric-paired-column{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;min-width:0;flex:1;max-width:45px}
 .electric-paired-bar{width:clamp(3px,65%,14px);border-radius:3px 3px 0 0;flex-shrink:0}
-.electric-paired-value{font-size:clamp(.35rem,1.15vw,.59rem);white-space:nowrap;letter-spacing:-.4px;font-weight:650}
+.electric-paired-value{display:none!important}
 @media(max-width:430px){.electric-paired-bars{gap:1px}.electric-paired-value{font-size:.38rem}.electric-paired-bar{width:clamp(3px,70%,10px)}}
 </style></head><body><div class="app">
 <div class="global-brand"><span aria-hidden="true" class="brand-house"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v11H3z"/><path d="M9 21v-8h6v8"/></svg></span><span>Kodin talous</span></div>
@@ -1206,7 +1206,7 @@ function renderNewComparison(){
  const pairMax=Math.max(1,...paired.flatMap(x=>[x.energy,x.transfer]));
  $('compareChart').innerHTML=electricTogether
   ? paired.map(x=>{
-     const bar=(amount,color)=>'<div class="electric-paired-column"><span class="electric-paired-value">'+(amount?E(amount):'–')+'</span><div class="electric-paired-bar" style="height:'+(amount?Math.max(2,Math.round(amount/pairMax*105)):2)+'px;background:'+(amount?color:'#e5e9e7')+'"></div></div>';
+     const bar=(amount,color)=>'<div class="electric-paired-column" title="'+(amount?E(amount):'Ei merkintää')+'"><div class="electric-paired-bar" style="height:'+(amount?Math.max(2,Math.round(amount/pairMax*105)):2)+'px;background:'+(amount?color:'#e5e9e7')+'"></div></div>';
      return '<div class="compare-bar-item electric-paired-month"><div class="electric-paired-bars">'+bar(x.energy,'#71c98d')+bar(x.transfer,'#4187ce')+'</div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>';
     }).join('')
   :values.map(x=>'<div class="compare-bar-item"><span class="compare-bar-value">'+(x.hasData?E(x.sum):'–')+'</span><div class="compare-bar" style="height:'+(x.hasData?Math.max(2,Math.round(x.sum/max*125)):2)+'px;'+(!x.hasData?'background:#e5e9e7;':'')+'"></div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>').join('');
@@ -1214,7 +1214,7 @@ function renderNewComparison(){
  if(electricTogether)$('compareChart').insertAdjacentHTML('beforebegin','<div id="electricLegend" style="font-size:.82rem;padding:8px 12px"><span style="color:#27804b">■</span> Kulutus &nbsp; <span style="color:#4187ce">■</span> Siirto</div>');
  const known=values.filter(x=>x.hasData),sums=known.map(x=>x.sum);
  $('compareStats').innerHTML='<div>Keskimäärin / kk<strong>'+(known.length?E(sums.reduce((a,b)=>a+b,0)/known.length):'–')+'</strong></div><div>Korkein<strong>'+(known.length?E(Math.max(...sums)):'–')+'</strong></div><div>Matalin<strong>'+(known.length?E(Math.min(...sums)):'–')+'</strong></div>';
- $('compareMonthRows').innerHTML=values.map(x=>'<div class="compare-month-row"><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei merkintää')+'</strong></div>').join('');
+ $('compareMonthRows').innerHTML=values.map(x=>'<div class="compare-month-row"><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei merkintää')+'</strong>'+(electricTogether?'<div class="electric-month-breakdown">Kulutus '+E(paired.find(p=>p.month===x.month).energy)+' · Siirto '+E(paired.find(p=>p.month===x.month).transfer)+'</div>':'')+'</div>').join('');
 
  document.querySelectorAll('.compare-period button').forEach(b=>b.classList.toggle('selected',Number(b.dataset.period)===comparePeriod));
 }
