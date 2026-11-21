@@ -1166,7 +1166,18 @@ function renderNewComparison(){
  const today=new Date();
  const rows=state.transactions.filter(x=>x.type==='expense'&&isHouseholdTransaction(x));
  const categories=category==='Muut menot'?['Muut kodin ostot','Tilaukset','Lemmikit','Harrastukset ja jäsenmaksut','Tarkistettavat']:null;
- const matching=rows.filter(x=>category==='Kaikki menot'||(categories?categories.includes(householdMainCategory(x)):(category==='Sähköenergia'||category==='Sähkönsiirto')?(householdMainCategory(x)==='Sähkö'&&expenseSubcategory(x,'Sähkö')===category):householdMainCategory(x)===category));
+ const filtered=rows.filter(x=>category==='Kaikki menot'||(categories?categories.includes(householdMainCategory(x)):(category==='Sähköenergia'||category==='Sähkönsiirto')?(householdMainCategory(x)==='Sähkö'&&expenseSubcategory(x,'Sähkö')===category):householdMainCategory(x)===category));
+ const seenElectric=new Set();
+ const matching=filtered.filter(x=>{
+  if(!['Sähkö','Sähköenergia','Sähkönsiirto'].includes(category))return true;
+  const d=textKey(x.description);
+  const supplier=/OOMI/.test(d)?'oomi':/ELENIA/.test(d)?'elenia':'other';
+  if(supplier==='other')return true;
+  const key=[x.date,x.account,supplier,Math.round(Math.abs(Number(x.amount))*100)].join('|');
+  if(seenElectric.has(key))return false;
+  seenElectric.add(key);
+  return true;
+ });
  const available=[...new Set(rows.map(x=>x.date.slice(0,7)))].sort();
  const currentMonth=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
  const end=currentMonth;
