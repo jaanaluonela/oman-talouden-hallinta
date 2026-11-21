@@ -1172,7 +1172,7 @@ function renderNewComparison(){
  const end=currentMonth;
  const [year,month]=end.split('-').map(Number);
  const periods=Array.from({length:comparePeriod},(_,i)=>{const d=new Date(Date.UTC(year,month-1-(comparePeriod-1-i),1));return d.toISOString().slice(0,7)});
- const values=periods.map(m=>({month:m,sum:expenseTotal(matching.filter(x=>x.date.slice(0,7)===m)),hasData:rows.some(x=>x.date.slice(0,7)===m)}));
+ const values=periods.map(m=>{const monthItems=matching.filter(x=>x.date.slice(0,7)===m);return {month:m,sum:expenseTotal(monthItems),hasData:monthItems.length>0};});
  const max=Math.max(1,...values.map(x=>x.sum));
  $('compareTitle').textContent=category+' – '+comparePeriod+' kuukauden vertailu';
  $('compareChart').style.setProperty('--comparison-columns',String(comparePeriod));
@@ -1182,14 +1182,14 @@ function renderNewComparison(){
  $('compareStats').innerHTML='<div>Keskimäärin / kk<strong>'+(known.length?E(sums.reduce((a,b)=>a+b,0)/known.length):'–')+'</strong></div><div>Korkein<strong>'+(known.length?E(Math.max(...sums)):'–')+'</strong></div><div>Matalin<strong>'+(known.length?E(Math.min(...sums)):'–')+'</strong></div>';
  $('compareMonthRows').innerHTML=values.map(x=>{
   let extra='';
-  if((category==='Sähkö'||category==='Sähköenergia'||category==='Sähkönsiirto')&&x.hasData){
+  if((category==='Sähkö'||category==='Sähköenergia'||category==='Sähkönsiirto'||category==='Vesi')&&x.hasData){
    const items=matching.filter(t=>t.date.slice(0,7)===x.month);
    const oomi=items.filter(t=>/OOMI/.test(textKey(t.description)));
    const elenia=items.filter(t=>/ELENIA/.test(textKey(t.description)));
    const other=items.filter(t=>!/OOMI|ELENIA/.test(textKey(t.description)));
    const paymentSources=arr=>[...new Set(arr.map(t=>{const a=state.accounts.find(a=>a.id===t.account);const k=textKey((a?.name||'')+' '+(t.account||''));return /TAKSI|YRITYS/.test(k)?'taksin tililtä':/JAANA/.test(k)?'Jaanan tililtä':/JANNE/.test(k)?'Jannen tililtä':'tili ei tiedossa'}))].join(', ');
    const paymentLine=(label,arr)=>'<div>'+label+': '+(arr.length?E(expenseTotal(arr)):'—')+(arr.length?'<div style="font-size:.78em;color:var(--muted)">Maksettu '+escapeHtml(paymentSources(arr))+'</div>':'')+'</div>';
-   extra='<div style="grid-column:1/-1;font-size:.86em;line-height:1.5">'+paymentLine('Kulutus · Oomi',oomi)+paymentLine('Siirto · Elenia',elenia)+(other.length?paymentLine('Muut',other):'')+'</div>';
+   extra='<div style="grid-column:1/-1;font-size:.86em;line-height:1.5">'+(category==='Vesi'?paymentLine('Aurinkovuoren Vesi',items):paymentLine('Kulutus · Oomi',oomi)+paymentLine('Siirto · Elenia',elenia)+(other.length?paymentLine('Muut',other):''))+'</div>';
   }
   return '<div class="compare-month-row"><span>'+monthLabel(x.month)+'</span><strong>'+(x.hasData?E(x.sum):'Ei merkintää')+'</strong>'+extra+'</div>';
  }).join('');
