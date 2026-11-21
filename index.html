@@ -1351,9 +1351,9 @@ function renderNewComparison(){
  });
  // Vertailussa ei käytetä maksukuukausiin perustuvia kiinteitä sähkölukuja.
  // Laskun kulutuskuukausi on vahvistettava erikseen.
- const electricPeriod=x=>/^\\d{4}-\\d{2}$/.test(x.consumptionMonth||'')?x.consumptionMonth:null;
+ const electricPeriod=x=>/^\d{4}-\d{2}$/.test(x.consumptionMonth||'')?x.consumptionMonth:x.date.slice(0,7);
  const verifiedElectric2026={};
- const electricRows=matching.filter(x=>electricPeriod(x));
+ // Jos laskun kulutuskuukautta ei ole vielä vahvistettu, näytetään maksu\n // väliaikaisesti maksukuukaudella, jotta pylväät eivät katoa.
  const available=[...new Set(rows.map(x=>x.date.slice(0,7)))].sort();
  const currentMonth=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
  const end=currentMonth;
@@ -1391,7 +1391,7 @@ function renderNewComparison(){
   ? axisHtml+'<div class="electric-plot">'+plotLines+values.map(x=>'<div class="compare-bar-item electric-paired-month"><div class="electric-paired-bars"><div class="electric-paired-column" title="'+(x.hasData?E(x.sum):'Ei laskua')+'"><div class="electric-paired-bar" style="height:'+(x.hasData?Math.max(0,Math.min(barHeight,Math.round(Math.max(0,x.sum)/axisMax*barHeight))):0)+'px;background:'+(category==='Auto'?'#71c98d':'#4187ce')+'"></div></div></div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>').join('')+'</div>'
   :values.map(x=>'<div class="compare-bar-item"><span class="compare-bar-value">'+(x.hasData?E(x.sum):'–')+'</span><div class="compare-bar" style="height:'+(x.hasData?Math.max(2,Math.round(x.sum/max*125)):2)+'px;'+(!x.hasData?'background:#e5e9e7;':'')+'"></div><span class="compare-bar-month">'+monthLabel(x.month).split(' ')[0].slice(0,3)+'</span></div>').join('');
  document.getElementById('electricLegend')?.remove();
- if(electricTogether)$('compareChart').insertAdjacentHTML('beforebegin','<div id="electricLegend" style="font-size:.82rem;padding:8px 12px"><span style="color:#27804b">■</span> Kulutus &nbsp; <span style="color:#4187ce">■</span> Siirto</div>');
+ if(electricTogether)$('compareChart').insertAdjacentHTML('beforebegin','<div id="electricLegend" style="font-size:.82rem;padding:8px 12px"><span style="color:#27804b">■</span> Sähköenergia &nbsp; <span style="color:#4187ce">■</span> Siirto<br><small>Vahvistamaton kulutuskuukausi näytetään väliaikaisesti maksukuukaudella.</small></div>');
  const known=values.filter(x=>x.hasData),sums=known.map(x=>x.sum);
  $('compareStats').innerHTML='<div>Keskimäärin / kk<strong>'+(known.length?E(sums.reduce((a,b)=>a+b,0)/known.length):'–')+'</strong></div><div>Korkein<strong>'+(known.length?E(Math.max(...sums)):'–')+'</strong></div><div>Matalin<strong>'+(known.length?E(Math.min(...sums)):'–')+'</strong></div>';
  $('compareMonthRows').innerHTML=electricTogether
