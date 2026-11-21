@@ -780,6 +780,17 @@ for(const t of state.transactions.filter(x=>x.date?.startsWith('2026-10-')&&x.id
  if(type)t.type=type;
  if(scope==='Yritys'){t.scope='Yritys';t.businessExpense=true}
 }
+// Lokakuu 2026: taksiyrityksen Jannelle maksamat suoritukset ovat kotitalouden tuloja.
+// Jaanan ja Jannen väliset tilisiirrot eivät ole tuloja eivätkä menoja.
+for(const t of state.transactions.filter(x=>x.date?.startsWith('2026-10-')&&['sp_janne','sp_jaana'].includes(x.account))){
+ const d=textKey(t.description),a=Number(t.amount);
+ if(t.account==='sp_janne'&&a>0&&/VAAKSYN PALVELUTAKSI/.test(d)){
+  t.type='income';t.category='Taksiyritykseltä saadut tulot';t.manualCategory='Taksiyritykseltä saadut tulot';t.scope='Koti';t.needsReview=false;
+ }else if(/^(?:LUONELA JAANA MARIANNE|LUONELA JANNE MIKA ANTERO|JAANA LUONELA|JANNE LUONELA)(?:$|\\s)/.test(d)){
+  t.type='transfer';t.category='Oma siirto';t.manualCategory='Oma siirto';t.needsReview=false;
+ }
+}
+localStorage.setItem('talousV5',JSON.stringify(state));
 // Lokakuun 1.–7.10. Jaanan pankkikuvista vahvistetut tapahtumat.
 const jaanaOctStart=[
  ['2026-10-01','IKEA Lahti HFB Main',-7.99,'Kodin menot','expense'],
