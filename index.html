@@ -682,6 +682,17 @@ for(let i=0;i<octoberEarlyFromScreenshots.length;i++){
 localStorage.setItem('talousV5',JSON.stringify(state));
 for(const tx of octoberStatementRows){if(!state.transactions.some(t=>t.id===tx.id)){state.transactions.push(automaticAudit(tx));}}
 localStorage.setItem('talousV5',JSON.stringify(state));
+// Marraskuun 2026 käyttäjän vahvistamat Jaanan käyttötilin ostot.
+// Tunnisteet ja maksun tarkistus estävät saman tapahtuman lisäämisen kahdesti.
+for(const tx of [
+ {id:'spj_20261120_vfi_keski_uudenmaan_4350',date:'2026-11-20',account:'sp_jaana',owner:'Jaana',description:'VFI Keski-Uudenmaan K – ravintola',amount:-43.50,category:'Ravintolat',manualCategory:'Ravintolat',type:'expense',scope:'Koti',needsReview:false},
+ {id:'spj_20261121_sanna_maarit_3800',date:'2026-11-21',account:'sp_jaana',owner:'Jaana',description:'Sanna-Maarit Joha – leivonnainen',amount:-38.00,category:'Kaupat',manualCategory:'Kaupat',type:'expense',scope:'Koti',needsReview:false}
+]){
+ const norm=v=>textKey(v).replace(/[^A-Z0-9]/g,'');
+ const exists=state.transactions.some(t=>t.id===tx.id||(t.date===tx.date&&t.account===tx.account&&Math.abs(Number(t.amount)-tx.amount)<0.01&&(norm(t.description).includes(norm(tx.description.split(' – ')[0]))||norm(tx.description).includes(norm(t.description)))));
+ if(!exists)state.transactions.push(tx);
+}
+localStorage.setItem('talousV5',JSON.stringify(state));
 // Lokakuun 2026 seurattavien menojen vahvistetut luokittelut.
 // Säilytä yksittäiset samansuuruiset pankkitapahtumat, älä yhdistä niitä automaattisesti.
 for(const t of state.transactions.filter(x=>x.date?.startsWith('2026-10-')&&x.id?.startsWith('sp_oct26_'))){
