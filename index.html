@@ -1679,4 +1679,29 @@ document.querySelectorAll('[data-owner-choice]').forEach(b=>b.addEventListener('
 $('backupDownload').onclick=()=>{try{const payload={format:'kodin-talous-backup',savedAt:new Date().toISOString(),state};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='kodin-talous-varmuuskopio-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);$('backupStatus').textContent='Varmuuskopio ladattu. Säilytä tiedosto iCloud Drivessa tai Tiedostot-sovelluksessa.'}catch(e){$('backupStatus').textContent='Tallennus epäonnistui: '+e.message}};
 $('backupRestore').onclick=()=>$('backupFile').click();
 $('backupFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=JSON.parse(await file.text());if(data.format!=='kodin-talous-backup'||!data.state||!Array.isArray(data.state.transactions))throw Error('Tiedosto ei ole Kodin talous -varmuuskopio');if(!confirm('Palautetaanko varmuuskopio? Nykyiset paikalliset muutokset korvataan. Tallenna ensin nykyinen varmuuskopio.'))return;state=data.state;persist();location.reload()}catch(err){$('backupStatus').textContent='Palautus epäonnistui: '+err.message}finally{e.target.value=''}};
+// Pankkikuvista 22.11.2026 tarkistettu syyskuun 2026 sähkömenojen korjaus.
+// Maksukuukausi Menot-sivulle; Vertailu-sivun kulutuskuukausien laskut säilyvät ennallaan.
+// Vanhoissa Excel-tuonneissa oli virheelliset Jannen Oomi 95,31 € ja Elenia 117,37 €.
+// Vahvistettu ainoa syyskuun maksu: Elenia 117,81 € Jaanan tililtä 15.9.2026.
+{
+ const confirmedId='confirmed_elenia_2026-09-15_sp_jaana';
+ state.transactions=state.transactions.filter(t=>{
+  if(!String(t.date||'').startsWith('2026-09-')||Number(t.amount)>=0)return true;
+  const name=textKey(t.description||'');
+  if(!/ELENIA|OOMI/.test(name))return true;
+  return t.date==='2026-09-15' && t.account==='sp_jaana'
+    && /ELENIA/.test(name) && Math.abs(Number(t.amount)+117.81)<0.005;
+ });
+ const matches=state.transactions.filter(t=>t.date==='2026-09-15'&&t.account==='sp_jaana'&&
+   /ELENIA/.test(textKey(t.description||''))&&Math.abs(Number(t.amount)+117.81)<0.005);
+ if(!matches.length)state.transactions.push({id:confirmedId,date:'2026-09-15',
+   account:'sp_jaana',owner:'Jaana',description:'Elenia Verkko Oyj – pankista vahvistettu',
+   amount:-117.81,category:'Sähkö',manualCategory:'Sähkö',type:'expense',scope:'Koti',needsReview:false});
+ else{
+  for(const t of matches.slice(1))state.transactions.splice(state.transactions.indexOf(t),1);
+  Object.assign(matches[0],{category:'Sähkö',manualCategory:'Sähkö',type:'expense',scope:'Koti',needsReview:false});
+ }
+ state.transactions.sort((a,b)=>b.date.localeCompare(a.date));
+ persist();
+}
 restoreArchiveAreas();renderHome();if('serviceWorker'in navigator)navigator.serviceWorker.register('service-worker.js');</script></body></html>
